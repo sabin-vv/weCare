@@ -1,0 +1,14 @@
+.formWrapper {
+    width: 500px;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.passwordWrapper {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}

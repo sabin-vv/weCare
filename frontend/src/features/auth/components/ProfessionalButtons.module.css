@@ -1,0 +1,31 @@
+.buttonWrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    height: 40px;
+    margin: 10px 0;
+}
+
+.buttonWrapper button {
+    padding: 10px 20px;
+    width: fit-content;
+    height: auto;
+    border-radius: 8px;
+    font-weight: 500;
+}
+.backButton {
+    border: 1px solid #cbd5e1;
+    background: none;
+    color: black;
+}
+.backButton:hover {
+    cursor: pointer;
+}
+.nextButton {
+    border: none;
+    background: #137fec;
+    color: white;
+}
+.nextButton:hover {
+    cursor: pointer;
+}

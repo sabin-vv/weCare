@@ -1,0 +1,91 @@
+.gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.sectionTitle {
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.specializationGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+}
+.specializationCard {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.specializationCard input {
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #dbe0e6;
+    font-size: 14px;
+}
+
+.specializationCard input:focus {
+    border-color: #137fec;
+}
+.addSpecializationButton {
+    border: 2px dashed #dc2626;
+    background: #f8fafc;
+    color: #964444;
+}
+.removeBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50px;
+    border: none;
+    background: #fee2e2;
+    color: #dc2626;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.removeBtn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+.cardHeader {
+    display: flex;
+    gap: 8px;
+}
+.cardHeader input {
+    flex: 1;
+}
+
+.navigationButton {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.documentInput {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+
+    border-radius: 8px;
+    border: 1px solid #dbe0e6;
+
+    font-size: 14px;
+    outline: none;
+}
+.documentInput:focus {
+    border-color: #137fec;
+}

@@ -1,0 +1,58 @@
+.formFields {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.formFields label {
+    font-size: 14px;
+    color: black;
+    font-weight: 600;
+}
+.inputWrapper {
+    position: relative;
+}
+.leftContent {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+}
+
+.icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.prefix {
+    font-weight: 500;
+}
+
+.input {
+    width: 100%;
+    height: 48px;
+    padding: 10px 10px 10px 40px;
+    border-radius: 8px;
+    outline: none;
+    border: 2px solid #dbe0e6;
+}
+
+.withPrefix {
+    padding-left: 65px;
+}
+
+.input:hover {
+    border: 2px solid blueviolet;
+}
+.input:focus {
+    border-color: blueviolet;
+}
+.icon {
+    display: flex;
+    align-items: center;
+}

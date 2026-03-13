@@ -1,0 +1,16 @@
+.footerContainer {
+    width: 100%;
+    background: white;
+    padding: 20px 0;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.footerContainer h3,
+p {
+    font-size: 12px;
+    font-weight: normal;
+    color: #617589;
+}

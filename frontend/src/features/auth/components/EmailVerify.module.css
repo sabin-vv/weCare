@@ -1,0 +1,58 @@
+.cardWrapper {
+    width: 400px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+.title {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.emailAddress {
+    color: blueviolet;
+    font-weight: bold;
+}
+.digitBox {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin: 20px 10px;
+}
+.digitBox input {
+    height: 45px;
+    width: 45px;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+}
+.digitBox input:focus {
+    outline: none;
+    border: 1px solid #137fec;
+    box-shadow: 0 0 0 2px rgba(19, 127, 236, 0.15);
+}
+.cardFooter {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.resendCode {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+.changeEmail {
+    font-size: 10px;
+    color: #137fec;
+}
+.changeEmail:hover {
+    cursor: pointer;
+}

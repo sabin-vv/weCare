@@ -1,0 +1,27 @@
+.headerContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 65px;
+    background: #ffff;
+    padding: 10px 15px;
+}
+.buttonWrapper {
+    width: fit-content;
+    display: flex;
+    gap: 10px;
+}
+.buttonWrapper button {
+    width: fit-content;
+    height: 40px;
+    padding: 10px;
+    border-radius: 8px;
+    min-width: 113px;
+    border: none;
+    background: #137fec;
+    color: #ffff;
+}
+.buttonWrapper button:hover {
+    cursor: pointer;
+}

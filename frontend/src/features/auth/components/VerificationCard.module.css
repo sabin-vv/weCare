@@ -1,0 +1,38 @@
+.cardWrapper {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s ease;
+}
+
+.cardWrapper:hover {
+    border-color: #cbd5f5;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.cardHeading {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.title h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+}
+.description {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.description p {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}

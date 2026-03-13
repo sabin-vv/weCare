@@ -1,0 +1,43 @@
+.formWrapper {
+    width: 450px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.progressWrapper {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    flex-direction: column;
+    padding: 20px 0 10px 0;
+}
+.progressTextWrapper {
+    display: flex;
+    justify-content: space-between;
+}
+.step {
+    font-weight: bold;
+}
+.progressText {
+    color: #22c55e;
+    font-weight: bold;
+}
+progress {
+    width: 100%;
+    height: 10px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+}
+progress::-webkit-progress-bar {
+    background-color: #eee;
+    border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+    background-color: #22c55e;
+    border-radius: 10px;
+}
