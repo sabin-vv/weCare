@@ -1,0 +1,76 @@
+.header {
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.headerContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1a202c;
+    cursor: pointer;
+    text-decoration: none;
+    letter-spacing: -0.5px;
+}
+
+.navLinks {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.navLink {
+    background: none;
+    border: none;
+    color: #4a5568;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+}
+
+.navLink:hover {
+    color: #3b82f6;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.loginBtn {
+    background: transparent;
+    border: 1px solid #3b82f6;
+    color: #3b82f6;
+    padding: 0.5rem 1.25rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.loginBtn:hover {
+    background-color: #eff6ff;
+}
+
+@media (max-width: 768px) {
+    .navLinks {
+        display: none;
+    }
+}

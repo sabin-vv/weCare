@@ -1,7 +1,10 @@
 import type { FC, ReactNode } from 'react'
-import Header from '../features/auth/components/Header'
+
 import Footer from '../features/auth/components/Footer'
+
 import styles from './FormLayout.module.css'
+
+import Header from '@/features/auth/components/Header'
 
 interface LayoutProps {
     children: ReactNode

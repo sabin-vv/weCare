@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+
 import styles from './Header.module.css'
 
 const Header = () => {
@@ -7,7 +8,7 @@ const Header = () => {
         <div className={styles.headerContainer}>
             <img src="logo" alt="logo" />
             <div className={styles.buttonWrapper}>
-                <button>Home</button>
+                <button onClick={() => navigate('/')}>Home</button>
                 <button onClick={() => navigate('/api/auth/login')}>Login</button>
             </div>
         </div>

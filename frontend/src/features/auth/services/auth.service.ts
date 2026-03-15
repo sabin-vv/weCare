@@ -21,3 +21,8 @@ export const doctorRegister = async (formData: FormData): Promise<ApiInterface> 
     const res = await api.post('/doctors/register', formData)
     return res.data
 }
+
+export const caregiverRegister = async (formData: FormData): Promise<ApiInterface> => {
+    const res = await api.post('/caregivers/register', formData)
+    return res.data
+}

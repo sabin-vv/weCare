@@ -63,6 +63,9 @@ export interface StepOneProps {
     formData: RegisterFormData
     setFormData: React.Dispatch<React.SetStateAction<DoctorRegisterState>>
 }
+export interface caregiverStepOneProps extends Omit<StepOneProps, 'setFormData'> {
+    setFormData: React.Dispatch<React.SetStateAction<caregiverRegisterState>>
+}
 export interface StepThreeProps {
     prevStep: () => void
     nextStep: () => void
@@ -95,4 +98,21 @@ export interface DoctorRegisterState {
     basicInfo: RegisterFormData
     documents: DoctorDocuments
     specializations: Specialization[]
+}
+
+export interface caregiverDocuments extends Pick<DoctorDocuments, 'govId' | 'profileImage'> {
+    certificate: Certificate
+    licence: Certificate
+}
+
+export interface caregiverRegisterState {
+    basicInfo: RegisterFormData
+    documents: caregiverDocuments
+}
+export interface caregiverStepThreeProps {
+    nextStep: () => void
+    prevStep: () => void
+    documents: caregiverDocuments
+    registerData: caregiverRegisterState
+    setRegisterData: React.Dispatch<React.SetStateAction<caregiverRegisterState>>
 }

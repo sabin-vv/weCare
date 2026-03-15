@@ -1,13 +1,16 @@
 import { useState } from 'react'
-import RoleSelector from '../../components/RoleSelector'
-import PasswordField from '../../../../shared/components/PasswordField/PasswordField'
-import styles from './LoginForm.module.css'
-import InputField from '../../../../shared/components/InputField/InputField'
-import Button from '../../../../shared/components/Button/Button'
-import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
-import type { Role } from '../../types/auth.types'
-import EmailIcon from '@/shared/icons/EmailIcon'
 import { useNavigate } from 'react-router-dom'
+
+import Button from '../../../../shared/components/Button/Button'
+import InputField from '../../../../shared/components/InputField/InputField'
+import PasswordField from '../../../../shared/components/PasswordField/PasswordField'
+import RoleSelector from '../../components/RoleSelector'
+import type { Role } from '../../types/auth.types'
+
+import styles from './LoginForm.module.css'
+
+import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
+import EmailIcon from '@/shared/icons/EmailIcon'
 
 interface InputProps {
     email: string
@@ -63,7 +66,7 @@ const LoginForm = () => {
                 <p>Medical professionals require verification before activation.</p>
                 <div className={styles.professioanlRegister}>
                     <button onClick={() => navigate('/api/doctors/register')}>Apply as a Doctor</button>
-                    <button>Register as Caregiver</button>
+                    <button onClick={() => navigate('/api/caregivers/register')}>Register as Caregiver</button>
                 </div>
             </div>
         </FormWrapper>

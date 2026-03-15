@@ -1,6 +1,8 @@
 import type { RouteObject } from 'react-router-dom'
-import LoginPage from '../pages/LoginPage'
+
+import CaregiverRegisterPage from '../pages/CaregiverRegistrationPage'
 import DoctorRegisterPage from '../pages/DoctorRegisterPage'
+import LoginPage from '../pages/LoginPage'
 
 const AuthRoutes: RouteObject[] = [
     {
@@ -10,6 +12,10 @@ const AuthRoutes: RouteObject[] = [
     {
         path: '/api/doctors/register',
         element: <DoctorRegisterPage />,
+    },
+    {
+        path: '/api/caregivers/register',
+        element: <CaregiverRegisterPage />,
     },
 ]
 

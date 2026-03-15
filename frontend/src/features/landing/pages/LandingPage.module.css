@@ -1,0 +1,182 @@
+.landingContainer {
+    font-family: 'Inter', sans-serif;
+    color: #1a202c;
+    background-color: #f7f9fc;
+    min-height: 100vh;
+}
+
+.heroSection {
+    padding: 2rem 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f7f9fc;
+}
+
+.heroInner {
+    border-radius: 4px;
+    padding: 3rem 2rem;
+    max-width: 1000px;
+    width: 100%;
+    text-align: center;
+}
+
+.heroTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #1a202c;
+    line-height: 1.2;
+}
+
+.highlightText {
+    color: #2e9b76;
+}
+
+.heroSubtitle {
+    font-size: 1rem;
+    color: #4a5568;
+    max-width: 580px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+}
+
+.buttonGroup {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+}
+
+.btnPrimary {
+    padding: 0.75rem 2.5rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btnPrimary {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+}
+
+.btnPrimary:hover {
+    background-color: #2563eb;
+}
+
+.heroCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.heroCard {
+    background: white;
+    border-radius: 12px;
+    padding: 1.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.heroCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.cardIcon {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.heroCard h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+    color: #1a202c;
+    font-weight: 600;
+}
+
+.heroCard p {
+    font-size: 0.9rem;
+    color: #718096;
+    line-height: 1.5;
+}
+
+.worksSection {
+    background-color: #f7f9fc;
+    padding: 2rem 2rem;
+    text-align: center;
+}
+
+.worksTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 4rem;
+}
+
+.worksGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.worksCard {
+    background: white;
+    border-radius: 12px;
+    padding: 2.5rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease;
+}
+
+.worksCard:hover {
+    transform: translateY(-4px);
+}
+
+.worksNumber {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #2e9b76;
+    margin-bottom: 1.5rem;
+}
+
+.worksCard h4 {
+    font-size: 1.05rem;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.worksCard p {
+    font-size: 0.85rem;
+    color: #718096;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .heroTitle {
+        font-size: 2.2rem;
+    }
+
+    .heroInner {
+        padding: 2rem 1rem;
+    }
+
+    .buttonGroup {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btnPrimary {
+        width: 100%;
+    }
+}
