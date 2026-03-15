@@ -1,9 +1,12 @@
-import type { PasswordFieldProps } from '../../../features/auth/types/auth.types'
-import EyeOffIcon from '@/shared/icons/EyeOffIcon'
-import EyeIcon from '@/shared/icons/EyeIcon'
 import { useState } from 'react'
-import ErrorField from '@/shared/components/ErrorField/ErrorField'
+
+import type { PasswordFieldProps } from '../../../features/auth/types/auth.types'
+
 import styles from './PasswordField.module.css'
+
+import ErrorField from '@/shared/components/ErrorField/ErrorField'
+import EyeIcon from '@/shared/icons/EyeIcon'
+import EyeOffIcon from '@/shared/icons/EyeOffIcon'
 import PasswordIcon from '@/shared/icons/PasswordIcon'
 
 const PasswordField = ({ label, onForgotPassword, error, ...props }: PasswordFieldProps) => {

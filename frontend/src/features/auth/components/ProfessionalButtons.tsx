@@ -1,4 +1,5 @@
 import type { ProfessionalButtonsProps } from '../types/auth.types'
+
 import styles from './ProfessionalButtons.module.css'
 
 const ProfessionalButtons = ({ onBack, onNext, nextLabel, backLabel }: ProfessionalButtonsProps) => {

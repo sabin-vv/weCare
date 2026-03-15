@@ -1,14 +1,17 @@
-import ProgressBar from '../../components/ProgressBar'
-import FileUplodBox from '../../components/FileUploadBox'
-import VerificationCard from '../../components/VerificationCard'
-import ProfessionalButtons from '../../components/ProfessionalButtons'
-import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
-import styles from './DoctorStepThree.module.css'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
-import type { StepThreeProps } from '../../types/auth.types'
+
+import FileUplodBox from '../../components/FileUploadBox'
+import ProfessionalButtons from '../../components/ProfessionalButtons'
+import ProgressBar from '../../components/ProgressBar'
+import VerificationCard from '../../components/VerificationCard'
 import { doctorStepThreeSchema } from '../../schemas/doctorStepThreeSchme'
 import { doctorRegister } from '../../services/auth.service'
-import { useState } from 'react'
+import type { StepThreeProps } from '../../types/auth.types'
+
+import styles from './DoctorStepThree.module.css'
+
+import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 

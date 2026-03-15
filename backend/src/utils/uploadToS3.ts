@@ -1,6 +1,7 @@
 import { PutObjectCommand } from '@aws-sdk/client-s3'
-import { s3 } from '../config/s3'
+
 import env from '../config/env'
+import { s3 } from '../config/s3'
 
 export const uploadToS3 = async (file: Express.Multer.File) => {
     try {

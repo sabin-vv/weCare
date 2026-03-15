@@ -1,8 +1,10 @@
-import Cropper, { type Area } from 'react-easy-crop'
-import type { ImageCropperProps } from './ImageCropper.types'
 import { useState } from 'react'
-import { getCroppedImg } from '@/utils/cropImage'
+import Cropper, { type Area } from 'react-easy-crop'
+
 import styles from './ImageCropper.module.css'
+import type { ImageCropperProps } from './ImageCropper.types'
+
+import { getCroppedImg } from '@/utils/cropImage'
 
 const ImageCropper = ({ image, onCropComplete, onClose }: ImageCropperProps) => {
     const [crop, setCrop] = useState({ x: 0, y: 0 })

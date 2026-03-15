@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 
@@ -21,15 +21,26 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const CaregiverStepOne = ({ nextStep, formData, setFormData }: caregiverStepOneProps) => {
     const [loading, setLoading] = useState<boolean>(false)
+
     const {
         register,
         handleSubmit,
         control,
+        reset,
         formState: { errors },
     } = useForm<RegisterFormData>({
         resolver: zodResolver(doctorStepOneSchema),
         defaultValues: formData,
     })
+    useEffect(() => {
+        const savedData = localStorage.getItem('caregiverRegister')
+
+        if (savedData) {
+            const parsedData = JSON.parse(savedData)
+            setFormData(parsedData)
+            reset(parsedData.basicInfo)
+        }
+    }, [reset])
 
     const handleNext = async (data: RegisterFormData) => {
         setLoading(true)
@@ -40,17 +51,18 @@ const CaregiverStepOne = ({ nextStep, formData, setFormData }: caregiverStepOneP
                 setLoading(false)
                 return
             }
+            setFormData((prev) => {
+                const updated = { ...prev, basicInfo: data }
+                localStorage.setItem('caregiverRegister', JSON.stringify(updated))
+                return updated
+            })
             toast.success(res.message)
             nextStep()
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
-        setFormData((prev) => {
-            const updated = { ...prev, basicInfo: data }
-            localStorage.setItem('caregiverRegister', JSON.stringify(updated))
-            return updated
-        })
     }
 
     return (

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
+
 import { updatedRegisterDoctor } from '../interfaces/doctorInterface'
 import { DoctorService } from '../services/doctor.services'
 

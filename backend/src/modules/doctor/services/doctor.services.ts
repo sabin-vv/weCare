@@ -1,9 +1,10 @@
-import { AppError } from '../../../utils/AppError'
 import bcrypt from 'bcrypt'
-import { DoctorRepository } from '../repositories/doctor.repository'
+
+import { AppError } from '../../../utils/AppError'
 import { uploadToS3 } from '../../../utils/uploadToS3'
 import { userRepository } from '../../auth/repositories/user.repository'
-import { updatedRegisterDoctor, SpecializationInput } from '../interfaces/doctorInterface'
+import { SpecializationInput, updatedRegisterDoctor } from '../interfaces/doctorInterface'
+import { DoctorRepository } from '../repositories/doctor.repository'
 
 export class DoctorService {
     constructor(private doctorRepository: DoctorRepository) {}

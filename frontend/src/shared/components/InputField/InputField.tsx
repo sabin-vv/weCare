@@ -1,6 +1,7 @@
 import ErrorField from '../ErrorField/ErrorField'
-import type { InputFieldProps } from './InputField.types'
+
 import styles from './InputField.module.css'
+import type { InputFieldProps } from './InputField.types'
 
 const InputField = ({ label, errors, icon, prefix, ...props }: InputFieldProps) => {
     const inputClass = `${styles.input} ${prefix ? styles.withPrefix : ''}`

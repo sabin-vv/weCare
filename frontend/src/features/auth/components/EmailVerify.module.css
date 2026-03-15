@@ -50,9 +50,15 @@
     gap: 5px;
 }
 .changeEmail {
-    font-size: 10px;
+    font-size: 12px;
     color: #137fec;
 }
 .changeEmail:hover {
+    cursor: pointer;
+}
+.resendCode {
+    color: #137fec;
+}
+.resendCode:hover {
     cursor: pointer;
 }

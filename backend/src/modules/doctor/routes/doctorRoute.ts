@@ -1,6 +1,7 @@
 import { Router } from 'express'
-import { DoctorController } from '../controllers/doctorController'
+
 import { upload } from '../../../middlewares/upload.middleware'
+import { DoctorController } from '../controllers/doctorController'
 
 export const createDoctorRouter = (doctorController: DoctorController): Router => {
     const router = Router()

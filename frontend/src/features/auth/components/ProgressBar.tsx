@@ -1,5 +1,6 @@
-import styles from './ProgressBar.module.css'
 import type { ProgressBarProps } from '../types/auth.types'
+
+import styles from './ProgressBar.module.css'
 
 const ProgressBar = ({ step, percentage, totalSteps, title }: ProgressBarProps) => {
     return (

@@ -1,4 +1,5 @@
 import type { VerificationCardProps } from '../types/auth.types'
+
 import styles from './VerificationCard.module.css'
 
 const VerificationCard = ({ title, description, children }: VerificationCardProps) => {

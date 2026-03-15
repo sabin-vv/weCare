@@ -1,5 +1,5 @@
-import EmailVerify from '../../components/EmailVerify'
 import FormWrapper from '../../../../shared/components/FormWrapper/FormWrapper'
+import EmailVerify from '../../components/EmailVerify'
 import ProgressBar from '../../components/ProgressBar'
 import type { EmailVerifyProps } from '../../types/auth.types'
 

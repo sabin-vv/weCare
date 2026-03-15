@@ -1,19 +1,22 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import toast from 'react-hot-toast'
+
+import FormWrapper from '../../../../shared/components/FormWrapper/FormWrapper'
+import ProgressBar from '../../components/ProgressBar'
 import { doctorStepOneSchema } from '../../schemas/doctorStepOneSchema'
 import { sendOtp } from '../../services/auth.service'
-import ProgressBar from '../../components/ProgressBar'
-import InputField from '@/shared/components/InputField/InputField'
-import PhoneInput from '@/shared/components/PhoneInput/PhoneInput'
-import Button from '@/shared/components/Button/Button'
 import type { RegisterFormData, StepOneProps } from '../../types/auth.types'
+
 import styles from './DoctorStepOne.module.css'
-import FormWrapper from '../../../../shared/components/FormWrapper/FormWrapper'
-import UserIcon from '@/shared/icons/UserIcon'
-import EmailIcon from '@/shared/icons/EmailIcon'
+
+import Button from '@/shared/components/Button/Button'
+import InputField from '@/shared/components/InputField/InputField'
 import PasswordField from '@/shared/components/PasswordField/PasswordField'
-import toast from 'react-hot-toast'
+import PhoneInput from '@/shared/components/PhoneInput/PhoneInput'
+import EmailIcon from '@/shared/icons/EmailIcon'
+import UserIcon from '@/shared/icons/UserIcon'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const DoctorStepOne = ({ formData, setFormData, nextStep }: StepOneProps) => {

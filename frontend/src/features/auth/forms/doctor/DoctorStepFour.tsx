@@ -1,7 +1,9 @@
-import ProgressBar from '../../components/ProgressBar'
-import styles from './DoctorStepFour.module.css'
-import Button from '../../../../shared/components/Button/Button'
 import { useNavigate } from 'react-router-dom'
+
+import Button from '../../../../shared/components/Button/Button'
+import ProgressBar from '../../components/ProgressBar'
+
+import styles from './DoctorStepFour.module.css'
 
 const DoctorStepFour = () => {
     const navigate = useNavigate()

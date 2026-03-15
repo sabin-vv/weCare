@@ -1,8 +1,10 @@
-import UploadIcon from '@/shared/icons/UploadIcon'
-import styles from './FileUploadBox.module.css'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+
+import styles from './FileUploadBox.module.css'
+
+import UploadIcon from '@/shared/icons/UploadIcon'
 
 interface Props {
     file?: File | null

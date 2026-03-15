@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose'
+
 import { IOtp } from '../interfaces/authInterface'
 
 const otpSchema = new Schema<IOtp>(

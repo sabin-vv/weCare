@@ -1,13 +1,27 @@
-import Button from '@/shared/components/Button/Button'
-import type { EmailVerifyProps } from '../types/auth.types'
-import styles from './EmailVerify.module.css'
-import { useRef } from 'react'
-import { verifyOtp } from '../services/auth.service'
+/* eslint-disable react/no-unescaped-entities */
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+
+import { sendOtp, verifyOtp } from '../services/auth.service'
+import type { EmailVerifyProps } from '../types/auth.types'
+
+import styles from './EmailVerify.module.css'
+
+import Button from '@/shared/components/Button/Button'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
+    const [timer, setTimer] = useState<number>(30)
     const inputRef = useRef<(HTMLInputElement | null)[]>([])
+
+    useEffect(() => {
+        if (timer <= 0) return
+        const intervalId = setInterval(() => {
+            setTimer((prev) => prev - 1)
+        }, 1000)
+
+        return () => clearInterval(intervalId)
+    }, [timer])
     const handleChange = async (value: string, index: number) => {
         if (!/^[0-9]?$/.test(value)) {
             return
@@ -36,6 +50,17 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
         }
         nextStep()
     }
+    const resendOtp = async () => {
+        try {
+            const result = await sendOtp(email)
+            if (!result.success) {
+                toast.error(result.message)
+            }
+            toast.success('OTP resend successfully')
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        }
+    }
     return (
         <div className={styles.cardWrapper}>
             <div className={styles.title}>
@@ -63,7 +88,17 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
             </Button>
             <div className={styles.cardFooter}>
                 <div className={styles.resendCode}>
-                    <p>Resend code in:</p> <p> 00.30 sec</p>
+                    <p>Didn't receive the code?</p>
+                    <p>
+                        {' '}
+                        {timer === 0 ? (
+                            <p onClick={resendOtp} className={styles.resendCode}>
+                                Resend Code
+                            </p>
+                        ) : (
+                            ` Resend code in: ${timer} sec`
+                        )}{' '}
+                    </p>
                 </div>
                 <p onClick={prevStep} className={styles.changeEmail}>
                     Change email

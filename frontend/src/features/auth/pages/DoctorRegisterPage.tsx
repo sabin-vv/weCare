@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
+
 import FormLayout from '../../../layouts/FormLayout'
-import DoctorStepOne from '../forms/doctor/DoctorStepOne'
-import DoctorStepTwo from '../forms/doctor/DoctorStepTwo'
-import DoctorStepThree from '../forms/doctor/DoctorStepThree'
 import DoctorStepFour from '../forms/doctor/DoctorStepFour'
+import DoctorStepOne from '../forms/doctor/DoctorStepOne'
+import DoctorStepThree from '../forms/doctor/DoctorStepThree'
+import DoctorStepTwo from '../forms/doctor/DoctorStepTwo'
 import type { DoctorRegisterState } from '../types/auth.types'
 
 const DoctorRegisterPage = () => {

@@ -1,4 +1,5 @@
 import type { FormWrapperProps } from '../../../features/auth/types/auth.types'
+
 import styles from './FormWrapper.module.css'
 
 const FormWrapper = ({ title, description, maxWidth, children }: FormWrapperProps) => {

@@ -1,5 +1,5 @@
-import User from '../model/user'
 import { IUser } from '../../../interfaces/user.auth'
+import User from '../model/user'
 
 class UserRepository {
     async createUser(data: Partial<IUser>) {
