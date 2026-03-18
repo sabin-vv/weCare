@@ -5,6 +5,7 @@ import { errorHandler } from './middlewares/error.middleware'
 import { authRouter } from './modules/auth'
 import { caregiverRouter } from './modules/caregiver'
 import { doctorRouter } from './modules/doctor'
+import { patientRouter } from './modules/patient'
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(urlencoded({ extended: true }))
 app.use('/api/auth', authRouter)
 app.use('/api/doctors', doctorRouter)
 app.use('/api/caregivers', caregiverRouter)
+app.use('/api/patients', patientRouter)
 
 app.use(errorHandler)
 

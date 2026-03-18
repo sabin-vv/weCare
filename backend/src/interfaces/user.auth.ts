@@ -1,8 +1,13 @@
 import { Document } from 'mongoose'
 
-type Role = 'doctor' | 'caregiver' | 'admin' | 'patient'
+export enum Role {
+    DOCTOR = 'doctor',
+    CAREGIVER = 'caregiver',
+    ADMIN = 'admin',
+    PATIENT = 'patient',
+}
 
-export interface IUser extends Document {
+export interface User extends Document {
     name: string
     email: string
     mobile: string

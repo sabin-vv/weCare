@@ -5,7 +5,8 @@ import Header from '../components/Header'
 
 import styles from './LandingPage.module.css'
 
-import Footer from '@/features/auth/components/Footer'
+import Button from '@/shared/components/Button/Button'
+import Footer from '@/shared/components/Footer/Footer'
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate()
@@ -27,9 +28,7 @@ const LandingPage: React.FC = () => {
                     </p>
 
                     <div className={styles.buttonGroup}>
-                        <button className={styles.btnPrimary} onClick={() => navigate('/api/auth/login')}>
-                            Get Started
-                        </button>
+                        <Button onClick={() => navigate('/api/auth/login')}>Get Started</Button>
                     </div>
 
                     <div className={styles.heroCards}>

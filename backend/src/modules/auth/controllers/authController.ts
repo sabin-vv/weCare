@@ -1,25 +1,35 @@
 import { NextFunction, Request, Response } from 'express'
 
-import { ISendOtp, IverifyOtp } from '../interfaces/authInterface'
-import { OtpService } from '../services/otp.service'
+import { OtpRequest, ResetPasswordRequest, VerifyOtp } from '../interfaces/authInterface'
+import { AuthService } from '../services/otp.service'
 
 export class AuthController {
-    constructor(private otpService: OtpService) {}
-    async sendOtp(req: Request<unknown, unknown, ISendOtp>, res: Response, next: NextFunction) {
+    constructor(private authService: AuthService) {}
+    sendOtp = async (req: Request<unknown, unknown, OtpRequest>, res: Response, next: NextFunction) => {
         try {
-            const { email } = req.body
+            const { email, purpose } = req.body
 
-            const result = await this.otpService.sendOtp(email)
+            const result = await this.authService.sendOtp(email, purpose)
 
             return res.status(200).json(result)
         } catch (error) {
             next(error)
         }
     }
-    async verifyOtp(req: Request<unknown, unknown, IverifyOtp>, res: Response, next: NextFunction) {
+    verifyOtp = async (req: Request<unknown, unknown, VerifyOtp>, res: Response, next: NextFunction) => {
         try {
             const { email, otp } = req.body
-            const result = await this.otpService.verifyOtp(email, otp)
+            const result = await this.authService.verifyOtp(email, otp)
+            return res.status(200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    resetPassword = async (req: Request<unknown, unknown, ResetPasswordRequest>, res: Response, next: NextFunction) => {
+        try {
+            const { email, password } = req.body
+            const result = await this.authService.resetPassword(email, password)
             return res.status(200).json(result)
         } catch (error) {
             next(error)

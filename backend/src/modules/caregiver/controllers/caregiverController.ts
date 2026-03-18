@@ -12,7 +12,6 @@ export class CaregiverController {
         next: NextFunction,
     ) => {
         try {
-            console.log('point 1')
             const files = req.files as Record<string, Express.Multer.File[]>
 
             const result = await this.caregiverService.registerCaregiver(req.body, files)

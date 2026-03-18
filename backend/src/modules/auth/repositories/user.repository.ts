@@ -1,10 +1,11 @@
-import { IUser } from '../../../interfaces/user.auth'
+import { User as user } from '../../../interfaces/user.auth'
 import User from '../model/user'
 
-class UserRepository {
-    async createUser(data: Partial<IUser>) {
+export class UserRepository {
+    async createUser(data: Partial<user>) {
         return await User.create(data)
     }
+    async findByEmail(email: string) {
+        return await User.findOne({ email })
+    }
 }
-
-export const userRepository = new UserRepository()

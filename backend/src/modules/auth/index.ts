@@ -1,14 +1,14 @@
 import { AuthController } from './controllers/authController'
 import { OtpRepository } from './repositories/auth.repository'
-import { DoctorRepository } from './repositories/doctor.repository'
+import { UserRepository } from './repositories/user.repository'
 import { createAuthRoute } from './routes/authRoute'
-import { OtpService } from './services/otp.service'
+import { AuthService } from './services/otp.service'
 
 const otpRepository = new OtpRepository()
-const doctorRepository = new DoctorRepository()
+const userRepository = new UserRepository()
 
-const otpService = new OtpService(otpRepository, doctorRepository)
+const authService = new AuthService(otpRepository, userRepository)
 
-const authController = new AuthController(otpService)
+const authController = new AuthController(authService)
 
 export const authRouter = createAuthRoute(authController)

@@ -23,7 +23,7 @@ const DoctorStepFour = () => {
                     <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
                 <h3>Application Submitted Successfully!</h3>
-                <p>Thank you for joining CareCoord Healthcare. Your profile is now being processed.</p>
+                <p>Thank you for joining WeCare. Your profile is now being processed.</p>
             </div>
             <div className={styles.card}>
                 <h2>What happens next?</h2>

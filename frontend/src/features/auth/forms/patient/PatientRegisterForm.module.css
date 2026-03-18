@@ -1,0 +1,8 @@
+.dobGenderWrapper {
+    display: flex;
+    gap: 10px;
+}
+.passwordWrap {
+    display: flex;
+    gap: 10px;
+}

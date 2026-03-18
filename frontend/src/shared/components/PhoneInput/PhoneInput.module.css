@@ -8,7 +8,7 @@
 
 .label {
     font-size: 14px;
-    color: black;
+    color: #334155;
     font-weight: 600;
 }
 
@@ -19,6 +19,8 @@
 .libContainer {
     width: 100% !important;
     display: flex !important;
+    border-radius: 10px;
+    transition: all 0.25s ease !important;
 }
 
 .libInput {
@@ -26,26 +28,22 @@
     height: 48px !important;
     padding-left: 80px !important;
     font-size: 14px !important;
-
-    border: 2px solid #dbe0e6 !important;
+    border: 1.5px solid #e2e8f0 !important;
     border-left: none !important;
-
-    border-radius: 8px !important;
-
+    border-radius: 8px 8px !important;
+    box-shadow: none;
     outline: none !important;
-    color: #222 !important;
+    color: #1e293b !important;
+    background: #f8fafc !important;
 
-    transition:
-        border-color 0.25s ease,
-        box-shadow 0.25s ease !important;
-    background: #fff !important;
+    transition: all 0.25s ease !important;
 }
 
 .libButton {
     height: 48px !important;
     width: 80px !important;
 
-    border: 2px solid #dbe0e6 !important;
+    border: 1.5px solid #e2e8f0 !important;
     border-right: none !important;
 
     border-radius: 8px 0 0 8px !important;
@@ -61,12 +59,18 @@
 
 .libContainer:hover .libInput,
 .libContainer:hover .libButton {
-    border-color: blueviolet !important;
+    border-color: #94a3b8 !important;
+    background: #ffffff !important;
+}
+.libContainer:focus-within {
+    border-radius: 10px;
+    box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.15);
 }
 
 .libContainer:focus-within .libInput,
 .libContainer:focus-within .libButton {
-    border-color: blueviolet !important;
+    border-color: #137fec !important;
+    background: #ffffff !important;
 }
 
 .libContainer:focus-within .libInput {
@@ -79,19 +83,19 @@
 }
 
 :global(.selected-flag .flag) {
-    transform: scale(1.15);
+    transform: scale(1.1);
 }
 
 :global(.selected-dial-code) {
     font-size: 13px !important;
     font-weight: 600 !important;
-    color: #333 !important;
+    color: #334155 !important;
     padding-left: 4px !important;
 }
 
 .libDropdown {
     border-radius: 10px !important;
-    border: 1.5px solid #e0e0e0 !important;
+    border: 1px solid #e0e0e0 !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
     font-size: 13px !important;
     width: 260px !important;
@@ -108,5 +112,6 @@
 }
 
 :global(.search-box:focus) {
-    border-color: blueviolet !important;
+    border-color: #137fec !important;
+    box-shadow: 0 0 0 2px rgba(19, 127, 236, 0.12) !important;
 }

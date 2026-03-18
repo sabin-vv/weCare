@@ -25,7 +25,8 @@ export default defineConfig([
                         caseInsensitive: true
                     }
                 }
-            ]
+            ],
+            "no-console": ["warn", { allow: ["warn", "error"] }],
         }
     },
 

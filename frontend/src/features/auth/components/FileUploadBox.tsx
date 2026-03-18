@@ -27,10 +27,20 @@ const FileUploadBox = ({ file, accept, onFileSelect }: Props) => {
         }
     }, [file])
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
+    const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault()
+
+        const file = e.dataTransfer.files?.[0]
         if (!file) return
 
+        processFile(file)
+    }
+
+    const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+        e.preventDefault()
+    }
+
+    const processFile = (file: File) => {
         if (accept && !accept.split(',').includes(file.type)) {
             toast.error('Please choose a valid file')
             return
@@ -38,14 +48,20 @@ const FileUploadBox = ({ file, accept, onFileSelect }: Props) => {
         const maxSize = 5 * 1024 * 1024
         if (file.size > maxSize) {
             toast.error('File size must be less than 5MB')
-
             return
         }
 
         onFileSelect?.(file)
     }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        processFile(file)
+    }
+
     return (
-        <label className={styles.box}>
+        <label className={styles.box} onDrop={handleDrop} onDragOver={handleDragOver}>
             <input type="file" hidden accept={accept} onChange={handleChange} />
             {file ? (
                 file.type.startsWith('image/') ? (

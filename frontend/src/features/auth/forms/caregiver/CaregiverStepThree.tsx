@@ -47,15 +47,9 @@ const CaregiverStepThree = ({
             formData.append('licenseNumber', documents.licence.number)
             formData.append('licenseImage', documents.licence.document!)
 
-            for (const [key, value] of formData.entries()) {
-                console.log(key, value)
-            }
-            const response = await caregiverRegister(formData)
-            if (!response.success) {
-                toast.error(response.message)
-                return
-            }
-            toast.success(response.message)
+            const result = await caregiverRegister(formData)
+
+            toast.success(result.message)
             localStorage.removeItem('caregiverRegister')
             nextStep()
         } catch (error: unknown) {

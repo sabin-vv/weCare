@@ -1,18 +1,25 @@
-import { AppError } from '../../../utils/AppError'
-import { OtpRepository } from '../repositories/auth.repository'
-import { DoctorRepository } from '../repositories/doctor.repository'
-import { generateOtp, sendEmail } from './auth.service'
+import bcrypt from 'bcrypt'
 
-export class OtpService {
+import { AppError } from '../../../utils/AppError'
+import { generateOtp, sendEmail } from '../../notification/email.service'
+import { OtpRequestPurpose } from '../interfaces/authInterface'
+import { OtpRepository } from '../repositories/auth.repository'
+import { UserRepository } from '../repositories/user.repository'
+
+export class AuthService {
     constructor(
         private otpRepository: OtpRepository,
-        private doctorRepository: DoctorRepository,
+        private userRepository: UserRepository,
     ) {}
-    async sendOtp(email: string) {
-        const emailExist = await this.doctorRepository.findByEmail(email)
-        if (emailExist) {
+    async sendOtp(email: string, purpose: OtpRequestPurpose) {
+        const user = await this.userRepository.findByEmail(email)
+        if (purpose === OtpRequestPurpose.EMAIL_VERIFICATION && user) {
             throw new AppError(400, 'Email already exist')
         }
+        if (purpose === OtpRequestPurpose.PASSWORD_RESET && !user) {
+            throw new AppError(404, 'Email not found')
+        }
+
         const otp = generateOtp()
 
         await this.otpRepository.createOtp(email, otp)
@@ -40,6 +47,20 @@ export class OtpService {
         return {
             success: true,
             message: 'OTP verified',
+        }
+    }
+
+    async resetPassword(email: string, password: string) {
+        const user = await this.userRepository.findByEmail(email)
+        if (!user) {
+            throw new AppError(404, 'Email not found')
+        }
+        const hashedPassword = await bcrypt.hash(password, 10)
+        user.password = hashedPassword
+        await user.save()
+        return {
+            success: true,
+            message: 'Password changed successfully',
         }
     }
 }

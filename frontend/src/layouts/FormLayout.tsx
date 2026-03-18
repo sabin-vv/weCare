@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from 'react'
 
-import Footer from '../features/auth/components/Footer'
+import Footer from '../shared/components/Footer/Footer'
 
 import styles from './FormLayout.module.css'
 

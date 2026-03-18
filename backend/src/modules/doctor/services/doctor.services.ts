@@ -1,13 +1,17 @@
 import bcrypt from 'bcrypt'
 
+import { Role } from '../../../interfaces/user.auth'
 import { AppError } from '../../../utils/AppError'
 import { uploadToS3 } from '../../../utils/uploadToS3'
-import { userRepository } from '../../auth/repositories/user.repository'
+import { UserRepository } from '../../auth/repositories/user.repository'
 import { SpecializationInput, updatedRegisterDoctor } from '../interfaces/doctorInterface'
 import { DoctorRepository } from '../repositories/doctor.repository'
 
 export class DoctorService {
-    constructor(private doctorRepository: DoctorRepository) {}
+    constructor(
+        private doctorRepository: DoctorRepository,
+        private userRepository: UserRepository,
+    ) {}
     async registerDoctor(body: updatedRegisterDoctor, files: Express.Multer.File[]) {
         const { name, email, mobile, password, medicalCertificateNumber, medicalCouncilRegisterNumber } = body
 
@@ -46,12 +50,12 @@ export class DoctorService {
 
         const formattedMobile = mobile.startsWith('+') ? mobile : `+${mobile}`
 
-        const user = await userRepository.createUser({
+        const user = await this.userRepository.createUser({
             name,
             email,
             mobile: formattedMobile,
             password: hashedPassword,
-            role: 'doctor',
+            role: Role.DOCTOR,
             isActive: true,
         })
 

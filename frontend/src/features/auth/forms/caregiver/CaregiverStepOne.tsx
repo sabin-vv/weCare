@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import ProgressBar from '../../components/ProgressBar'
 import { doctorStepOneSchema } from '../../schemas/doctorStepOneSchema'
 import { sendOtp } from '../../services/auth.service'
-import type { caregiverStepOneProps, RegisterFormData } from '../../types/auth.types'
+import { OtpPurpose, type caregiverStepOneProps, type RegisterFormData } from '../../types/auth.types'
 
 import styles from './CaregiverStepOne.module.css'
 
@@ -45,18 +45,14 @@ const CaregiverStepOne = ({ nextStep, formData, setFormData }: caregiverStepOneP
     const handleNext = async (data: RegisterFormData) => {
         setLoading(true)
         try {
-            const res = await sendOtp(data.email)
-            if (!res.success) {
-                toast.error(res.message)
-                setLoading(false)
-                return
-            }
+            const result = await sendOtp(data.email, OtpPurpose.EMAIL_VERIFICATION)
+
             setFormData((prev) => {
                 const updated = { ...prev, basicInfo: data }
                 localStorage.setItem('caregiverRegister', JSON.stringify(updated))
                 return updated
             })
-            toast.success(res.message)
+            toast.success(result.message)
             nextStep()
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
@@ -116,7 +112,9 @@ const CaregiverStepOne = ({ nextStep, formData, setFormData }: caregiverStepOneP
                     error={errors.confirmPassword?.message}
                 />
             </div>
-            <Button onClick={handleSubmit(handleNext)}>{loading ? 'Sending OTP...' : 'Send OTP'}</Button>
+            <Button disabled={loading} onClick={handleSubmit(handleNext)}>
+                {loading ? 'Sending OTP...' : 'Send OTP'}
+            </Button>
         </FormWrapper>
     )
 }

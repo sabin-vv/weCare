@@ -1,23 +1,24 @@
 import bcrypt from 'bcrypt'
 
+import { Role } from '../../../interfaces/user.auth'
 import { AppError } from '../../../utils/AppError'
 import { uploadToS3 } from '../../../utils/uploadToS3'
-import { userRepository } from '../../auth/repositories/user.repository'
+import { UserRepository } from '../../auth/repositories/user.repository'
 import { caregiverRegister } from '../interfaces/caregiverIneterface'
 import { CaregiverRepository } from '../repositories/caregiver.repository'
 
 export class CaregiverService {
-    constructor(private caregiverRepository: CaregiverRepository) {}
+    constructor(
+        private caregiverRepository: CaregiverRepository,
+        private userRepository: UserRepository,
+    ) {}
     async registerCaregiver(body: caregiverRegister, files: Record<string, Express.Multer.File[]>) {
         const { name, email, mobile, password, certificateNumber, licenseNumber } = body
-        console.log('BODY :', body)
         const caregiverExist = await this.caregiverRepository.findByEmail(email)
-        console.log('caregiver :', caregiverExist)
         if (caregiverExist) {
             throw new AppError(400, 'Caregiver with this email is already exist')
         }
         const govId = files.govId?.[0]
-        console.log('govID :', govId)
         const profileImage = files.profileImage?.[0]
         const certificateImage = files.certificateImage?.[0]
         const licenseImage = files.licenseImage?.[0]
@@ -36,12 +37,12 @@ export class CaregiverService {
 
         const formattedMobile = mobile.startsWith('+') ? mobile : `+${mobile}`
 
-        const user = await userRepository.createUser({
+        const user = await this.userRepository.createUser({
             name,
             email,
             mobile: formattedMobile,
             password: hashedPassword,
-            role: 'caregiver',
+            role: Role.CAREGIVER,
             isActive: true,
         })
         const caregiverData = {

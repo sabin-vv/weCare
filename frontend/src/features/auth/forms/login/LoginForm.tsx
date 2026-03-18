@@ -1,35 +1,38 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 import Button from '../../../../shared/components/Button/Button'
 import InputField from '../../../../shared/components/InputField/InputField'
 import PasswordField from '../../../../shared/components/PasswordField/PasswordField'
 import RoleSelector from '../../components/RoleSelector'
-import type { Role } from '../../types/auth.types'
+import { loginSchema } from '../../schemas/loginSchema'
+import { loginUser } from '../../services/auth.service'
+import { Role } from '../../types/auth.types'
 
 import styles from './LoginForm.module.css'
 
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import EmailIcon from '@/shared/icons/EmailIcon'
-
-interface InputProps {
-    email: string
-    password: string
-}
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const LoginForm = () => {
-    const [role, setRole] = useState<Role>('doctor')
-    const [formData, setFormData] = useState<InputProps>({
-        email: '',
-        password: '',
+    const [role, setRole] = useState<Role>(Role.DOCTOR)
+
+    const { register, handleSubmit } = useForm({
+        resolver: zodResolver(loginSchema),
     })
     const navigate = useNavigate()
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }))
+
+    const formSubmit = async (data: { email: string; password: string }) => {
+        try {
+            const result = await loginUser(data.email, role)
+            toast.success(result.message)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        }
     }
 
     return (
@@ -39,27 +42,25 @@ const LoginForm = () => {
                 <InputField
                     icon={<EmailIcon />}
                     label="Email Address"
-                    name="email"
                     type="text"
                     placeholder="eg. example@email.com"
-                    value={formData.email}
                     id="email"
-                    onChange={handleInput}
+                    {...register('email')}
                 />
                 <PasswordField
                     onForgotPassword={() => navigate('/api/auth/forgot-password')}
                     label="Password"
-                    name="password"
                     type="password"
                     placeholder="********"
-                    value={formData.password}
                     id="password"
-                    onChange={handleInput}
+                    {...register('password')}
                 />
 
                 <Button type="submit">Sign In</Button>
             </form>
-            <button className={styles.patientRegister}>Register as Patient</button>
+            <button onClick={handleSubmit(formSubmit)} className={styles.patientRegister}>
+                Register as Patient
+            </button>
 
             <div className={styles.professionalCard}>
                 <h3>Medical Professionals</h3>

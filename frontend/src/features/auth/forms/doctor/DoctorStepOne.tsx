@@ -7,7 +7,7 @@ import FormWrapper from '../../../../shared/components/FormWrapper/FormWrapper'
 import ProgressBar from '../../components/ProgressBar'
 import { doctorStepOneSchema } from '../../schemas/doctorStepOneSchema'
 import { sendOtp } from '../../services/auth.service'
-import type { RegisterFormData, StepOneProps } from '../../types/auth.types'
+import { OtpPurpose, type RegisterFormData, type StepOneProps } from '../../types/auth.types'
 
 import styles from './DoctorStepOne.module.css'
 
@@ -35,14 +35,9 @@ const DoctorStepOne = ({ formData, setFormData, nextStep }: StepOneProps) => {
     async function handleNext(data: RegisterFormData) {
         setLoading(true)
         try {
-            const res = await sendOtp(data.email)
+            const result = await sendOtp(data.email, OtpPurpose.EMAIL_VERIFICATION)
 
-            if (!res.success) {
-                toast.error(res.message)
-                setLoading(false)
-                return
-            }
-            toast.success(res.message)
+            toast.success(result.message)
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
             setLoading(false)

@@ -8,9 +8,9 @@ export const errorHandler = (err: unknown, req: Request, res: Response, _next: N
         return res.status(err.statusCode).json({ success: false, message: err.message })
     }
     if (err instanceof Error) {
-        return res.status(500).json({ success: false, messsage: err.message })
+        return res.status(500).json({ success: false, message: err.message })
     }
-    res.status(500).json({
+    return res.status(500).json({
         success: false,
         message: 'Internal server error',
     })

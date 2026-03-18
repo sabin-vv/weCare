@@ -84,10 +84,7 @@ const DoctorStepThree = ({
             })
 
             const result = await doctorRegister(formData)
-            if (!result.success) {
-                toast.error(result.message)
-                return
-            }
+
             toast.success(result.message)
             localStorage.removeItem('doctorRegister')
             nextStep()

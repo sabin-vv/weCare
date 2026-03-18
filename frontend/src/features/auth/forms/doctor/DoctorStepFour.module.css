@@ -68,9 +68,9 @@
 .timeline::before {
     content: '';
     position: absolute;
-    left: 47px;
-    top: 32px;
-    bottom: 0;
+    left: 40px;
+    top: 40px;
+    bottom: 10px;
     width: 2px;
     background: linear-gradient(180deg, #137fec 0%, #cbd5f5 100%);
 }
@@ -92,7 +92,7 @@
     height: 56px;
     min-width: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #137fec 0%, #0a66d2 100%);
+    background: linear-gradient(135deg, #137fec 0%, #739dce 100%);
     color: white;
     display: flex;
     align-items: center;

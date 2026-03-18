@@ -6,8 +6,8 @@
     margin-bottom: 12px;
 }
 .formFields label {
-    font-size: 14px;
-    color: black;
+    font-size: 13px;
+    color: #334155;
     font-weight: 600;
 }
 .inputWrapper {
@@ -21,7 +21,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #6b7280;
+    color: #94a3b8;
 }
 
 .icon svg {
@@ -39,7 +39,9 @@
     padding: 10px 10px 10px 40px;
     border-radius: 8px;
     outline: none;
-    border: 2px solid #dbe0e6;
+    border: 1.5px solid #dbe0e6;
+    background: #f8fafc;
+    transition: all 0.25s ease;
 }
 
 .withPrefix {
@@ -47,12 +49,22 @@
 }
 
 .input:hover {
-    border: 2px solid blueviolet;
+    border-color: #94a3b8;
 }
 .input:focus {
-    border-color: blueviolet;
+    border-color: #137fec;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(19, 127, 236, 0.15);
 }
 .icon {
     display: flex;
     align-items: center;
+}
+.input::placeholder {
+    color: #94a3b8;
+    font-size: 13px;
+}
+.input:disabled {
+    background: #f1f5f9;
+    cursor: not-allowed;
 }

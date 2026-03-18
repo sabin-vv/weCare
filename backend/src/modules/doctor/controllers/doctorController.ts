@@ -6,7 +6,11 @@ import { DoctorService } from '../services/doctor.services'
 export class DoctorController {
     constructor(private doctorService: DoctorService) {}
 
-    async registerDoctor(req: Request<unknown, unknown, updatedRegisterDoctor>, res: Response, next: NextFunction) {
+    registerDoctor = async (
+        req: Request<unknown, unknown, updatedRegisterDoctor>,
+        res: Response,
+        next: NextFunction,
+    ) => {
         try {
             const files = req.files as Express.Multer.File[]
             const result = await this.doctorService.registerDoctor(req.body, files)

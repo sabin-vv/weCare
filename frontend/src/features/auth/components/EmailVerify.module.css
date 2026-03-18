@@ -50,6 +50,8 @@
     gap: 5px;
 }
 .changeEmail {
+    display: flex;
+    align-self: center;
     font-size: 12px;
     color: #137fec;
 }
@@ -58,6 +60,9 @@
 }
 .resendCode {
     color: #137fec;
+}
+.resendCodeDisable {
+    pointer-events: none;
 }
 .resendCode:hover {
     cursor: pointer;

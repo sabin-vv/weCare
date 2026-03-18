@@ -44,28 +44,14 @@
 
 .buttonGroup {
     display: flex;
+
     justify-content: center;
-    gap: 1.5rem;
+
     margin-bottom: 3.5rem;
 }
-
-.btnPrimary {
-    padding: 0.75rem 2.5rem;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btnPrimary {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-}
-
-.btnPrimary:hover {
-    background-color: #2563eb;
+.buttonGroup button {
+    width: fit-content;
+    padding: 0 40px;
 }
 
 .heroCards {

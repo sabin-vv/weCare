@@ -1,9 +1,10 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import styles from './Header.module.css'
 
-const Header: React.FC = () => {
+import Button from '@/shared/components/Button/Button'
+
+const Header = () => {
     const navigate = useNavigate()
 
     return (
@@ -22,9 +23,7 @@ const Header: React.FC = () => {
                 </nav>
 
                 <div className={styles.actionButtons}>
-                    <button className={styles.loginBtn} onClick={() => navigate('/api/auth/login')}>
-                        Login
-                    </button>
+                    <Button onClick={() => navigate('/api/auth/login')}>Login</Button>
                 </div>
             </div>
         </header>

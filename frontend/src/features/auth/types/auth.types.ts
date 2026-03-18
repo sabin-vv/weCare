@@ -1,7 +1,11 @@
 import type { ReactNode } from 'react'
 import type React from 'react'
 
-export type Role = 'doctor' | 'caregiver' | 'patient'
+export enum Role {
+    DOCTOR = 'doctor',
+    CAREGIVER = 'caregiver',
+    PATIENT = 'patient',
+}
 
 export type User = {
     name: string
@@ -15,8 +19,14 @@ export interface FormWrapperProps {
     children?: React.ReactNode
     maxWidth?: string
 }
+export enum OtpPurpose {
+    EMAIL_VERIFICATION = 'email-verification',
+    PASSWORD_RESET = 'password-reset',
+    ACCOUNT_RECOVERY = 'account-recovery',
+}
 export interface EmailVerifyProps {
     email: string
+    purpose: OtpPurpose
     prevStep: () => void
     nextStep: () => void
 }
@@ -42,7 +52,7 @@ export interface ProgressBarProps {
 
 export interface RoleSelectorProps {
     role: Role
-    onChange: (role: 'doctor' | 'caregiver' | 'patient') => void
+    onChange: (role: Role) => void
 }
 export interface VerificationCardProps {
     children: ReactNode
@@ -115,4 +125,20 @@ export interface caregiverStepThreeProps {
     documents: caregiverDocuments
     registerData: caregiverRegisterState
     setRegisterData: React.Dispatch<React.SetStateAction<caregiverRegisterState>>
+}
+
+export const genderOptions = [
+    { label: 'Male', value: 'male' },
+    { label: 'Female', value: 'female' },
+    { label: 'Other', value: 'other' },
+]
+
+export interface PatientRegisterData {
+    name: string
+    email: string
+    dateOfBirth: string
+    gender: 'male' | 'female' | 'other'
+    mobile: string
+    password: string
+    confirmPassword: string
 }

@@ -3,14 +3,15 @@ import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { sendOtp, verifyOtp } from '../services/auth.service'
-import type { EmailVerifyProps } from '../types/auth.types'
+import { type EmailVerifyProps } from '../types/auth.types'
 
 import styles from './EmailVerify.module.css'
 
 import Button from '@/shared/components/Button/Button'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
-const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
+const EmailVerify = ({ email, prevStep, nextStep, purpose }: EmailVerifyProps) => {
+    const [otpSent, setOtpSend] = useState<boolean>(false)
     const [timer, setTimer] = useState<number>(30)
     const inputRef = useRef<(HTMLInputElement | null)[]>([])
 
@@ -31,6 +32,16 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
             inputRef.current[index + 1]?.focus()
         }
     }
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+        if (e.key === 'Backspace') {
+            const currentValue = inputRef.current[index]?.value
+
+            if (!currentValue && index > 0) {
+                inputRef.current[index - 1]?.focus()
+            }
+        }
+    }
+
     const handleVerify = async () => {
         try {
             const otp = inputRef.current.map((digit) => digit?.value).join('')
@@ -38,12 +49,9 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
                 toast.error('Please enter 6 digit OTP')
                 return
             }
-            const res = await verifyOtp(email, otp)
-            if (!res.success) {
-                toast.error(res.message)
-                return
-            }
-            toast.success(res.message)
+            const result = await verifyOtp(email, otp)
+
+            toast.success(result.message)
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
             return
@@ -52,13 +60,15 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
     }
     const resendOtp = async () => {
         try {
-            const result = await sendOtp(email)
-            if (!result.success) {
-                toast.error(result.message)
-            }
-            toast.success('OTP resend successfully')
+            setOtpSend(true)
+            const result = await sendOtp(email, purpose)
+
+            toast.success(result.message)
+            setTimer(30)
         } catch (error) {
             toast.error(getErrorMessage(error))
+        } finally {
+            setOtpSend(false)
         }
     }
     return (
@@ -80,6 +90,7 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
                         onChange={(e) => {
                             handleChange(e.target.value, index)
                         }}
+                        onKeyDown={(e) => handleKeyDown(e, index)}
                     />
                 ))}
             </div>
@@ -90,14 +101,13 @@ const EmailVerify = ({ email, prevStep, nextStep }: EmailVerifyProps) => {
                 <div className={styles.resendCode}>
                     <p>Didn't receive the code?</p>
                     <p>
-                        {' '}
                         {timer === 0 ? (
-                            <p onClick={resendOtp} className={styles.resendCode}>
+                            <p onClick={resendOtp} className={otpSent ? styles.resendCodeDisable : styles.resendCode}>
                                 Resend Code
                             </p>
                         ) : (
-                            ` Resend code in: ${timer} sec`
-                        )}{' '}
+                            <span>Resend code in : {timer} sec</span>
+                        )}
                     </p>
                 </div>
                 <p onClick={prevStep} className={styles.changeEmail}>

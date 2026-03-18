@@ -1,8 +1,8 @@
 import { model, Schema } from 'mongoose'
 
-import { IUser } from '../../../interfaces/user.auth'
+import { Role, User } from '../../../interfaces/user.auth'
 
-const userModel: Schema<IUser> = new Schema<IUser>(
+const userModel: Schema<User> = new Schema<User>(
     {
         name: {
             type: String,
@@ -20,14 +20,16 @@ const userModel: Schema<IUser> = new Schema<IUser>(
         },
         password: {
             type: String,
+            required: true,
         },
         role: {
             type: String,
-            enum: ['doctor', 'caregiver', 'admin', 'patient'],
+            enum: Object.values(Role),
         },
         isActive: {
             type: Boolean,
             required: true,
+            default: true,
         },
     },
     { timestamps: true },

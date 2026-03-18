@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 
-import env from '../../../config/env'
+import env from '../../config/env'
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -14,6 +14,9 @@ export const sendEmail = async (email: string, otp: string) => {
     const mailOptions = {
         from: env.email.user,
         to: email,
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
         subject: 'WeCare Email Verification',
         html: `
 <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:40px 0;">
