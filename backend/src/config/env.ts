@@ -13,6 +13,10 @@ const env = {
     awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
     awsSecretKey: process.env.AWS_SECRET_ACCESS_KEY,
     awsBucketName: process.env.AWS_BUCKET_NAME,
+    jwtSecret: process.env.JWT_SECRET || 'wecare_secret_token',
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN || '15m',
+    jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'wecare_refresh_secret_token',
+    jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
 }
 
 export default env

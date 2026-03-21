@@ -1,7 +1,7 @@
 import type { PatientRegisterData } from '../types/auth.types'
 
 import api from '@/shared/services/api'
-import type { ApiInterface } from '@/types/api.types'
+import type { ApiInterface, LoginUser } from '@/types/api.types'
 
 export const sendOtp = async (email: string, purpose: string): Promise<ApiInterface> => {
     const res = await api.post('/auth/send-otp', {
@@ -35,6 +35,11 @@ export const patientRegister = async (formData: PatientRegisterData): Promise<Ap
     return res.data
 }
 
+export const loginUser = async (email: string, password: string, role: string): Promise<LoginUser> => {
+    const res = await api.post('/auth/login', { email, password, role })
+    return res.data
+}
+
 export const resetPassword = async (email: string, password: string): Promise<ApiInterface> => {
     const res = await api.post('/auth/reset-password', {
         email,
@@ -42,7 +47,8 @@ export const resetPassword = async (email: string, password: string): Promise<Ap
     })
     return res.data
 }
-export const loginUser = async (email: string, password: string) => {
-    const res = await api.post('/auth/login', { email, password })
+
+export const logout = async (): Promise<ApiInterface> => {
+    const res = await api.post('/auth/logout')
     return res.data
 }

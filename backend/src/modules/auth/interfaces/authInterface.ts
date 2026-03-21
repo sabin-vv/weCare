@@ -19,7 +19,17 @@ export interface VerifyOtp {
     otp: string
 }
 
+export type Role = 'doctor' | 'caregiver' | 'patient' | 'admin'
+
 export interface ResetPasswordRequest {
     email: string
     password: string
+}
+export interface Login extends ResetPasswordRequest {
+    role: Role
+}
+
+export interface Payload {
+    userId: string
+    role: string
 }

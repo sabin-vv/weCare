@@ -1,12 +1,10 @@
-import bcrypt from 'bcrypt'
-
 import { AppError } from '../../../utils/AppError'
 import { generateOtp, sendEmail } from '../../notification/email.service'
 import { OtpRequestPurpose } from '../interfaces/authInterface'
-import { OtpRepository } from '../repositories/auth.repository'
+import { OtpRepository } from '../repositories/otp.repository'
 import { UserRepository } from '../repositories/user.repository'
 
-export class AuthService {
+export class OtpService {
     constructor(
         private otpRepository: OtpRepository,
         private userRepository: UserRepository,
@@ -47,20 +45,6 @@ export class AuthService {
         return {
             success: true,
             message: 'OTP verified',
-        }
-    }
-
-    async resetPassword(email: string, password: string) {
-        const user = await this.userRepository.findByEmail(email)
-        if (!user) {
-            throw new AppError(404, 'Email not found')
-        }
-        const hashedPassword = await bcrypt.hash(password, 10)
-        user.password = hashedPassword
-        await user.save()
-        return {
-            success: true,
-            message: 'Password changed successfully',
         }
     }
 }

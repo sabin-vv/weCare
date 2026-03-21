@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 
 import { updatedRegisterDoctor } from '../interfaces/doctorInterface'
-import { DoctorService } from '../services/doctor.services'
+import { DoctorService } from '../services/doctor.service'
 
 export class DoctorController {
     constructor(private doctorService: DoctorService) {}

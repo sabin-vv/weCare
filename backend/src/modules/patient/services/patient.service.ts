@@ -5,9 +5,9 @@ import { AppError } from '../../../utils/AppError'
 import { generatePatientId } from '../../../utils/generatePatientId'
 import { UserRepository } from '../../auth/repositories/user.repository'
 import { PatientRegisterRequest } from '../interfaces/patientInterfaces'
-import { PatientRepository } from '../repositories/patientRepository'
+import { PatientRepository } from '../repositories/patient.repository'
 
-export class PatientServices {
+export class PatientService {
     constructor(
         private patientRepository: PatientRepository,
         private userRepository: UserRepository,
