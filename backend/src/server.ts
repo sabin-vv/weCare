@@ -1,7 +1,8 @@
 import app from './app'
+import { env } from './core/config/env'
 import { logger } from './core/logger/logger'
 
-const PORT = 5000
+const PORT = env.PORT
 
 app.listen(PORT, () => {
     logger.info(`Server running at port ${PORT}`)
