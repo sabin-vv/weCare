@@ -1,3 +1,5 @@
+import 'reflect-metadata'
+
 import app from './app'
 import { env } from './core/config/env'
 import { logger } from './core/logger/logger'
