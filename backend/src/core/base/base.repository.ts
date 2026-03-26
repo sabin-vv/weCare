@@ -11,11 +11,11 @@ export abstract class BaseRepository<T extends Document> {
         return this.model.findById(id)
     }
 
-    async findOne(filter: Record<string, any>): Promise<T | null> {
+    async findOne(filter: Record<string, unknown>): Promise<T | null> {
         return this.model.findOne(filter)
     }
 
-    async findAll(filter: Record<string, any>): Promise<T[]> {
+    async findAll(filter: Record<string, unknown>): Promise<T[]> {
         return this.model.find(filter)
     }
 
