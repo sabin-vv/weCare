@@ -1,21 +1,5 @@
-export enum UserRole {
-    DOCTOR = 'doctor',
-    CAREGIVER = 'caregiver',
-    PATIENT = 'patient',
-    ADMIN = 'admin',
-}
+import { z } from 'zod'
 
-export interface SpecializationInput {
-    name: string
-}
+import { registerDoctorSchema } from '../validator/doctor.schema'
 
-export interface RegisterDoctorDTO {
-    name: string
-    email: string
-    password: string
-
-    medicalCertificateNumber: string
-    medicalCouncilRegisterNumber: string
-
-    specializations: SpecializationInput[]
-}
+export type RegisterDoctorDTO = z.infer<typeof registerDoctorSchema>
