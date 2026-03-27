@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express'
 import { inject, injectable } from 'tsyringe'
 
 import { TOKENS } from '../../../container/tokens'
+import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { MulterFiles } from '../types/auth.types'
@@ -39,6 +40,30 @@ export class AuthController {
             const result = await this.authService.registerDoctor(req.body, req.files as MulterFiles)
 
             res.status(HTTP_STATUS.CREATED).json({ success: true, data: result })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    login = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email, password, role } = req.body
+            const result = await this.authService.login(email, password, role)
+
+            const { accessToken, refreshToken } = result.tokens
+
+            const isProduction = env.NODE_ENV === 'production'
+
+            const cookieOptions = {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+            }
+
+            res.cookie('accessToken', accessToken, cookieOptions)
+            res.cookie('refreshToken', refreshToken, cookieOptions)
+
+            res.status(HTTP_STATUS.OK).json({ success: true, data: result.user })
         } catch (error) {
             next(error)
         }

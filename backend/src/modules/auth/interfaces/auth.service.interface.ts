@@ -1,6 +1,6 @@
 import { DoctorDocument } from '../../doctor/types/doctor.types'
 import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
-import { MulterFiles } from '../types/auth.types'
+import { LoginResponse, MulterFiles, UserRole } from '../types/auth.types'
 import { OtpRequestPurpose } from '../types/otp.types'
 
 export interface IAuthService {
@@ -9,4 +9,6 @@ export interface IAuthService {
     sendOtp(email: string, purpose: OtpRequestPurpose): Promise<void>
 
     verifyOtp(email: string, otp: string): Promise<void>
+
+    login(email: string, password: string, role: UserRole): Promise<LoginResponse>
 }

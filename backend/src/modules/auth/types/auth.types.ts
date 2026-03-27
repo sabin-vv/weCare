@@ -4,7 +4,7 @@ export enum UserRole {
     PATIENT = 'patient',
     ADMIN = 'admin',
 }
-import { Document } from 'mongoose'
+import { Document, Types } from 'mongoose'
 
 export interface UserDocument extends Document {
     name: string
@@ -16,3 +16,16 @@ export interface UserDocument extends Document {
 }
 
 export type MulterFiles = Record<string, Express.Multer.File[]>
+
+export interface LoginResponse {
+    user: {
+        id: Types.ObjectId
+        name: string
+        email: string
+        role: string
+    }
+    tokens: {
+        accessToken: string
+        refreshToken: string
+    }
+}
