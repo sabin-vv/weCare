@@ -1,4 +1,5 @@
 import 'reflect-metadata'
+import './container'
 
 import app from './app'
 import { env } from './core/config/env'
