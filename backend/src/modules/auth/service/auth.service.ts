@@ -1,15 +1,20 @@
+import { inject, injectable } from 'tsyringe'
+
+import { TOKENS } from '../../../container/tokens'
 import { AppError } from '../../../core/errors/AppError'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { toDoctorEntity } from '../../doctor/mapper/doctor.mapper'
 import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
+import { IAuthService } from '../interfaces/auth.service.interface'
 import { IUserRepository } from '../interfaces/user.repository.interface'
 import { toUserEntity } from '../mapper/auth.mapper'
 import { MulterFiles } from '../types/auth.types'
 
-export class AuthService {
+@injectable()
+export class AuthService implements IAuthService {
     constructor(
-        private userRepo: IUserRepository,
-        private doctorRepo: IDoctorRepository,
+        @inject(TOKENS.IUserRepository) private userRepo: IUserRepository,
+        @inject(TOKENS.IDoctorRepository) private doctorRepo: IDoctorRepository,
     ) {}
 
     async registerDoctor(dto: RegisterDoctorDTO, files: MulterFiles) {
