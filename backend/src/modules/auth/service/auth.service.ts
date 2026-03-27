@@ -1,6 +1,7 @@
 import { inject, injectable } from 'tsyringe'
 
 import { TOKENS } from '../../../container/tokens'
+import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { toDoctorEntity } from '../../doctor/mapper/doctor.mapper'
@@ -23,7 +24,7 @@ export class AuthService implements IAuthService {
     async registerDoctor(dto: RegisterDoctorDTO, files: MulterFiles) {
         const existing = await this.userRepo.findByEmail(dto.email)
 
-        if (existing) throw new AppError(400, 'User already exist')
+        if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
 
         const userData = await toUserEntity(dto)
         const user = await this.userRepo.create(userData)
@@ -37,11 +38,11 @@ export class AuthService implements IAuthService {
         const user = await this.userRepo.findByEmail(email)
 
         if (purpose === OtpRequestPurpose.REGISTER && user) {
-            throw new AppError(400, 'Email already exist')
+            throw new AppError(HTTP_STATUS.CONFLICT, 'Email already exist')
         }
 
         if (purpose === OtpRequestPurpose.PASSWORD_RESET && !user) {
-            throw new AppError(404, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
         }
         await this.otpService.sendOtp(email, purpose)
     }

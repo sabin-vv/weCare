@@ -3,6 +3,7 @@ import { injectable } from 'tsyringe'
 import { env } from '../../../core/config/env'
 import { transporter } from '../../../core/config/mailer'
 import { redis } from '../../../core/config/redis'
+import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { OtpRequestPurpose } from '../types/otp.types'
 
@@ -84,7 +85,7 @@ export class OtpService {
 `,
             })
         } catch (error) {
-            throw new AppError(500, error)
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, error)
         }
     }
 
@@ -92,10 +93,10 @@ export class OtpService {
         const storedOtp = await redis.get(`otp:${email}`)
 
         if (!storedOtp) {
-            throw new AppError(400, 'OTP Expired')
+            throw new AppError(HTTP_STATUS.GONE, 'OTP Expired')
         }
         if (storedOtp !== otp) {
-            throw new AppError(400, 'Invalid OTP')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid OTP')
         }
         await redis.del(`otp:${email}`)
     }
