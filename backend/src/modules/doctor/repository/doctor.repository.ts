@@ -11,7 +11,7 @@ export class DoctorRepository extends BaseRepository<DoctorDocument> implements 
     constructor() {
         super(DoctorModel)
     }
-    async findByEmail(userId: Types.ObjectId) {
-        return this.model.findOne({ email })
+    async findByUserId(userId: Types.ObjectId) {
+        return this.model.findOne({ userId })
     }
 }
