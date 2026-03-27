@@ -10,6 +10,30 @@ import { MulterFiles } from '../types/auth.types'
 export class AuthController {
     constructor(@inject(TOKENS.IAuthService) private authService: IAuthService) {}
 
+    sendOtp = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email, purpose } = req.body
+            await this.authService.sendOtp(email, purpose)
+            res.status(HTTP_STATUS.OK).json({ success: true, message: 'OTP send successfully' })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { email, otp } = req.body
+
+            await this.authService.verifyOtp(email, otp)
+            res.status(HTTP_STATUS.OK).json({
+                success: true,
+                message: 'OTP verified Successfuly',
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+
     registerDoctor = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const result = await this.authService.registerDoctor(req.body, req.files as MulterFiles)
