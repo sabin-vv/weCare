@@ -1,3 +1,4 @@
+import { Types } from 'mongoose'
 import { injectable } from 'tsyringe'
 
 import { BaseRepository } from '../../../core/base/base.repository'
@@ -9,5 +10,8 @@ import { DoctorDocument } from '../types/doctor.types'
 export class DoctorRepository extends BaseRepository<DoctorDocument> implements IDoctorRepository {
     constructor() {
         super(DoctorModel)
+    }
+    async findByEmail(userId: Types.ObjectId) {
+        return this.model.findOne({ email })
     }
 }
