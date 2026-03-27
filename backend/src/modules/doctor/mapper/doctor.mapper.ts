@@ -1,7 +1,7 @@
 import { Types } from 'mongoose'
 
-import { MulterFiles } from '../../../types/user.model.types'
 import { RegisterDoctorDTO } from '../../auth/dto/registerDoctor.dto'
+import { MulterFiles } from '../../auth/types/auth.types'
 import { DoctorEntity } from '../types/doctor.types'
 
 export const toDoctorEntity = (userId: Types.ObjectId, dto: RegisterDoctorDTO, files: MulterFiles): DoctorEntity => {

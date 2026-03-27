@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 
 import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
-import { UserRole } from '../types/auth.enum'
+import { UserRole } from '../types/auth.types'
 
 export const toUserEntity = async (dto: RegisterDoctorDTO) => {
     return {

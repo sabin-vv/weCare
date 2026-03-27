@@ -1,10 +1,10 @@
 import { AppError } from '../../../core/errors/AppError'
-import { MulterFiles } from '../../../types/user.model.types'
+import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { toDoctorEntity } from '../../doctor/mapper/doctor.mapper'
-import { IDoctorRepository } from '../../doctor/repository/interface/doctor.repository.interface'
 import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
+import { IUserRepository } from '../interfaces/user.repository.interface'
 import { toUserEntity } from '../mapper/auth.mapper'
-import { IUserRepository } from '../repository/interface/user.repository.interface'
+import { MulterFiles } from '../types/auth.types'
 
 export class AuthService {
     constructor(

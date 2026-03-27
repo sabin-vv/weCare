@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose'
 
-import { UserRole } from '../modules/auth/types/auth.enum'
-import { UserDocument } from '../types/user.model.types'
+import { UserRole } from '../types/auth.types'
+import { UserDocument } from '../types/auth.types'
 
 const userSchema: Schema<UserDocument> = new Schema<UserDocument>(
     {
@@ -39,6 +39,4 @@ const userSchema: Schema<UserDocument> = new Schema<UserDocument>(
     { timestamps: true },
 )
 
-const UserModel = model<UserDocument>('User', userSchema)
-
-export default UserModel
+export const UserModel = model<UserDocument>('User', userSchema)

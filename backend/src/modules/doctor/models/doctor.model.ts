@@ -1,6 +1,6 @@
 import { model, Schema } from 'mongoose'
 
-import { DoctorDocument } from '../modules/doctor/types/doctor.types'
+import { DoctorDocument } from '../types/doctor.types'
 
 const doctorSchema = new Schema<DoctorDocument>(
     {
