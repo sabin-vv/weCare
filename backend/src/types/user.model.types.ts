@@ -10,3 +10,5 @@ export interface UserDocument extends Document {
     role: UserRole
     isActive: boolean
 }
+
+export type MulterFiles = Record<string, Express.Multer.File[]>

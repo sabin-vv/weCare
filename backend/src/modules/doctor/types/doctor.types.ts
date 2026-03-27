@@ -6,7 +6,7 @@ export interface DoctorSpecialization {
 }
 
 export interface DoctorEntity {
-    userId: string
+    userId: Types.ObjectId
     medicalCertificateNumber: string
     medicalCouncilRegisterNumber: string
 
@@ -20,7 +20,6 @@ export interface DoctorEntity {
 
 type specialization = {
     name: string
-    verified: boolean
     documentImage: string
 }
 
