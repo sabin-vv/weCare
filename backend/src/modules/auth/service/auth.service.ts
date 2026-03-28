@@ -4,7 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
-import { generateAccessToken, generateRefreshToken } from '../../../core/utils/jwt'
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../../core/utils/jwt'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { toDoctorEntity } from '../../doctor/mapper/doctor.mapper'
 import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
@@ -106,5 +106,16 @@ export class AuthService implements IAuthService {
                 refreshToken,
             },
         }
+    }
+    async refreshToken(token: string) {
+        if (!token) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'No refresh token')
+        }
+
+        const decoded = verifyRefreshToken(token)
+
+        const newAccessToken = generateAccessToken({ userId: decoded.userId, role: decoded.role })
+
+        return { accessToken: newAccessToken }
     }
 }
