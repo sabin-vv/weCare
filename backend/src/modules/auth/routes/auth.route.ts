@@ -16,12 +16,7 @@ export const createAuthRoutes = () => {
     router.post('/send-otp', validate(SendOtpSchema), authController.sendOtp)
     router.post('/verify-otp', validate(verifyOtpSchema), authController.verifyOtp)
     router.post('/login', validate(loginSchema), authController.login)
-    router.post(
-        '/register-doctor',
-        upload.any(),
-        validate(registerDoctorSchema),
-        authController.registerDoctor,
-    )
-
+    router.post('/register-doctor', upload.any(), validate(registerDoctorSchema), authController.registerDoctor)
+    router.post('/refresh-token', authController.refreshToken)
     return router
 }
