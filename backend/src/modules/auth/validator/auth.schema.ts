@@ -8,3 +8,8 @@ export const loginSchema = z.object({
     password: passwordSchema,
     role: z.enum([UserRole.DOCTOR, UserRole.ADMIN, UserRole.CAREGIVER, UserRole.PATIENT]),
 })
+
+export const resetPasswordSchema = z.object({
+    email: emailschema,
+    newPassword: passwordSchema,
+})
