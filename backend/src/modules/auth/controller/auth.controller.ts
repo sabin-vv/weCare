@@ -68,4 +68,22 @@ export class AuthController {
             next(error)
         }
     }
+    refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const refreshToken = req.cookies?.refreshToken
+            const { accessToken } = await this.authService.refreshToken(refreshToken)
+
+            const isProduction = env.NODE_ENV === 'production'
+
+            res.cookie('accessToken', accessToken, {
+                httpOnly: true,
+                secure: isProduction,
+                sameSite: isProduction ? 'none' : 'lax',
+                maxAge: 15 * 60 * 1000,
+            })
+            res.status(HTTP_STATUS.OK).json({ success: true, message: 'Access token refreshed successfully' })
+        } catch (error) {
+            next(error)
+        }
+    }
 }
