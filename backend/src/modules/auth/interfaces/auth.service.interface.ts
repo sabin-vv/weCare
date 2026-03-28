@@ -11,4 +11,6 @@ export interface IAuthService {
     verifyOtp(email: string, otp: string): Promise<void>
 
     login(email: string, password: string, role: UserRole): Promise<LoginResponse>
+
+    refreshToken(token: string): Promise<{ accessToken: string }>
 }
