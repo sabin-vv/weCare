@@ -7,6 +7,14 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { MulterFiles } from '../types/auth.types'
 
+const isProduction = env.NODE_ENV === 'production'
+
+const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+}
+
 @injectable()
 export class AuthController {
     constructor(@inject(TOKENS.IAuthService) private authService: IAuthService) {}
@@ -52,14 +60,6 @@ export class AuthController {
 
             const { accessToken, refreshToken } = result.tokens
 
-            const isProduction = env.NODE_ENV === 'production'
-
-            const cookieOptions = {
-                httpOnly: true,
-                secure: isProduction,
-                sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
-            }
-
             res.cookie('accessToken', accessToken, cookieOptions)
             res.cookie('refreshToken', refreshToken, cookieOptions)
 
@@ -73,14 +73,8 @@ export class AuthController {
             const refreshToken = req.cookies?.refreshToken
             const { accessToken } = await this.authService.refreshToken(refreshToken)
 
-            const isProduction = env.NODE_ENV === 'production'
+            res.cookie('accessToken', accessToken)
 
-            res.cookie('accessToken', accessToken, {
-                httpOnly: true,
-                secure: isProduction,
-                sameSite: isProduction ? 'none' : 'lax',
-                maxAge: 15 * 60 * 1000,
-            })
             res.status(HTTP_STATUS.OK).json({ success: true, message: 'Access token refreshed successfully' })
         } catch (error) {
             next(error)
@@ -94,6 +88,17 @@ export class AuthController {
                 success: true,
                 message: 'Password reset successfully',
             })
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    logout = async (_req: Request, res: Response, next: NextFunction) => {
+        try {
+            res.clearCookie('accessToken', cookieOptions)
+            res.clearCookie('refreshToken', cookieOptions)
+
+            res.status(HTTP_STATUS.OK).json({ success: true, message: 'Logged out successfully' })
         } catch (error) {
             next(error)
         }
