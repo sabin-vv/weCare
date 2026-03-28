@@ -8,6 +8,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '.
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { toDoctorEntity } from '../../doctor/mapper/doctor.mapper'
 import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
+import { ResetPasswordDTO } from '../dto/resetPassword.dto'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { IUserRepository } from '../interfaces/user.repository.interface'
 import { toUserEntity } from '../mapper/auth.mapper'
@@ -117,5 +118,19 @@ export class AuthService implements IAuthService {
         const newAccessToken = generateAccessToken({ userId: decoded.userId, role: decoded.role })
 
         return { accessToken: newAccessToken }
+    }
+
+    async resetpassword(dto: ResetPasswordDTO): Promise<void> {
+        const { email, newPassword } = dto
+
+        const user = await this.userRepo.findByEmail(email)
+
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+        await this.userRepo.updatePassword(user._id, hashedPassword)
     }
 }
