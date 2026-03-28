@@ -107,7 +107,7 @@ export class AuthService implements IAuthService {
             },
         }
     }
-    async refreshToken(token: string) {
+    async refreshToken(token: string): Promise<{ accessToken: string }> {
         if (!token) {
             throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'No refresh token')
         }
