@@ -1,5 +1,7 @@
+import { Toaster } from 'react-hot-toast'
+
 function App() {
-    return <></>
+    return <Toaster position="top-center" />
 }
 
 export default App
