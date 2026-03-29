@@ -1,6 +1,6 @@
 import type { AuthContextType, User } from '@/modules/auth/types/auth.types'
 import { clearStoredUser, getStoredUser, setStoredUser } from '@/utils/authStorage'
-import { createContext, useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
@@ -37,4 +37,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     )
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
+
+export const useAuth = (): AuthContextType => {
+    const auth = useContext(AuthContext)
+    if (!auth) throw new Error('useAuth must be used inside <AuthProvider>')
+    return auth
 }
