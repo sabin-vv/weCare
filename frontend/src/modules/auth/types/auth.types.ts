@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from 'react'
+
 export interface ProgressBarProps {
     step: number
     totalSteps: number
@@ -65,4 +67,33 @@ export type BasicInfoFormProps = {
     role?: 'doctor' | 'caregiver'
     title: string
     description?: string
+}
+
+export interface Certificate {
+    number: string
+    document: File | null
+}
+export interface DoctorDocuments {
+    govId: File | null
+    profileImage: File | null
+    medicalCertificate: Certificate
+    councilRegistration: Certificate
+}
+
+export interface Specialization {
+    name: string
+    document: File | null
+}
+export interface DoctorRegisterState {
+    basicInfo: RegisterFormData
+    documents: DoctorDocuments
+    specializations: Specialization[]
+}
+export interface DoctorDetailsFormProps {
+    prevStep: () => void
+    nextStep: () => void
+    documents: DoctorDocuments
+    specializations: Specialization[]
+    registerData: DoctorRegisterState
+    setRegisterData: Dispatch<SetStateAction<DoctorRegisterState>>
 }
