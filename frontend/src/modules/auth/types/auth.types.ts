@@ -42,3 +42,11 @@ export interface AuthContextType {
     clearAuth: () => void
     isAuthenticated: boolean
 }
+
+export interface OtpVerificationProps {
+    email: string
+    onVerify: (otp: string) => Promise<void>
+    onResend: () => Promise<void>
+    onBack?: () => void
+    loading?: boolean
+}
