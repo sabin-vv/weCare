@@ -97,3 +97,9 @@ export interface DoctorDetailsFormProps {
     registerData: DoctorRegisterState
     setRegisterData: Dispatch<SetStateAction<DoctorRegisterState>>
 }
+
+export enum OtpPurpose {
+    REGISTER = 'register',
+    PASSWORD_RESET = 'password-reset',
+    ACCOUNT_RECOVERY = 'account-recovery',
+}
