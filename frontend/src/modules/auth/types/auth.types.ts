@@ -16,3 +16,9 @@ export interface RoleSelectorProps {
     role: Role
     onChange: (role: Role) => void
 }
+
+export interface FileUploadBoxProps {
+    file?: File | null
+    accept?: string
+    onFileSelect: (file: File) => void
+}
