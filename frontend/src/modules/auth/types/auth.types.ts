@@ -50,3 +50,19 @@ export interface OtpVerificationProps {
     onBack?: () => void
     loading?: boolean
 }
+export interface RegisterFormData {
+    name: string
+    email: string
+    mobile: string
+    password: string
+    confirmPassword: string
+}
+
+export type BasicInfoFormProps = {
+    defaultValues?: RegisterFormData
+    onSubmit: (data: RegisterFormData) => void
+    loading?: boolean
+    role?: 'doctor' | 'caregiver'
+    title: string
+    description?: string
+}
