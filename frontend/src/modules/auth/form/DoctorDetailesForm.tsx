@@ -13,6 +13,7 @@ import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import type { DoctorDetailsFormProps } from '../types/auth.types'
 import { doctorDetailesSchema } from '../validator/register.schema'
+import { doctorRegister } from '../api/auth.api'
 
 const DoctorDetailsForm = ({
     prevStep,
@@ -82,6 +83,8 @@ const DoctorDetailsForm = ({
                 if (spec.document) formData.append(`specializationDocument${index}`, spec.document)
             })
 
+            const response = await doctorRegister(formData)
+            toast.success(response.message || 'Registration submitted successfully')
             nextStep()
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
