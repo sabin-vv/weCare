@@ -22,3 +22,11 @@ export interface FileUploadBoxProps {
     accept?: string
     onFileSelect: (file: File) => void
 }
+export interface FormNavigationButtonsProps {
+    onBack?: () => void
+    onNext: () => void
+    nextLabel?: string
+    backLabel?: string
+    isNextDisabled?: boolean
+    isLoading?: boolean
+}
