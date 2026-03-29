@@ -30,3 +30,15 @@ export interface FormNavigationButtonsProps {
     isNextDisabled?: boolean
     isLoading?: boolean
 }
+export interface User {
+    id: string
+    name: string
+    email: string
+    profileImage?: string
+}
+export interface AuthContextType {
+    user: User | null
+    setAuth: (user: User) => void
+    clearAuth: () => void
+    isAuthenticated: boolean
+}
