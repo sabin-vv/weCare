@@ -20,3 +20,14 @@ export interface CaregiverDocument extends Document {
     verifiedAt: Date
     rejectReason: string
 }
+
+export interface CaregiverEntity {
+    userId: Types.ObjectId
+    certificateNumber: string
+    licenseNumber: string
+
+    govIdImage: string
+    profileImage: string
+    certificateImage: string
+    licenseImage: string
+}
