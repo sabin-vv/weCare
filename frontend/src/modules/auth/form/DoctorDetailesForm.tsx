@@ -64,7 +64,7 @@ const DoctorDetailsForm = ({
             formData.append('password', registerData.basicInfo.password)
             formData.append('confirmPassword', registerData.basicInfo.confirmPassword)
 
-            formData.append('govId', documents.govId!)
+            formData.append('govIdImage', documents.govId!)
             formData.append('profileImage', documents.profileImage!)
 
             formData.append('medicalCertificateNumber', documents.medicalCertificate.number)
