@@ -5,7 +5,7 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { toUserEntity } from '../../auth/mapper/auth.mapper'
-import { MulterFiles } from '../../auth/types/auth.types'
+import { MulterFiles, UserRole } from '../../auth/types/auth.types'
 import { ICaregiverRepository } from '../interfaces/caregiver.repository.interface'
 import { ICaregiverService } from '../interfaces/caregiver.service.interface'
 import { toCaregiverEntity } from '../mapper/caregiver.mapper'
@@ -22,7 +22,7 @@ export class CaregiverService implements ICaregiverService {
         const existing = await this.userRepo.findByEmail(dto.email)
         if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
 
-        const userData = await toUserEntity(dto)
+        const userData = await toUserEntity(dto, UserRole.CAREGIVER)
         const user = await this.userRepo.create(userData)
 
         const caregiverData = toCaregiverEntity(user._id, dto, files)
