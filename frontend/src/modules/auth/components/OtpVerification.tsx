@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import Button from '@/shared/components/Button/Button'
 import styles from './OtpVerification.module.css'
 import type { OtpVerificationProps } from '../types/auth.types'
+import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
+import ProgressBar from './ProgressBar'
 
 const OtpVerification = ({ email, onVerify, onResend, onBack, loading }: OtpVerificationProps) => {
     const [timer, setTimer] = useState(30)
@@ -43,7 +45,12 @@ const OtpVerification = ({ email, onVerify, onResend, onBack, loading }: OtpVeri
     }
 
     return (
-        <div className={styles.cardWrapper}>
+        <FormWrapper
+            maxWidth="520px"
+            title="Verify your email"
+            description="Please enter verification code was just sent to your email"
+        >
+            <ProgressBar step={2} totalSteps={4} percentage={50} title="Verify your email address" />
             <p>
                 We’ve sent a 6-digit code to <strong>{email}</strong>
             </p>
@@ -69,16 +76,22 @@ const OtpVerification = ({ email, onVerify, onResend, onBack, loading }: OtpVeri
 
             <div className={styles.cardFooter}>
                 {timer === 0 ? (
-                    <button onClick={handleResend} disabled={resending}>
+                    <button className={styles.resendCode} onClick={handleResend} disabled={resending}>
                         {resending ? 'Sending...' : 'Resend Code'}
                     </button>
                 ) : (
-                    <span>Resend in {timer}s</span>
+                    <button className={styles.resendCode} disabled>
+                        Resend in {timer}s
+                    </button>
                 )}
 
-                {onBack && <button onClick={onBack}>Change email</button>}
+                {onBack && (
+                    <button className={styles.changeEmail} onClick={onBack}>
+                        Change email
+                    </button>
+                )}
             </div>
-        </div>
+        </FormWrapper>
     )
 }
 
