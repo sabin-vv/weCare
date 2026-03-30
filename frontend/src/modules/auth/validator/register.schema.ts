@@ -1,5 +1,12 @@
 import { isValidPhoneNumber } from 'libphonenumber-js'
 import { z } from 'zod'
+import { Role } from '../types/auth.types'
+
+export const loginSchema = z.object({
+    email: z.string().min(1, 'Email is required').email('Invalid email address'),
+    password: z.string().min(1, 'Password is required'),
+    role: z.nativeEnum(Role),
+})
 
 export const basicInfoSchema = z
     .object({
