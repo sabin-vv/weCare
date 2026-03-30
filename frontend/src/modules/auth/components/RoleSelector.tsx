@@ -27,13 +27,6 @@ const RoleSelector = ({ role, onChange }: RoleSelectorProps) => {
                 >
                     Patient
                 </button>
-                <button
-                    type="button"
-                    className={role === Role.ADMIN ? styles.active : ''}
-                    onClick={() => onChange(Role.ADMIN)}
-                >
-                    Admin
-                </button>
             </div>
         </div>
     )
