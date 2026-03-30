@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
-import styles from './CaregiverStepThree.module.css'
+import styles from './CaregiverDetailsForm.module.css'
 
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
@@ -95,7 +95,7 @@ const CaregiverDetailsForm = ({
         >
             <ProgressBar title="Professional information" percentage={75} step={2} totalSteps={4} />
 
-            <div className={styles.cardGrid}>
+            <div className={styles.gridContainer}>
                 <Card
                     title="Government ID"
                     description="Upload a clear photo of your Passport, Driver's License, or National ID Card."

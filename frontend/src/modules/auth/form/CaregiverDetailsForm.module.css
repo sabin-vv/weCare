@@ -1,0 +1,22 @@
+.gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.documentInput {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid #dbe0e6;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.documentInput:focus {
+    border-color: #137fec;
+}
