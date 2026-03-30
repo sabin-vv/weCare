@@ -29,6 +29,9 @@
     font-weight: 600;
     color: #334155;
 }
+.box p {
+    font-size: 14px;
+}
 
 .previewImage {
     width: 100%;
