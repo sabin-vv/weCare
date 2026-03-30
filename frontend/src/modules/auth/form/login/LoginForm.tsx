@@ -14,6 +14,7 @@ import { loginUser } from '../../api/auth.api'
 import { useAuth } from '@/shared/context/AuthContext'
 import { Role, type LoginFormData } from '../../types/auth.types'
 import styles from './LoginForm.module.css'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const LoginForm = () => {
     const [role, setRole] = useState<Role>(Role.DOCTOR)
@@ -37,36 +38,29 @@ const LoginForm = () => {
         try {
             const response = await loginUser(data.email, data.password, data.role)
 
-            if (response.success) {
-                setAuth({
-                    id: response.user.email,
-                    name: response.user.name,
-                    email: response.user.email,
-                })
+            setAuth({
+                id: response.user.email,
+                name: response.user.name,
+                email: response.user.email,
+            })
 
-                toast.success('Login successful!')
+            toast.success(response.message)
 
-                switch (data.role) {
-                    case Role.DOCTOR:
-                        navigate('/doctor/dashboard')
-                        break
-                    case Role.CAREGIVER:
-                        navigate('/caregiver/dashboard')
-                        break
-                    case Role.ADMIN:
-                        navigate('/admin/dashboard')
-                        break
-                    case Role.PATIENT:
-                        navigate('/patient/dashboard')
-                        break
-                    default:
-                        navigate('/')
-                }
-            } else {
-                toast.error(response.message || 'Login failed')
+            switch (data.role) {
+                case Role.DOCTOR:
+                    navigate('/doctor/dashboard')
+                    break
+                case Role.CAREGIVER:
+                    navigate('/caregiver/dashboard')
+                    break
+                case Role.PATIENT:
+                    navigate('/patient/dashboard')
+                    break
+                default:
+                    navigate('/')
             }
         } catch (error) {
-            toast.error('An error occurred during login')
+            toast.error(getErrorMessage(error))
         } finally {
             setIsLoading(false)
         }
