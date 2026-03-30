@@ -12,3 +12,18 @@ export interface LoginUser extends ApiInterface {
         role: Role
     }
 }
+
+export type AllowedContentType = 'image/png' | 'image/jpeg' | 'application/pdf'
+
+export interface PresignUploadParams {
+    fileName: string
+    contentType: AllowedContentType
+    folder?: string
+    size?: number
+}
+
+export interface PresignUploadResponse {
+    success: boolean
+    uploadUrl: string
+    key: string
+}
