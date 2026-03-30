@@ -14,6 +14,7 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 import type { DoctorDetailsFormProps } from '../types/auth.types'
 import { doctorDetailesSchema } from '../validator/register.schema'
 import { doctorRegister } from '../api/auth.api'
+import InputField from '@/shared/components/InputField/InputField'
 
 const DoctorDetailsForm = ({
     prevStep,
@@ -135,7 +136,7 @@ const DoctorDetailsForm = ({
                     title="Medical Certificate"
                     description="Verification of your professional certificate is required for all doctors."
                 >
-                    <input
+                    <InputField
                         type="text"
                         placeholder="Enter Medical certificate number"
                         value={documents.medicalCertificate.number}
@@ -151,7 +152,6 @@ const DoctorDetailsForm = ({
                                 },
                             }))
                         }
-                        className={styles.documentInput}
                     />
                     <FileUploadBox
                         file={documents.medicalCertificate.document}
@@ -174,7 +174,7 @@ const DoctorDetailsForm = ({
                     title="Medical Council Registration"
                     description="Verification of your medical council registration is valid."
                 >
-                    <input
+                    <InputField
                         type="text"
                         placeholder="Enter Medical council Reg. number"
                         value={documents.councilRegistration.number}
@@ -190,7 +190,6 @@ const DoctorDetailsForm = ({
                                 },
                             }))
                         }
-                        className={styles.documentInput}
                     />
 
                     <FileUploadBox
@@ -217,7 +216,7 @@ const DoctorDetailsForm = ({
                 {specializations.map((item, index) => (
                     <div key={index} className={styles.specializationCard}>
                         <div className={styles.cardHeader}>
-                            <input
+                            <InputField
                                 type="text"
                                 placeholder="Enter your specialization"
                                 value={item.name}
