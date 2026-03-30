@@ -8,6 +8,9 @@ import type { BasicInfoFormProps, RegisterFormData } from '../types/auth.types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import ProgressBar from '../components/ProgressBar'
+import { User } from 'lucide-react'
+import { Mail } from 'lucide-react'
+import styles from './BasicInfoForm.module.css'
 
 const BasicInfoForm = ({ defaultValues, title, description, onSubmit, loading, role }: BasicInfoFormProps) => {
     const {
@@ -25,13 +28,22 @@ const BasicInfoForm = ({ defaultValues, title, description, onSubmit, loading, r
             <form onSubmit={handleSubmit(onSubmit)}>
                 <ProgressBar step={1} totalSteps={4} percentage={25} title="Basic Information" />
                 <InputField
+                    placeholder="John Doe"
+                    icon={<User />}
                     prefix={role === 'doctor' ? 'Dr.' : ''}
                     label="Full Name"
                     {...register('name')}
                     errors={errors.name?.message}
                 />
 
-                <InputField label="Email" type="email" {...register('email')} errors={errors.email?.message} />
+                <InputField
+                    placeholder="user@email.com"
+                    icon={<Mail />}
+                    label="Email"
+                    type="email"
+                    {...register('email')}
+                    errors={errors.email?.message}
+                />
 
                 <Controller
                     name="mobile"
@@ -46,13 +58,21 @@ const BasicInfoForm = ({ defaultValues, title, description, onSubmit, loading, r
                     )}
                 />
 
-                <PasswordField label="Password" {...register('password')} error={errors.password?.message} />
+                <div className={styles.passwordWrapper}>
+                    <PasswordField
+                        placeholder="********"
+                        label="Password"
+                        {...register('password')}
+                        error={errors.password?.message}
+                    />
 
-                <PasswordField
-                    label="Confirm Password"
-                    {...register('confirmPassword')}
-                    error={errors.confirmPassword?.message}
-                />
+                    <PasswordField
+                        placeholder="********"
+                        label="Confirm Password"
+                        {...register('confirmPassword')}
+                        error={errors.confirmPassword?.message}
+                    />
+                </div>
 
                 <Button type="submit" disabled={loading}>
                     {loading ? 'Please wait...' : 'Next'}
