@@ -6,7 +6,7 @@ export enum VerificationStatus {
     rejected = 'rejected',
 }
 
-export interface caregiverDocument extends Document {
+export interface CaregiverDocument extends Document {
     userId: Types.ObjectId
     profileImage: string
     govIdImage: string
