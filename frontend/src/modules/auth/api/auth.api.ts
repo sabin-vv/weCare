@@ -23,6 +23,11 @@ export const doctorRegister = async (formData: FormData): Promise<ApiInterface> 
     return res.data
 }
 
+export const caregiverRegister = async (formData: FormData): Promise<ApiInterface> => {
+    const res = await api.post('/caregivers/register', formData)
+    return res.data
+}
+
 export const loginUser = async (email: string, password: string, role: string): Promise<LoginUser> => {
     const res = await api.post('/auth/login', { email, password, role })
     return res.data
