@@ -13,4 +13,8 @@ export const env = {
     JWT_ACCESS_EXPIRES: '15m',
     JWT_REFRESH_EXPIRES: '7d',
     NODE_ENV: process.env.NODE_ENV,
+    AWS_REGION: process.env.AWS_REGION || 'ap-south-1',
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
 }
