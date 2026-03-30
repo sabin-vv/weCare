@@ -57,7 +57,11 @@ const PatientRegisterForm = () => {
         }
     }
     return (
-        <FormWrapper title="Join as a Patient" description="Let's start by setting up your secure account credentials">
+        <FormWrapper
+            maxWidth="500px"
+            title="Join as a Patient"
+            description="Let's start by setting up your secure account credentials"
+        >
             <InputField
                 label="Full Name"
                 icon={<User />}

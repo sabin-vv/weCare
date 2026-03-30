@@ -93,7 +93,7 @@ const LoginForm = () => {
                     {isLoading ? 'Signing In...' : 'Sign In'}
                 </Button>
             </form>
-            <button onClick={() => navigate('/patients/register')} className={styles.patientRegister}>
+            <button onClick={() => navigate('/auth/patients/register')} className={styles.patientRegister}>
                 Register as Patient
             </button>
 
