@@ -66,6 +66,16 @@ export interface LoginFormData {
     role: Role
 }
 
+export interface PatientRegisterData {
+    name: string
+    email: string
+    mobile: string
+    password: string
+    confirmPassword: string
+    dateOfBirth: string
+    gender: string
+}
+
 export type BasicInfoFormProps = {
     defaultValues?: RegisterFormData
     onSubmit: (data: RegisterFormData) => void
