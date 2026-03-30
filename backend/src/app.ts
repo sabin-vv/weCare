@@ -3,6 +3,7 @@ import express from 'express'
 
 import { errorMiddleware } from './core/middleware/errorMiddleware'
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
+import { createDoctorRoutes } from './modules/doctor/routes/doctor.route'
 
 const app = express()
 
@@ -16,6 +17,8 @@ app.use(
 app.use(express.json())
 
 app.use('/api/auth', createAuthRoutes())
+
+app.use('/api/doctors', createDoctorRoutes())
 
 app.use(errorMiddleware)
 

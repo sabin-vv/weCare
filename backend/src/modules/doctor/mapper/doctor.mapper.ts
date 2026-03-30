@@ -1,8 +1,8 @@
 import { Types } from 'mongoose'
 
-import { RegisterDoctorDTO } from '../../auth/dto/registerDoctor.dto'
 import { MulterFiles } from '../../auth/types/auth.types'
 import { DoctorEntity } from '../types/doctor.types'
+import { RegisterDoctorDTO } from '../validator/registerDoctor.schema'
 
 export const toDoctorEntity = (userId: Types.ObjectId, dto: RegisterDoctorDTO, files: MulterFiles): DoctorEntity => {
     const specializationKeys = Object.keys(files || {})

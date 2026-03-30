@@ -6,13 +6,10 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../../core/utils/jwt'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
-import { toDoctorEntity } from '../../doctor/mapper/doctor.mapper'
-import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
 import { ResetPasswordDTO } from '../dto/resetPassword.dto'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { IUserRepository } from '../interfaces/user.repository.interface'
-import { toUserEntity } from '../mapper/auth.mapper'
-import { MulterFiles, UserRole } from '../types/auth.types'
+import { UserRole } from '../types/auth.types'
 import { OtpRequestPurpose } from '../types/otp.types'
 import { OtpService } from './otp.service'
 
@@ -23,19 +20,6 @@ export class AuthService implements IAuthService {
         @inject(TOKENS.IDoctorRepository) private doctorRepo: IDoctorRepository,
         @inject(TOKENS.IOtpService) private otpService: OtpService,
     ) {}
-
-    async registerDoctor(dto: RegisterDoctorDTO, files: MulterFiles) {
-        const existing = await this.userRepo.findByEmail(dto.email)
-
-        if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
-
-        const userData = await toUserEntity(dto)
-        const user = await this.userRepo.create(userData)
-
-        const doctorData = toDoctorEntity(user._id, dto, files)
-
-        return this.doctorRepo.create(doctorData)
-    }
 
     async sendOtp(email: string, purpose: OtpRequestPurpose) {
         const user = await this.userRepo.findByEmail(email)
@@ -108,6 +92,7 @@ export class AuthService implements IAuthService {
             },
         }
     }
+
     async refreshToken(token: string): Promise<{ accessToken: string }> {
         if (!token) {
             throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'No refresh token')

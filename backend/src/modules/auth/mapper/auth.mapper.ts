@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 
-import { RegisterDoctorDTO } from '../dto/registerDoctor.dto'
+import { RegisterDoctorDTO } from '../../doctor/validator/registerDoctor.schema'
 import { UserRole } from '../types/auth.types'
 
 export const toUserEntity = async (dto: RegisterDoctorDTO) => {

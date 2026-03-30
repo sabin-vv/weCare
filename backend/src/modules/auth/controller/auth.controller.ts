@@ -5,7 +5,6 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { IAuthService } from '../interfaces/auth.service.interface'
-import { MulterFiles } from '../types/auth.types'
 
 const isProduction = env.NODE_ENV === 'production'
 
@@ -38,16 +37,6 @@ export class AuthController {
                 success: true,
                 message: 'OTP verified Successfuly',
             })
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    registerDoctor = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const result = await this.authService.registerDoctor(req.body, req.files as MulterFiles)
-
-            res.status(HTTP_STATUS.CREATED).json({ success: true, data: result })
         } catch (error) {
             next(error)
         }

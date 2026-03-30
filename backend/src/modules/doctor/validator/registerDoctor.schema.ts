@@ -20,3 +20,5 @@ export const registerDoctorSchema = z.object({
             ),
         ),
 })
+
+export type RegisterDoctorDTO = z.infer<typeof registerDoctorSchema>
