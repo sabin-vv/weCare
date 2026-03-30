@@ -39,14 +39,13 @@ const LoginForm = () => {
 
             if (response.success) {
                 setAuth({
-                    id: response.user.email, // Using email as ID for now, adjust if backend provides proper ID
+                    id: response.user.email,
                     name: response.user.name,
                     email: response.user.email,
                 })
 
                 toast.success('Login successful!')
 
-                // Navigate based on role
                 switch (data.role) {
                     case Role.DOCTOR:
                         navigate('/doctor/dashboard')
@@ -67,7 +66,6 @@ const LoginForm = () => {
                 toast.error(response.message || 'Login failed')
             }
         } catch (error) {
-            console.error('Login error:', error)
             toast.error('An error occurred during login')
         } finally {
             setIsLoading(false)
@@ -75,7 +73,7 @@ const LoginForm = () => {
     }
 
     return (
-        <FormWrapper title="Welcome Back" description="Secure access to your healthcare dashboard">
+        <FormWrapper maxWidth="700px" title="Welcome Back" description="Secure access to your healthcare dashboard">
             <form className={styles.form} onSubmit={handleSubmit(formSubmit)}>
                 <RoleSelector role={role} onChange={setRole} />
                 <InputField
@@ -108,9 +106,9 @@ const LoginForm = () => {
             <div className={styles.professionalCard}>
                 <h3>Medical Professionals</h3>
                 <p>Medical professionals require verification before activation.</p>
-                <div className={styles.professioanlRegister}>
-                    <button onClick={() => navigate('/doctors/register')}>Apply as a Doctor</button>
-                    <button onClick={() => navigate('/caregivers/register')}>Register as Caregiver</button>
+                <div className={styles.professionalRegister}>
+                    <button onClick={() => navigate('/auth/doctors/register')}>Apply as a Doctor</button>
+                    <button onClick={() => navigate('/auth/caregivers/register')}>Register as Caregiver</button>
                 </div>
             </div>
         </FormWrapper>
