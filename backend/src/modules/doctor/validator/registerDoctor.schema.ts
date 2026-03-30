@@ -10,6 +10,7 @@ export const registerDoctorSchema = z.object({
     medicalCertificateNumber: z.string().min(1, 'Medical certificate number is required'),
     medicalCouncilRegisterNumber: z.string().min(1, 'Medical council register number required'),
 
+    govIdImage: z.string().min(1).optional(),
     profileImage: z.string().min(1).optional(),
     medicalCertificateImage: z.string().min(1).optional(),
     medicalCouncilImage: z.string().min(1).optional(),

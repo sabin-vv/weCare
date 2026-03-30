@@ -9,6 +9,10 @@ export const toDoctorEntity = (userId: Types.ObjectId, dto: RegisterDoctorDTO, f
         .filter((key) => key.startsWith('specializationDocument'))
         .sort()
 
+    const fromDtoOrFile = (dtoValue: string | undefined, fileField: string) => {
+        return dtoValue ?? files?.[fileField]?.[0]?.originalname ?? ''
+    }
+
     return {
         userId,
         medicalCertificateNumber: dto.medicalCertificateNumber,
@@ -16,12 +20,12 @@ export const toDoctorEntity = (userId: Types.ObjectId, dto: RegisterDoctorDTO, f
 
         specializations: dto.specializations.map((spec, index) => ({
             name: spec.name,
-            documentImage: files?.[specializationKeys[index]]?.[0]?.originalname,
+            documentImage: dto.specializationDocumentKeys?.[index] ?? files?.[specializationKeys[index]]?.[0]?.originalname ?? '',
         })),
 
-        govIdImage: files?.govIdImage?.[0]?.originalname,
-        profileImage: files?.profileImage?.[0]?.originalname,
-        medicalCertificateImage: files?.medicalCertificateImage?.[0]?.originalname,
-        medicalCouncilImage: files?.medicalCouncilImage?.[0]?.originalname,
+        govIdImage: fromDtoOrFile(dto.govIdImage, 'govIdImage'),
+        profileImage: fromDtoOrFile(dto.profileImage, 'profileImage'),
+        medicalCertificateImage: fromDtoOrFile(dto.medicalCertificateImage, 'medicalCertificateImage'),
+        medicalCouncilImage: fromDtoOrFile(dto.medicalCouncilImage, 'medicalCouncilImage'),
     }
 }
