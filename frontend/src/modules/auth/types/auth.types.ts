@@ -60,6 +60,12 @@ export interface RegisterFormData {
     confirmPassword: string
 }
 
+export interface LoginFormData {
+    email: string
+    password: string
+    role: Role
+}
+
 export type BasicInfoFormProps = {
     defaultValues?: RegisterFormData
     onSubmit: (data: RegisterFormData) => void
