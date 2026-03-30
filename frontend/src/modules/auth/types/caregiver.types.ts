@@ -1,3 +1,5 @@
+import type { Dispatch } from 'react'
+
 export interface CaregiverDocuments {
     govId: File | null
     profileImage: File | null
@@ -20,4 +22,12 @@ export interface CaregiverRegisterState {
         confirmPassword: string
     }
     documents: CaregiverDocuments
+}
+
+export interface CaregiverDetailsFormProps {
+    prevStep: () => void
+    nextStep: () => void
+    documents: CaregiverDocuments
+    registerData: CaregiverRegisterState
+    setRegisterData: Dispatch<React.SetStateAction<CaregiverRegisterState>>
 }
