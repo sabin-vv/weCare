@@ -7,11 +7,13 @@ import styles from './PhoneInput.module.css'
 import type { PhoneInputProps } from './PhoneInput.types'
 
 const PhoneInput = ({ value, onChange, label, error }: PhoneInputProps) => {
+    const ReactPhoneInput = (PhoneInputLib as any).default || PhoneInputLib
+
     return (
         <div className={styles.wrapper}>
             {label && <label className={styles.label}>{label}</label>}
             <div className={styles.phoneContainer}>
-                <PhoneInputLib
+                <ReactPhoneInput
                     country="in"
                     value={value}
                     onChange={onChange}

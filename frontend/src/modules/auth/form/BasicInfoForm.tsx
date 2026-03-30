@@ -37,7 +37,12 @@ const BasicInfoForm = ({ defaultValues, title, description, onSubmit, loading, r
                     name="mobile"
                     control={control}
                     render={({ field }) => (
-                        <PhoneInput value={field.value} onChange={field.onChange} error={errors.mobile?.message} />
+                        <PhoneInput
+                            label="Phone Number"
+                            value={field.value}
+                            onChange={(val) => field.onChange(val)}
+                            error={errors.mobile?.message}
+                        />
                     )}
                 />
 
