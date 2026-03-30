@@ -8,6 +8,10 @@ import { IUserRepository } from '../modules/auth/interfaces/user.repository.inte
 import { UserRepository } from '../modules/auth/repository/user.repository'
 import { AuthService } from '../modules/auth/service/auth.service'
 import { OtpService } from '../modules/auth/service/otp.service'
+import { ICaregiverRepository } from '../modules/caregiver/interfaces/caregiver.repository.interface'
+import { ICaregiverService } from '../modules/caregiver/interfaces/caregiver.service.interface'
+import { CaregiverRepository } from '../modules/caregiver/repository/caregiver.repository'
+import { CaregiverService } from '../modules/caregiver/service/caregiver.service'
 import { IDoctorRepository } from '../modules/doctor/interfaces/doctor.repository.interface'
 import { IDoctorService } from '../modules/doctor/interfaces/doctor.service.interface'
 import { DoctorRepository } from '../modules/doctor/repository/doctor.repository'
@@ -17,5 +21,7 @@ import { TOKENS } from './tokens'
 container.register<IUserRepository>(TOKENS.IUserRepository, { useClass: UserRepository })
 container.register<IDoctorRepository>(TOKENS.IDoctorRepository, { useClass: DoctorRepository })
 container.register<IDoctorService>(TOKENS.IDoctorService, { useClass: DoctorService })
+container.register<ICaregiverRepository>(TOKENS.ICaregiverRepository, { useClass: CaregiverRepository })
+container.register<ICaregiverService>(TOKENS.ICaregiverService, { useClass: CaregiverService })
 container.register<IAuthService>(TOKENS.IAuthService, { useClass: AuthService })
 container.register<IOtpService>(TOKENS.IOtpService, { useClass: OtpService })
