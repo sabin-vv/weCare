@@ -13,7 +13,7 @@ import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import type { DoctorDetailsFormProps } from '../types/auth.types'
 import { doctorDetailesSchema } from '../validator/register.schema'
-import { doctorRegister } from '../api/auth.api'
+import { doctorRegister, presignUpload, uploadToS3 } from '../api/auth.api'
 import InputField from '@/shared/components/InputField/InputField'
 
 const DoctorDetailsForm = ({
@@ -25,6 +25,25 @@ const DoctorDetailsForm = ({
     setRegisterData,
 }: DoctorDetailsFormProps) => {
     const [imageCrop, setImageCrop] = useState<string | null>(null)
+    const [isUploading, setIsUploading] = useState(false)
+
+    const uploadFileToS3 = async (file: File, folder: string): Promise<string> => {
+        try {
+            const contentType = file.type as 'image/png' | 'image/jpeg' | 'application/pdf'
+            const presignRes = await presignUpload({
+                fileName: file.name,
+                contentType,
+                folder,
+                size: file.size,
+            })
+
+            await uploadToS3(presignRes.uploadUrl, file)
+            return presignRes.key
+        } catch (error) {
+            throw new Error(`Failed to upload ${file.name}: ${getErrorMessage(error)}`)
+        }
+    }
+
     const handleChange = (index: number, value: string) => {
         setRegisterData((prev) => {
             const updated = [...prev.specializations]
@@ -56,6 +75,7 @@ const DoctorDetailsForm = ({
             toast.error(message)
             return
         }
+        setIsUploading(true)
         try {
             const formData = new FormData()
             formData.append('name', registerData.basicInfo.name)
@@ -64,13 +84,44 @@ const DoctorDetailsForm = ({
             formData.append('password', registerData.basicInfo.password)
             formData.append('confirmPassword', registerData.basicInfo.confirmPassword)
 
-            formData.append('govIdImage', documents.govId!)
-            formData.append('profileImage', documents.profileImage!)
+            if (documents.govId) {
+                const govIdKey = await uploadFileToS3(documents.govId, 'documents/govId')
+                formData.append('govIdImage', govIdKey)
+            }
+
+            if (documents.profileImage) {
+                const profileImageKey = await uploadFileToS3(documents.profileImage, 'documents/profileImage')
+                formData.append('profileImage', profileImageKey)
+            }
 
             formData.append('medicalCertificateNumber', documents.medicalCertificate.number)
-            formData.append('medicalCertificateImage', documents.medicalCertificate.document!)
+            if (documents.medicalCertificate.document) {
+                const certKey = await uploadFileToS3(
+                    documents.medicalCertificate.document,
+                    'documents/medicalCertificate',
+                )
+                formData.append('medicalCertificateImage', certKey)
+            }
+
             formData.append('medicalCouncilRegisterNumber', documents.councilRegistration.number)
-            formData.append('medicalCouncilImage', documents.councilRegistration.document!)
+            if (documents.councilRegistration.document) {
+                const councilKey = await uploadFileToS3(
+                    documents.councilRegistration.document,
+                    'documents/medicalCouncil',
+                )
+                formData.append('medicalCouncilImage', councilKey)
+            }
+
+            const specializationKeys: (string | null)[] = []
+            for (let i = 0; i < specializations.length; i++) {
+                const spec = specializations[i]
+                if (spec.document) {
+                    const specKey = await uploadFileToS3(spec.document, `documents/specializations`)
+                    specializationKeys.push(specKey)
+                } else {
+                    specializationKeys.push(null)
+                }
+            }
 
             formData.append(
                 'specializations',
@@ -80,9 +131,10 @@ const DoctorDetailsForm = ({
                     })),
                 ),
             )
-            specializations.forEach((spec, index) => {
-                if (spec.document) formData.append(`specializationDocument${index}`, spec.document)
-            })
+
+            if (specializationKeys.length > 0) {
+                formData.append('specializationDocumentKeys', JSON.stringify(specializationKeys))
+            }
 
             const response = await doctorRegister(formData)
             toast.success(response.message || 'Registration submitted successfully')
@@ -90,6 +142,8 @@ const DoctorDetailsForm = ({
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
             return
+        } finally {
+            setIsUploading(false)
         }
     }
 
@@ -259,6 +313,7 @@ const DoctorDetailsForm = ({
                     nextLabel="Register"
                     onBack={prevStep}
                     onNext={handleRegister}
+                    isLoading={isUploading}
                 />
             </div>
             {imageCrop && (
