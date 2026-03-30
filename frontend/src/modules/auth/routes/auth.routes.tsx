@@ -3,6 +3,7 @@ import CaregiverRegisterPage from '../pages/CaregiverRegisterPage'
 import DoctorRegisterPage from '../pages/DoctorRegisterPage'
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
+import PatientRegisterPage from '../pages/PatientRegisterPage'
 
 export const AuthRoutes: RouteObject[] = [
     {
@@ -20,5 +21,9 @@ export const AuthRoutes: RouteObject[] = [
     {
         path: '/auth/caregivers/register',
         element: <CaregiverRegisterPage />,
+    },
+    {
+        path: '/auth/patients/register',
+        element: <PatientRegisterPage />,
     },
 ]
