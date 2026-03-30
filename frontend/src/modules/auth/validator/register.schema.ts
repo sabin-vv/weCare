@@ -66,6 +66,31 @@ export const doctorDetailesSchema = z.object({
         .min(1, 'Add atleast one specialization'),
 })
 
+export const caregiverDetailsSchema = z.object({
+    documents: z.object({
+        govId: z.instanceof(File, {
+            message: 'Please upload a Government ID',
+        }),
+        profileImage: z.instanceof(File, {
+            message: 'Please upload your profile image',
+        }),
+        certificate: z.object({
+            number: z.string().trim().min(1, 'Enter certificate number'),
+            document: z.instanceof(File, {
+                message: 'Please upload your certificate document',
+            }),
+        }),
+        license: z.object({
+            number: z.string().trim().min(1, 'Enter license number'),
+            document: z.instanceof(File, {
+                message: 'Please upload your license document',
+            }),
+        }),
+    }),
+})
+
 export type BasicInfoDTO = z.infer<typeof basicInfoSchema>
 
 export type DoctorDetailesDTO = z.infer<typeof doctorDetailesSchema>
+
+export type CaregiverDetailsDTO = z.infer<typeof caregiverDetailsSchema>
