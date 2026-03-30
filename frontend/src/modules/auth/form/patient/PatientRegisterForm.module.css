@@ -1,0 +1,19 @@
+.dobGenderWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.passwordWrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .dobGenderWrapper,
+    .passwordWrap {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
