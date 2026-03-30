@@ -13,6 +13,7 @@ import Card from '@/shared/components/Card/Card'
 import FileUploadBox from '../components/FileUploadBox'
 import FormNavigationButtons from '../components/FormNavigationButtons '
 import { caregiverDetailsSchema } from '../validator/register.schema'
+import InputField from '@/shared/components/InputField/InputField'
 
 const CaregiverDetailsForm = ({
     nextStep,
@@ -131,7 +132,7 @@ const CaregiverDetailsForm = ({
                     title="Professional Certificate"
                     description="Verification of your professional credentials is required for all caregivers."
                 >
-                    <input
+                    <InputField
                         type="text"
                         placeholder="Enter certificate number"
                         value={documents.certificate.number}
@@ -170,7 +171,7 @@ const CaregiverDetailsForm = ({
                     title="Nursing License"
                     description="Verification of your active nursing license is required for all registered nurses."
                 >
-                    <input
+                    <InputField
                         type="text"
                         placeholder="Enter license number"
                         value={documents.license.number}
@@ -180,7 +181,7 @@ const CaregiverDetailsForm = ({
                                 ...prev,
                                 documents: {
                                     ...prev.documents,
-                                    licence: {
+                                    license: {
                                         ...prev.documents.license,
                                         number: e.target.value.toUpperCase(),
                                     },
@@ -196,7 +197,7 @@ const CaregiverDetailsForm = ({
                                 ...prev,
                                 documents: {
                                     ...prev.documents,
-                                    licence: {
+                                    license: {
                                         ...prev.documents.license,
                                         document: file,
                                     },

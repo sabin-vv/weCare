@@ -2,6 +2,10 @@ import 'reflect-metadata'
 
 import { container } from 'tsyringe'
 
+import { IAdminRepository } from '../modules/admin/interfaces/admin.repository.interface'
+import { IAdminService } from '../modules/admin/interfaces/admin.service.interface'
+import { AdminRepository } from '../modules/admin/repository/admin.repository'
+import { AdminService } from '../modules/admin/service/admin.service'
 import { IAuthService } from '../modules/auth/interfaces/auth.service.interface'
 import { IOtpService } from '../modules/auth/interfaces/otp.service.interface'
 import { IUserRepository } from '../modules/auth/interfaces/user.repository.interface'
@@ -31,3 +35,5 @@ container.register<IPatientRepository>(TOKENS.IPatientRepository, { useClass: Pa
 container.register<IPatientService>(TOKENS.IPatientService, { useClass: PatientService })
 container.register<IAuthService>(TOKENS.IAuthService, { useClass: AuthService })
 container.register<IOtpService>(TOKENS.IOtpService, { useClass: OtpService })
+container.register<IAdminRepository>(TOKENS.IAdminRepository, { useClass: AdminRepository })
+container.register<IAdminService>(TOKENS.IAdminService, { useClass: AdminService })

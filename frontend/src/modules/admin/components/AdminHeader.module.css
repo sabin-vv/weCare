@@ -1,0 +1,54 @@
+.header {
+    height: 72px;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.welcome {
+    font-size: 16px;
+    color: #64748b;
+}
+
+.welcome span {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.profileArea {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ef4444;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+    background: #dc2626;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+}

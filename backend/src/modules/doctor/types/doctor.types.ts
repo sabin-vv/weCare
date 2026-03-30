@@ -20,6 +20,7 @@ export interface DoctorEntity {
 
 type specialization = {
     name: string
+    verified?: boolean
     documentImage: string
 }
 

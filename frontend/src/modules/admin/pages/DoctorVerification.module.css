@@ -1,0 +1,342 @@
+.container {
+    padding: 8px;
+}
+
+.header {
+    margin-bottom: 24px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: 15px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.controls {
+    margin-bottom: 32px;
+}
+
+.search {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+}
+
+.tableContainer {
+    background: #fff;
+    border: 1px solid #f1f5f9;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: #fcfcfd;
+    padding: 16px 24px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table td {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f8fafc;
+    vertical-align: middle;
+}
+
+.doctorInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    overflow: hidden;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.infoContent h4 {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.infoContent p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.license {
+    background: #f8fafc;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #475569;
+    background: #f1f5f9;
+}
+
+.date {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.time {
+    display: block;
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+
+.specialtyBadge {
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.viewDocBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #2563eb;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.viewDocBtn:hover {
+    background: #eff6ff;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.docHead {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    font-size: 13.5px;
+    color: #475569;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.docHead p {
+    margin: 0;
+}
+
+.tabBar {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 8px;
+}
+
+.tab {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    position: relative;
+    top: 2px;
+}
+
+.tab:hover {
+    color: #1e293b;
+}
+
+.activeTab {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+.noDoc {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #94a3b8;
+    background: #f8fafc;
+    font-style: italic;
+}
+
+.docWrapper {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f1f5f9;
+}
+
+.docIframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.docImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.specActionBar {
+    padding: 8px 16px;
+    background: #f0f7ff;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+}
+
+.specVerifyBtn {
+    padding: 6px 16px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.specVerifyBtn:hover {
+    background: #1d4ed8;
+}
+
+.verifiedBadge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #16a34a;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 12px;
+    background: #f0fdf4;
+    border-radius: 6px;
+    border: 1px solid #dcfce7;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.approveBtn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.rejectBtn {
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.footer {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fcfcfd;
+}
+
+.summary {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+}
+
+.pageBtn {
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.activePage {
+    background: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+}
