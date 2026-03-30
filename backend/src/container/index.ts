@@ -16,6 +16,10 @@ import { IDoctorRepository } from '../modules/doctor/interfaces/doctor.repositor
 import { IDoctorService } from '../modules/doctor/interfaces/doctor.service.interface'
 import { DoctorRepository } from '../modules/doctor/repository/doctor.repository'
 import { DoctorService } from '../modules/doctor/service/doctor.service'
+import { IPatientRepository } from '../modules/patient/interfaces/patient.repository.interface'
+import { IPatientService } from '../modules/patient/interfaces/patient.service.interface'
+import { PatientRepository } from '../modules/patient/repository/patient.repository'
+import { PatientService } from '../modules/patient/service/patient.service'
 import { TOKENS } from './tokens'
 
 container.register<IUserRepository>(TOKENS.IUserRepository, { useClass: UserRepository })
@@ -23,5 +27,7 @@ container.register<IDoctorRepository>(TOKENS.IDoctorRepository, { useClass: Doct
 container.register<IDoctorService>(TOKENS.IDoctorService, { useClass: DoctorService })
 container.register<ICaregiverRepository>(TOKENS.ICaregiverRepository, { useClass: CaregiverRepository })
 container.register<ICaregiverService>(TOKENS.ICaregiverService, { useClass: CaregiverService })
+container.register<IPatientRepository>(TOKENS.IPatientRepository, { useClass: PatientRepository })
+container.register<IPatientService>(TOKENS.IPatientService, { useClass: PatientService })
 container.register<IAuthService>(TOKENS.IAuthService, { useClass: AuthService })
 container.register<IOtpService>(TOKENS.IOtpService, { useClass: OtpService })

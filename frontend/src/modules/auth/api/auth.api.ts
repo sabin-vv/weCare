@@ -18,6 +18,11 @@ export const verifyOtp = async (email: string, otp: string): Promise<ApiInterfac
     return res.data
 }
 
+export const patientRegister = async (data: Record<string, any>): Promise<ApiInterface> => {
+    const res = await api.post('/patients/register', data)
+    return res.data
+}
+
 export const doctorRegister = async (formData: FormData): Promise<ApiInterface> => {
     const res = await api.post('/doctors/register', formData)
     return res.data

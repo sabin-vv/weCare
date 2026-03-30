@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -22,11 +23,16 @@ const genderOptions = [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
     { value: 'other', label: 'Other' },
-    { value: 'prefer-not-to-say', label: 'Prefer not to say' },
 ]
 
-const PatientRegisterForm = () => {
+type Props = {
+    onSubmit?: (data: PatientRegisterData) => Promise<void>
+    loading?: boolean
+}
+
+const PatientRegisterForm = ({ onSubmit, loading }: Props) => {
     const navigate = useNavigate()
+    const [submitting, setSubmitting] = useState(false)
     const {
         register,
         control,
@@ -46,14 +52,22 @@ const PatientRegisterForm = () => {
     const minDate = min.toISOString().split('T')[0]
 
     const handleSubmitForm = async (data: PatientRegisterData) => {
+        setSubmitting(true)
         try {
+            if (onSubmit) {
+                await onSubmit(data)
+                return
+            }
+
             const result = await sendOtp(data.email, OtpPurpose.REGISTER)
 
             toast.success(result.message)
             localStorage.setItem('patientRegisterData', JSON.stringify(data))
             navigate('/verify-email')
         } catch (error) {
-            toast.error(getErrorMessage(error))
+            if (!onSubmit) toast.error(getErrorMessage(error))
+        } finally {
+            setSubmitting(false)
         }
     }
     return (
@@ -118,7 +132,9 @@ const PatientRegisterForm = () => {
                     error={errors && errors.confirmPassword?.message}
                 />
             </div>
-            <Button onClick={handleSubmit(handleSubmitForm)}>Complete Registration</Button>
+            <Button onClick={handleSubmit(handleSubmitForm)} isLoading={loading || submitting}>
+                Complete Registration
+            </Button>
         </FormWrapper>
     )
 }

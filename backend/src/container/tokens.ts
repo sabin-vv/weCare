@@ -4,6 +4,8 @@ export const TOKENS = {
     IDoctorService: Symbol('IDoctorService'),
     ICaregiverRepository: Symbol('ICaregiverRepository'),
     ICaregiverService: Symbol('ICaregiverService'),
+    IPatientRepository: Symbol('IPatientRepository'),
+    IPatientService: Symbol('IPatientService'),
     IAuthService: Symbol('IAuthService'),
     IOtpService: Symbol('IOtpService'),
 }

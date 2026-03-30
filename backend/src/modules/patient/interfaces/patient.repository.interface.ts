@@ -1,4 +1,5 @@
 import { Types } from 'mongoose'
+
 import { PatientDocument } from '../types/patient.types'
 
 export interface IPatientRepository {

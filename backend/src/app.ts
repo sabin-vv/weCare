@@ -5,6 +5,7 @@ import { errorMiddleware } from './core/middleware/errorMiddleware'
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
 import { createDoctorRoutes } from './modules/doctor/routes/doctor.route'
+import { createPatientRoutes } from './modules/patient/routes/patient.route'
 import { createUploadsRoutes } from './modules/uploads/routes/uploads.route'
 
 const app = express()
@@ -23,6 +24,8 @@ app.use('/api/auth', createAuthRoutes())
 app.use('/api/doctors', createDoctorRoutes())
 
 app.use('/api/caregivers', createCaregiverRoutes())
+
+app.use('/api/patients', createPatientRoutes())
 
 app.use('/api/uploads', createUploadsRoutes())
 

@@ -4,7 +4,6 @@ import Button from '@/shared/components/Button/Button'
 import styles from './OtpVerification.module.css'
 import type { OtpVerificationProps } from '../types/auth.types'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
-import ProgressBar from './ProgressBar'
 
 const OtpVerification = ({ email, onVerify, onResend, onBack, loading }: OtpVerificationProps) => {
     const [timer, setTimer] = useState(30)
@@ -50,7 +49,6 @@ const OtpVerification = ({ email, onVerify, onResend, onBack, loading }: OtpVeri
             title="Verify your email"
             description="Please enter verification code was just sent to your email"
         >
-            <ProgressBar step={2} totalSteps={4} percentage={50} title="Verify your email address" />
             <p>
                 We’ve sent a 6-digit code to <strong>{email}</strong>
             </p>
