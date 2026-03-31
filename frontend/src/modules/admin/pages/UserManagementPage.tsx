@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { adminService } from '../services/adminService'
+import { adminService } from '../api/admin.api'
 
 import styles from './UserManagementPage.module.css'
 
@@ -45,9 +45,7 @@ const UserManagementPage = () => {
     const handleStatusToggle = async (userId: string, currentStatus: boolean) => {
         try {
             await adminService.toggleUserStatus(userId, !currentStatus)
-            setUsers((prev) =>
-                prev.map((u) => (u._id === userId ? { ...u, isActive: !currentStatus } : u)),
-            )
+            setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, isActive: !currentStatus } : u)))
             toast.success(`User ${!currentStatus ? 'enabled' : 'blocked'} successfully`)
         } catch (error) {
             toast.error(getErrorMessage(error))

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import type { PendingDoctor } from '../interfaces/admin.interface'
-import { adminService } from '../services/adminService'
+import { adminService } from '../api/admin.api'
 
 import styles from './DoctorVerification.module.css'
 
