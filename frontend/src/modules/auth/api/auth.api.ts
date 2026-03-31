@@ -66,6 +66,7 @@ export const adminLogin = async (email: string, password: string): Promise<Login
     const res = await api.post('/admin/login', {
         email,
         password,
+        role: 'admin',
     })
     return res.data
 }
