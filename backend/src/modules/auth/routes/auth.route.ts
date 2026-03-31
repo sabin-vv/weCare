@@ -15,6 +15,7 @@ export const createAuthRoutes = () => {
     router.post('/verify-otp', validate(verifyOtpSchema), authController.verifyOtp)
     router.post('/login', validate(loginSchema), authController.login)
     router.post('/refresh-token', authController.refreshToken)
+    router.post('/logout', authController.logout)
     router.post('/reset-password', validate(resetPasswordSchema), authController.resetPassword)
 
     return router

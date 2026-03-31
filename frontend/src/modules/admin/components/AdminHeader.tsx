@@ -1,9 +1,9 @@
 import styles from './AdminHeader.module.css'
 
 import { useAuth } from '@/shared/context/AuthContext'
-import { useLogout } from '@/shared/hooks/useLogout'
-import LogoutIcon from '@/shared/icons/LogoutIcon'
-import SettingsIcon from '@/shared/icons/SettingsIcon'
+import { useLogout } from '@/modules/auth/hooks/useLogout'
+import { LogOutIcon } from 'lucide-react'
+import { SettingsIcon } from 'lucide-react'
 
 const AdminHeader = () => {
     const { user } = useAuth()
@@ -16,7 +16,7 @@ const AdminHeader = () => {
             </div>
             <div className={styles.profileArea}>
                 <button className={styles.logoutBtn} onClick={handleLogout}>
-                    <LogoutIcon />
+                    <LogOutIcon />
                     Logout
                 </button>
                 <SettingsIcon />

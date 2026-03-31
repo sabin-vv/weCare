@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import { 
+    LayoutDashboard, 
+    Users, 
+    UserCheck, 
+    ShieldPlus, 
+    History as HistoryIcon, 
+    CalendarDays 
+} from 'lucide-react'
 
 import { adminService } from '../api/admin.api'
 
@@ -32,50 +40,51 @@ const AdminSidebar = () => {
                     to="/admin/dashboard"
                     className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
                 >
-                    Dashboard
+                    <LayoutDashboard size={20} />
+                    <span>Dashboard</span>
                 </NavLink>
 
                 <NavLink
-                    to="/admin/doctor-verification"
+                    to="/admin/doctors/verification"
                     className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
                 >
-                    <span className={styles.linkText}>Doctor Verification</span>
+                    <div className={styles.linkGroup}>
+                        <ShieldPlus size={20} />
+                        <span>Doctor Verification</span>
+                    </div>
                     {pendingCount > 0 && <span className={styles.badge}>{pendingCount}</span>}
                 </NavLink>
 
                 <NavLink
-                    to="/admin/caregiver-verification"
+                    to="/admin/caregivers/verification"
                     className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
                 >
-                    Caregiver Verification
+                    <UserCheck size={20} />
+                    <span>Caregiver Verification</span>
                 </NavLink>
 
                 <NavLink
-                    to="/admin/verified-doctors"
+                    to="/admin/users"
                     className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
                 >
-                    Verified Doctors
-                </NavLink>
-
-                <NavLink
-                    to="/admin/user-management"
-                    className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
-                >
-                    User Management
+                    <Users size={20} />
+                    <span>User Management</span>
                 </NavLink>
 
                 <NavLink
                     to="/admin/activity-logs"
                     className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
                 >
-                    Activity Logs
+                    <HistoryIcon size={20} />
+                    <span>Activity Logs</span>
                 </NavLink>
 
                 <NavLink
                     to="/admin/appointments"
                     className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
                 >
-                    Appointments
+                    <CalendarDays size={20} />
+                    <span>Appointments</span>
                 </NavLink>
             </nav>
         </aside>

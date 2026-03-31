@@ -4,6 +4,7 @@ import AdminDashboard from '../pages/AdminDashboard'
 import UserManagementPage from '../pages/UserManagementPage'
 import DoctorVerificationPage from '../pages/DoctorVerificationPage'
 import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
+import AdminLayout from '../components/AdminLayout'
 
 export const AdminRoutes: RouteObject[] = [
     {
@@ -11,19 +12,25 @@ export const AdminRoutes: RouteObject[] = [
         element: <AdminLoginPage />,
     },
     {
-        path: '/auth/admin/dashboard',
-        element: <AdminDashboard />,
-    },
-    {
-        path: '/auth/admin/users',
-        element: <UserManagementPage />,
-    },
-    {
-        path: '/auth/admin/doctors/verification',
-        element: <DoctorVerificationPage />,
-    },
-    {
-        path: '/auth/admin/caregivers/verification',
-        element: <CaregiverVerificationPage />,
+        path: '/admin',
+        element: <AdminLayout />,
+        children: [
+            {
+                path: 'dashboard',
+                element: <AdminDashboard />,
+            },
+            {
+                path: 'users',
+                element: <UserManagementPage />,
+            },
+            {
+                path: 'doctors/verification',
+                element: <DoctorVerificationPage />,
+            },
+            {
+                path: 'caregivers/verification',
+                element: <CaregiverVerificationPage />,
+            },
+        ],
     },
 ]
