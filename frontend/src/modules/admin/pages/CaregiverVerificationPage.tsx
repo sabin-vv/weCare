@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 
 import type { PendingCaregiver } from '../interfaces/admin.interface'
 import { adminService } from '../api/admin.api'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 import styles from './DoctorVerification.module.css'
 
@@ -111,7 +112,7 @@ const CaregiverVerificationPage = () => {
                                         <div className={styles.doctorInfo}>
                                             <div className={styles.avatar}>
                                                 {caregiver.profileImage ? (
-                                                    <img src={caregiver.profileImage} alt={caregiver.name} />
+                                                    <img src={getFileUrl(caregiver.profileImage)} alt={caregiver.name} />
                                                 ) : (
                                                     caregiver.name
                                                         .split(' ')
@@ -267,14 +268,14 @@ const CaregiverVerificationPage = () => {
                             {currentDocUrl?.endsWith('.pdf') ? (
                                 <iframe
                                     key={currentDocUrl}
-                                    src={currentDocUrl}
+                                    src={getFileUrl(currentDocUrl)}
                                     className={styles.docIframe}
                                     title="Caregiver Document Viewer"
                                 />
                             ) : currentDocUrl ? (
                                 <img
                                     key={currentDocUrl}
-                                    src={currentDocUrl}
+                                    src={getFileUrl(currentDocUrl)}
                                     className={styles.docImage}
                                     alt="Caregiver Document Preview"
                                 />

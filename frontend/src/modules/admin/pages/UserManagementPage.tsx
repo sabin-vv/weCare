@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { adminService } from '../api/admin.api'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 import styles from './UserManagementPage.module.css'
 
@@ -135,7 +136,7 @@ const UserManagementPage = () => {
                                             <div className={styles.avatar}>
                                                 {user.profileImage ? (
                                                     <img
-                                                        src={user.profileImage}
+                                                        src={getFileUrl(user.profileImage)}
                                                         alt={user.name}
                                                         className={styles.avatar}
                                                     />

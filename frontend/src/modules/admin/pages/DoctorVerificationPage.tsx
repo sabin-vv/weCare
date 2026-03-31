@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 
 import type { PendingDoctor } from '../interfaces/admin.interface'
 import { adminService } from '../api/admin.api'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 import styles from './DoctorVerification.module.css'
 
@@ -146,7 +147,7 @@ const DoctorVerificationPage = () => {
                                         <div className={styles.doctorInfo}>
                                             <div className={styles.avatar}>
                                                 {doctor.profileImage ? (
-                                                    <img src={doctor.profileImage} alt={doctor.name} />
+                                                    <img src={getFileUrl(doctor.profileImage)} alt={doctor.name} />
                                                 ) : (
                                                     doctor.name
                                                         .split(' ')
@@ -334,14 +335,14 @@ const DoctorVerificationPage = () => {
                             {currentDocUrl?.endsWith('.pdf') ? (
                                 <iframe
                                     key={currentDocUrl}
-                                    src={currentDocUrl}
+                                    src={getFileUrl(currentDocUrl)}
                                     className={styles.docIframe}
                                     title="Doctor Document Viewer"
                                 />
                             ) : currentDocUrl ? (
                                 <img
                                     key={currentDocUrl}
-                                    src={currentDocUrl}
+                                    src={getFileUrl(currentDocUrl)}
                                     className={styles.docImage}
                                     alt="Doctor Document Preview"
                                 />
