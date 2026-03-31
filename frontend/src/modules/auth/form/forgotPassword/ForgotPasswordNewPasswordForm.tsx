@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import { resetPaswordSchema } from '../../schemas/resetPasswordSchema'
-import { resetPassword } from '../../services/auth.service'
+import { resetPasswordSchema } from '../../validator/register.schema'
+import { resetPassword } from '../../api/auth.api'
 
 import styles from './ForgotPasswordNewPasswordForm.module.css'
 
@@ -24,7 +24,7 @@ const ForgotPasswordNewPasswordForm = () => {
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: zodResolver(resetPaswordSchema),
+        resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
             newPassword: '',
             confirmNewPassword: '',

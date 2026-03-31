@@ -2,7 +2,7 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
-import { sendOtp } from '../../services/auth.service'
+import { sendOtp } from '../../api/auth.api'
 import { OtpPurpose } from '../../types/auth.types'
 
 import styles from './ForgotPasswordEmailForm.module.css'
@@ -10,7 +10,7 @@ import styles from './ForgotPasswordEmailForm.module.css'
 import Button from '@/shared/components/Button/Button'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import InputField from '@/shared/components/InputField/InputField'
-import EmailIcon from '@/shared/icons/EmailIcon'
+import { Mail } from 'lucide-react'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const ForgotPasswordEmailForm = () => {
@@ -34,7 +34,7 @@ const ForgotPasswordEmailForm = () => {
         <FormWrapper title="Reset your password" description="Enter your email to receive a verification code.">
             <form className={styles.form} onSubmit={onSubmit}>
                 <InputField
-                    icon={<EmailIcon />}
+                    icon={<Mail />}
                     label="Email Address"
                     name="email"
                     type="email"

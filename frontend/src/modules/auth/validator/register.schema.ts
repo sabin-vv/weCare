@@ -132,3 +132,19 @@ export type BasicInfoDTO = z.infer<typeof basicInfoSchema>
 export type DoctorDetailesDTO = z.infer<typeof doctorDetailesSchema>
 
 export type CaregiverDetailsDTO = z.infer<typeof caregiverDetailsSchema>
+
+export const resetPasswordSchema = z
+    .object({
+        newPassword: z
+            .string()
+            .min(1, 'Password cannot be empty')
+            .min(8, 'Password must be minimum 8 characters')
+            .regex(/[a-z]/, 'password must contain at least one lowercase letter')
+            .regex(/[A-Z]/, 'password must contain at least one Uppercase letter')
+            .regex(/[0-9]/, 'password must contain at least one number'),
+        confirmNewPassword: z.string().min(1, 'confirm password cannot be empty'),
+    })
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
+        message: 'password do not match',
+        path: ['confirmNewPassword'],
+    })

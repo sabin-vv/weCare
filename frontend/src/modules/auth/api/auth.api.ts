@@ -62,6 +62,14 @@ export const uploadToS3 = async (uploadUrl: string, file: File): Promise<void> =
     }
 }
 
+export const resetPassword = async (email: string, newPassword: string): Promise<ApiInterface> => {
+    const res = await api.post('/auth/reset-password', {
+        email,
+        newPassword,
+    })
+    return res.data
+}
+
 export const adminLogin = async (email: string, password: string): Promise<LoginUser> => {
     const res = await api.post('/admin/login', {
         email,

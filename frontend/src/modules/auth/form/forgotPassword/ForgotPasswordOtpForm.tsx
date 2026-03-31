@@ -1,13 +1,16 @@
+import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
-import EmailVerify from '../../components/EmailVerify'
+import { sendOtp, verifyOtp } from '../../api/auth.api'
+import OtpVerification from '../../components/OtpVerification'
 import { OtpPurpose } from '../../types/auth.types'
-
-import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const ForgotPasswordOtpForm = () => {
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
+    const [isLoading, setIsLoading] = useState(false)
 
     const email = searchParams.get('email') || ''
 
@@ -16,19 +19,36 @@ const ForgotPasswordOtpForm = () => {
         return null
     }
 
-    const handleVerified = () => {
-        navigate(`/auth/forgot-password/new-password?email=${email}`)
+    const handleVerify = async (otp: string) => {
+        setIsLoading(true)
+        try {
+            await verifyOtp(email, otp)
+            toast.success('Email verified successfully')
+            navigate(`/auth/forgot-password/new-password?email=${email}`)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    const handleResend = async () => {
+        try {
+            await sendOtp(email, OtpPurpose.PASSWORD_RESET)
+            toast.success('Verification code resent')
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        }
     }
 
     return (
-        <FormWrapper title="Verify your Email address">
-            <EmailVerify
-                purpose={OtpPurpose.PASSWORD_RESET}
-                email={email}
-                prevStep={() => navigate('/auth/forgot-password')}
-                nextStep={handleVerified}
-            />
-        </FormWrapper>
+        <OtpVerification
+            email={email}
+            onVerify={handleVerify}
+            onResend={handleResend}
+            onBack={() => navigate('/auth/forgot-password')}
+            loading={isLoading}
+        />
     )
 }
 
