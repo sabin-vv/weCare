@@ -62,7 +62,7 @@ export class AuthController {
             const refreshToken = req.cookies?.refreshToken
             const { accessToken } = await this.authService.refreshToken(refreshToken)
 
-            res.cookie('accessToken', accessToken)
+            res.cookie('accessToken', accessToken, cookieOptions)
 
             res.status(HTTP_STATUS.OK).json({ success: true, message: 'Access token refreshed successfully' })
         } catch (error) {
