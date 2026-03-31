@@ -1,34 +1,29 @@
 import type { RouteObject } from 'react-router-dom'
-
-import AdminLayout from '../components/AdminLayout'
+import AdminLoginPage from '../pages/AdminLoginPage'
 import AdminDashboard from '../pages/AdminDashboard'
-import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
-import DoctorVerificationPage from '../pages/DoctorVerificationPage'
 import UserManagementPage from '../pages/UserManagementPage'
+import DoctorVerificationPage from '../pages/DoctorVerificationPage'
+import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
 
-import { Role } from '@/features/auth/types/auth.types'
-import RoleProtectedRoute from '@/routes/RoleProtectedRoute'
-
-const AdminRoutes: RouteObject[] = [
+export const AdminRoutes: RouteObject[] = [
     {
-        path: '/admin',
-        element: <RoleProtectedRoute allowedRoles={[Role.ADMIN]} />,
-        children: [
-            {
-                path: '',
-                element: <AdminLayout />,
-                children: [
-                    { path: 'dashboard', element: <AdminDashboard /> },
-                    { path: 'doctor-verification', element: <DoctorVerificationPage /> },
-                    { path: 'caregiver-verification', element: <CaregiverVerificationPage /> },
-                    { path: 'verified-doctors', element: <div>Verified Doctors Placeholder</div> },
-                    { path: 'user-management', element: <UserManagementPage /> },
-                    { path: 'activity-logs', element: <div>Activity Logs Placeholder</div> },
-                    { path: 'appointments', element: <div>Admin Appointments Management Placeholder</div> },
-                ],
-            },
-        ],
+        path: '/auth/admin/login',
+        element: <AdminLoginPage />,
+    },
+    {
+        path: '/auth/admin/dashboard',
+        element: <AdminDashboard />,
+    },
+    {
+        path: '/auth/admin/users',
+        element: <UserManagementPage />,
+    },
+    {
+        path: '/auth/admin/doctors/verification',
+        element: <DoctorVerificationPage />,
+    },
+    {
+        path: '/auth/admin/caregivers/verification',
+        element: <CaregiverVerificationPage />,
     },
 ]
-
-export default AdminRoutes
