@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { adminService } from '../services/adminService'
+import { adminService } from '../api/admin.api'
 
 import styles from './AdminSidebar.module.css'
 
