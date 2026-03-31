@@ -61,3 +61,11 @@ export const uploadToS3 = async (uploadUrl: string, file: File): Promise<void> =
         throw new Error(`S3 upload failed: ${res.status} ${res.statusText}`)
     }
 }
+
+export const adminLogin = async (email: string, password: string): Promise<LoginUser> => {
+    const res = await api.post('/admin/login', {
+        email,
+        password,
+    })
+    return res.data
+}
