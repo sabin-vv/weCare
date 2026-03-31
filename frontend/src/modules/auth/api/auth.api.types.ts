@@ -7,6 +7,7 @@ export interface ApiInterface {
 
 export interface LoginUser extends ApiInterface {
     user: {
+        id: string
         name: string
         email: string
         role: Role
