@@ -39,9 +39,9 @@ const LoginForm = () => {
             const response = await loginUser(data.email, data.password, data.role)
 
             setAuth({
-                id: response.user.email,
-                name: response.user.name,
-                email: response.user.email,
+                id: response.data.email,
+                name: response.data.name,
+                email: response.data.email,
             })
 
             toast.success(response.message)

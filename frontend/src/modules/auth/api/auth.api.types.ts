@@ -6,7 +6,7 @@ export interface ApiInterface {
 }
 
 export interface LoginUser extends ApiInterface {
-    user: {
+    data: {
         id: string
         name: string
         email: string
