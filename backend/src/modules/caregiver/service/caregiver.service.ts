@@ -14,18 +14,18 @@ import { RegisterCaregiverDTO } from '../validator/caregiver.schema'
 @injectable()
 export class CaregiverService implements ICaregiverService {
     constructor(
-        @inject(TOKENS.IUserRepository) private userRepo: IUserRepository,
-        @inject(TOKENS.ICaregiverRepository) private caregiverRepo: ICaregiverRepository,
+        @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
+        @inject(TOKENS.ICaregiverRepository) private _caregiverRepo: ICaregiverRepository,
     ) {}
 
     async registerCaregiver(dto: RegisterCaregiverDTO, files: MulterFiles) {
-        const existing = await this.userRepo.findByEmail(dto.email)
+        const existing = await this._userRepo.findByEmail(dto.email)
         if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
 
         const userData = await toUserEntity(dto, UserRole.CAREGIVER)
-        const user = await this.userRepo.create(userData)
+        const user = await this._userRepo.create(userData)
 
         const caregiverData = toCaregiverEntity(user._id, dto, files)
-        return this.caregiverRepo.create(caregiverData)
+        return this._caregiverRepo.create(caregiverData)
     }
 }
