@@ -1,9 +1,10 @@
-import styles from './AdminHeader.module.css'
-
-import { useAuth } from '@/shared/context/AuthContext'
-import { useLogout } from '@/modules/auth/hooks/useLogout'
 import { LogOutIcon } from 'lucide-react'
 import { SettingsIcon } from 'lucide-react'
+
+import styles from './AdminHeader.module.css'
+
+import { useLogout } from '@/modules/auth/hooks/useLogout'
+import { useAuth } from '@/shared/context/AuthContext'
 
 const AdminHeader = () => {
     const { user } = useAuth()

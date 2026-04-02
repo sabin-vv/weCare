@@ -1,13 +1,6 @@
+import { LayoutDashboard, Users, UserCheck, ShieldPlus, History as HistoryIcon, CalendarDays } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { 
-    LayoutDashboard, 
-    Users, 
-    UserCheck, 
-    ShieldPlus, 
-    History as HistoryIcon, 
-    CalendarDays 
-} from 'lucide-react'
 
 import { adminService } from '../api/admin.api'
 
@@ -63,10 +56,7 @@ const AdminSidebar = () => {
                     <span>Caregiver Verification</span>
                 </NavLink>
 
-                <NavLink
-                    to="/admin/users"
-                    className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
-                >
+                <NavLink to="/admin/users" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>
                     <Users size={20} />
                     <span>User Management</span>
                 </NavLink>
