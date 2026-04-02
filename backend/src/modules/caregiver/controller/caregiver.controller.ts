@@ -7,10 +7,10 @@ import { ICaregiverService } from '../interfaces/caregiver.service.interface'
 
 @injectable()
 export class CaregiverController {
-    constructor(@inject(TOKENS.ICaregiverService) private caregiverService: ICaregiverService) {}
+    constructor(@inject(TOKENS.ICaregiverService) private _caregiverService: ICaregiverService) {}
 
     registerCaregiver = async (req: Request, res: Response) => {
-        const result = await this.caregiverService.registerCaregiver(req.body, {})
+        const result = await this._caregiverService.registerCaregiver(req.body, {})
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
