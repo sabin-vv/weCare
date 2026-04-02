@@ -34,15 +34,8 @@ const DataTable = <T,>({ data, columns, keyExtractor, isLoading, children }: Tab
                             </td>
                         </tr>
                     ) : (
-                        data.map((item, rowIndex) => (
-                            <tr
-                                key={
-                                    keyExtractor
-                                        ? keyExtractor(item)
-                                        : ((item as any).id ?? (item as any)._id ?? rowIndex)
-                                }
-                                className={styles.tr}
-                            >
+                        data.map((item) => (
+                            <tr key={keyExtractor(item)} className={styles.tr}>
                                 {columns.map((col) => (
                                     <td key={String(col.key)} className={styles.td}>
                                         {col.render ? col.render(item) : (item[col.key] as ReactNode)}

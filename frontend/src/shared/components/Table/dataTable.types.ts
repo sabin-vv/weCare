@@ -9,7 +9,7 @@ export interface Column<T> {
 export interface TableProps<T> {
     data: T[]
     columns: Column<T>[]
-    keyExtractor?: (item: T) => string | number
+    keyExtractor: (item: T) => string | number
     isLoading?: boolean
     children?: ReactNode
 }
