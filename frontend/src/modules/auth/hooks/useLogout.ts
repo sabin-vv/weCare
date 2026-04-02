@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 import { logout } from '../api/auth.api'
+
 import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
