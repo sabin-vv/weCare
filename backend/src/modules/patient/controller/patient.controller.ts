@@ -7,10 +7,10 @@ import { IPatientService } from '../interfaces/patient.service.interface'
 
 @injectable()
 export class PatientController {
-    constructor(@inject(TOKENS.IPatientService) private patientService: IPatientService) {}
+    constructor(@inject(TOKENS.IPatientService) private _patientService: IPatientService) {}
 
     registerPatient = async (req: Request, res: Response) => {
-        const result = await this.patientService.registerPatient(req.body)
+        const result = await this._patientService.registerPatient(req.body)
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
