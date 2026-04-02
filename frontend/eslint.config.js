@@ -7,6 +7,9 @@ import tseslint from 'typescript-eslint'
 
 export default defineConfig([
     {
+        ignores: ["node_modules", "dist", "build", ".next"],
+    },
+    {
         files: ["**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"], plugins: { js, import: importPlugin }, extends: ["js/recommended"], languageOptions: { globals: globals.browser }, rules: {
             "import/order": [
                 "error",

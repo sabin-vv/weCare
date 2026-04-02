@@ -1,5 +1,6 @@
-import { api } from '@/services/api'
 import type { ApiInterface, LoginUser, PresignUploadParams, PresignUploadResponse } from './auth.api.types'
+
+import { api } from '@/services/api'
 
 export const sendOtp = async (email: string, purpose: string): Promise<ApiInterface> => {
     const res = await api.post('/auth/send-otp', {
