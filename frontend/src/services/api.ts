@@ -1,5 +1,6 @@
-import { HTTP_STATUS } from '@/shared/constants/http'
 import axios from 'axios'
+
+import { HTTP_STATUS } from '@/shared/constants/http'
 
 export const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
