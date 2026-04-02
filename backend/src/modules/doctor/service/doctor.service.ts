@@ -14,18 +14,18 @@ import { RegisterDoctorDTO } from '../validator/registerDoctor.schema'
 @injectable()
 export class DoctorService implements IDoctorService {
     constructor(
-        @inject(TOKENS.IUserRepository) private userRepo: IUserRepository,
-        @inject(TOKENS.IDoctorRepository) private doctorRepo: IDoctorRepository,
+        @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
+        @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
     ) {}
 
     async registerDoctor(dto: RegisterDoctorDTO, files: MulterFiles) {
-        const existing = await this.userRepo.findByEmail(dto.email)
+        const existing = await this._userRepo.findByEmail(dto.email)
         if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
 
         const userData = await toUserEntity(dto, UserRole.DOCTOR)
-        const user = await this.userRepo.create(userData)
+        const user = await this._userRepo.create(userData)
 
         const doctorData = toDoctorEntity(user._id, dto, files)
-        return this.doctorRepo.create(doctorData)
+        return this._doctorRepo.create(doctorData)
     }
 }
