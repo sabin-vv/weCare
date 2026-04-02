@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { resetPasswordSchema } from '../../validator/register.schema'
 import { resetPassword } from '../../api/auth.api'
+import { resetPasswordSchema } from '../../validator/register.schema'
 
 import styles from './ForgotPasswordNewPasswordForm.module.css'
 

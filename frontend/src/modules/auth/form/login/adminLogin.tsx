@@ -1,8 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { User } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+
+import { adminLogin } from '../../api/auth.api'
 
 import styles from './AdminLogin.module.css'
 
@@ -11,9 +14,7 @@ import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import InputField from '@/shared/components/InputField/InputField'
 import PasswordField from '@/shared/components/PasswordField/PasswordField'
 import { useAuth } from '@/shared/context/AuthContext'
-import { User } from 'lucide-react'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-import { adminLogin } from '../../api/auth.api'
 
 const adminLoginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -37,7 +38,7 @@ const AdminLogin = () => {
         try {
             const res = await adminLogin(data.email, data.password)
             if (res.success) {
-                setAuth(res.user)
+                setAuth(res.data)
                 toast.success('Admin access granted')
                 navigate('/admin/dashboard')
             }

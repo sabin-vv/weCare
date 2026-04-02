@@ -1,8 +1,14 @@
-import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Mail, User } from 'lucide-react'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
+
+import { sendOtp } from '../../api/auth.api'
+import { OtpPurpose } from '../../types/auth.types'
+import { patientRegisterSchema } from '../../validator/register.schema'
+import type { PatientRegisterData } from '../../validator/register.schema'
 
 import styles from './PatientRegisterForm.module.css'
 
@@ -12,12 +18,7 @@ import InputField from '@/shared/components/InputField/InputField'
 import PasswordField from '@/shared/components/PasswordField/PasswordField'
 import PhoneInput from '@/shared/components/PhoneInput/PhoneInput'
 import SelectField from '@/shared/components/SelectField/SelectField'
-import { Mail, User } from 'lucide-react'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-import { OtpPurpose } from '../../types/auth.types'
-import { sendOtp } from '../../api/auth.api'
-import { patientRegisterSchema } from '../../validator/register.schema'
-import type { PatientRegisterData } from '../../validator/register.schema'
 
 const genderOptions = [
     { value: 'male', label: 'Male' },

@@ -1,20 +1,20 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
+import { doctorRegister, presignUpload, uploadToS3 } from '../api/auth.api'
 import FileUploadBox from '../components/FileUploadBox'
 import FormNavigationButtons from '../components/FormNavigationButtons '
 import ProgressBar from '../components/ProgressBar'
-import Card from '@/shared/components/Card/Card'
+import type { DoctorDetailsFormProps } from '../types/auth.types'
+import { doctorDetailesSchema } from '../validator/register.schema'
 
 import styles from './DoctorDetailsForm.module.css'
 
+import Card from '@/shared/components/Card/Card'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
-import { getErrorMessage } from '@/utils/getErrorMessage'
-import type { DoctorDetailsFormProps } from '../types/auth.types'
-import { doctorDetailesSchema } from '../validator/register.schema'
-import { doctorRegister, presignUpload, uploadToS3 } from '../api/auth.api'
 import InputField from '@/shared/components/InputField/InputField'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const DoctorDetailsForm = ({
     prevStep,

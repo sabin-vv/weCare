@@ -1,19 +1,20 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
-import styles from './CaregiverDetailsForm.module.css'
-
-import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
-import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
-import { getErrorMessage } from '@/utils/getErrorMessage'
-import type { CaregiverDetailsFormProps } from '../types/caregiver.types'
 import { caregiverRegister, presignUpload, uploadToS3 } from '../api/auth.api'
-import ProgressBar from '../components/ProgressBar'
-import Card from '@/shared/components/Card/Card'
 import FileUploadBox from '../components/FileUploadBox'
 import FormNavigationButtons from '../components/FormNavigationButtons '
+import ProgressBar from '../components/ProgressBar'
+import type { CaregiverDetailsFormProps } from '../types/caregiver.types'
 import { caregiverDetailsSchema } from '../validator/register.schema'
+
+import styles from './CaregiverDetailsForm.module.css'
+
+import Card from '@/shared/components/Card/Card'
+import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
+import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
 import InputField from '@/shared/components/InputField/InputField'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const CaregiverDetailsForm = ({
     nextStep,

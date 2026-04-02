@@ -1,3 +1,4 @@
+import { Mail } from 'lucide-react'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
@@ -10,7 +11,6 @@ import styles from './ForgotPasswordEmailForm.module.css'
 import Button from '@/shared/components/Button/Button'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import InputField from '@/shared/components/InputField/InputField'
-import { Mail } from 'lucide-react'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const ForgotPasswordEmailForm = () => {

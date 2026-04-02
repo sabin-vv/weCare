@@ -1,19 +1,22 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Mail } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
-import RoleSelector from '../../components/RoleSelector'
-import { Mail } from 'lucide-react'
-import PasswordField from '@/shared/components/PasswordField/PasswordField'
-import InputField from '@/shared/components/InputField/InputField'
-import Button from '@/shared/components/Button/Button'
-import { loginSchema } from '../../validator/register.schema'
+import { useNavigate } from 'react-router-dom'
+
 import { loginUser } from '../../api/auth.api'
-import { useAuth } from '@/shared/context/AuthContext'
+import RoleSelector from '../../components/RoleSelector'
 import { Role, type LoginFormData } from '../../types/auth.types'
+import { loginSchema } from '../../validator/register.schema'
+
 import styles from './LoginForm.module.css'
+
+import Button from '@/shared/components/Button/Button'
+import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
+import InputField from '@/shared/components/InputField/InputField'
+import PasswordField from '@/shared/components/PasswordField/PasswordField'
+import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const LoginForm = () => {

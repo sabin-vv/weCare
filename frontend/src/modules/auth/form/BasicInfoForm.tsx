@@ -1,16 +1,19 @@
-import { Controller, useForm } from 'react-hook-form'
-import { basicInfoSchema } from '../validator/register.schema'
-import InputField from '@/shared/components/InputField/InputField'
-import PhoneInput from '@/shared/components/PhoneInput/PhoneInput'
-import PasswordField from '@/shared/components/PasswordField/PasswordField'
-import Button from '@/shared/components/Button/Button'
-import type { BasicInfoFormProps, RegisterFormData } from '../types/auth.types'
 import { zodResolver } from '@hookform/resolvers/zod'
-import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
-import ProgressBar from '../components/ProgressBar'
 import { User } from 'lucide-react'
 import { Mail } from 'lucide-react'
+import { Controller, useForm } from 'react-hook-form'
+
+import ProgressBar from '../components/ProgressBar'
+import type { BasicInfoFormProps, RegisterFormData } from '../types/auth.types'
+import { basicInfoSchema } from '../validator/register.schema'
+
 import styles from './BasicInfoForm.module.css'
+
+import Button from '@/shared/components/Button/Button'
+import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
+import InputField from '@/shared/components/InputField/InputField'
+import PasswordField from '@/shared/components/PasswordField/PasswordField'
+import PhoneInput from '@/shared/components/PhoneInput/PhoneInput'
 
 const BasicInfoForm = ({ defaultValues, title, description, onSubmit, loading, role }: BasicInfoFormProps) => {
     const {
