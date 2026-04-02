@@ -1,7 +1,7 @@
 import styles from './DoctorDashboard.module.css'
 
-import { useAuth } from '@/shared/context/AuthContext'
 import { useLogout } from '@/modules/auth/hooks/useLogout'
+import { useAuth } from '@/shared/context/AuthContext'
 
 const DoctorDashboard = () => {
     const { user } = useAuth()
