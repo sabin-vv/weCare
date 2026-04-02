@@ -16,17 +16,21 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 const ForgotPasswordEmailForm = () => {
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
+    const [loading, setLoading] = useState<boolean>(false)
 
     const onSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         try {
+            setLoading(true)
             const result = await sendOtp(email, OtpPurpose.PASSWORD_RESET)
 
             toast.success(result.message)
             navigate(`/auth/forgot-password/verify-otp`, { state: { email } })
         } catch (error) {
             toast.error(getErrorMessage(error))
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -44,7 +48,7 @@ const ForgotPasswordEmailForm = () => {
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
-                <Button disabled={!email} type="submit">
+                <Button disabled={!email || loading} type="submit">
                     Next
                 </Button>
 
