@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { adminService } from '../api/admin.api'
-import { getFileUrl } from '@/utils/getFileUrl'
+import type { UserProfile } from '../types/admin.types'
 
 import styles from './UserManagementPage.module.css'
 
-import { getErrorMessage } from '@/utils/getErrorMessage'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import DataTable from '@/shared/components/Table/DataTable'
 import type { Column } from '@/shared/components/Table/dataTable.types'
-import type { UserProfile } from '../types/admin.types'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 const UserManagementPage = () => {
     const [users, setUsers] = useState<UserProfile[]>([])

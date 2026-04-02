@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import type { PendingCaregiver } from '../interfaces/admin.interface'
 import { adminService } from '../api/admin.api'
-import { getFileUrl } from '@/utils/getFileUrl'
+import type { PendingCaregiver } from '../interfaces/admin.interface'
 
 import styles from './DoctorVerification.module.css'
 
 import Modal from '@/shared/components/Modal/Modal'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 const CaregiverVerificationPage = () => {
     const [caregivers, setCaregivers] = useState<PendingCaregiver[]>([])
@@ -112,7 +112,10 @@ const CaregiverVerificationPage = () => {
                                         <div className={styles.doctorInfo}>
                                             <div className={styles.avatar}>
                                                 {caregiver.profileImage ? (
-                                                    <img src={getFileUrl(caregiver.profileImage)} alt={caregiver.name} />
+                                                    <img
+                                                        src={getFileUrl(caregiver.profileImage)}
+                                                        alt={caregiver.name}
+                                                    />
                                                 ) : (
                                                     caregiver.name
                                                         .split(' ')

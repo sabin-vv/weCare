@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import type { PendingDoctor } from '../interfaces/admin.interface'
 import { adminService } from '../api/admin.api'
-import { getFileUrl } from '@/utils/getFileUrl'
+import type { PendingDoctor } from '../interfaces/admin.interface'
 
 import styles from './DoctorVerification.module.css'
 
 import Modal from '@/shared/components/Modal/Modal'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 const DoctorVerificationPage = () => {
     const [doctors, setDoctors] = useState<PendingDoctor[]>([])
