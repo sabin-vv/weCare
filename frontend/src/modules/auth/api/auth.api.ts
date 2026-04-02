@@ -1,6 +1,7 @@
 import type { ApiInterface, LoginUser, PresignUploadParams, PresignUploadResponse } from './auth.api.types'
 
 import { api } from '@/services/api'
+import type { PatientRegister } from '@/shared/types/model.types'
 
 export const sendOtp = async (email: string, purpose: string): Promise<ApiInterface> => {
     const res = await api.post('/auth/send-otp', {
@@ -19,7 +20,7 @@ export const verifyOtp = async (email: string, otp: string): Promise<ApiInterfac
     return res.data
 }
 
-export const patientRegister = async (data: Record<string, any>): Promise<ApiInterface> => {
+export const patientRegister = async (data: PatientRegister): Promise<ApiInterface> => {
     const res = await api.post('/patients/register', data)
     return res.data
 }
