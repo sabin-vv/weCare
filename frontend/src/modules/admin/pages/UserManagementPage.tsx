@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { adminService } from '../api/admin.api'
+import { getUsers, toggleUserStatus } from '../api/admin.api'
 import type { UserProfile } from '../types/admin.types'
 
 import styles from './UserManagementPage.module.css'
@@ -27,7 +27,7 @@ const UserManagementPage = () => {
     const fetchUsers = async (page = 1, role = 'all', searchQuery = '') => {
         setLoading(true)
         try {
-            const data = await adminService.getUsers(role, searchQuery, page, pagination.limit)
+            const data = await getUsers(role, searchQuery, page, pagination.limit)
             setUsers(data.users)
             setPagination(data.pagination)
         } catch (error) {
@@ -39,7 +39,7 @@ const UserManagementPage = () => {
 
     const handleStatusToggle = async (userId: string, currentStatus: boolean) => {
         try {
-            await adminService.toggleUserStatus(userId, !currentStatus)
+            await toggleUserStatus(userId, !currentStatus)
             setUsers((prev) => prev.map((u) => (u._id === userId ? { ...u, isActive: !currentStatus } : u)))
             toast.success(`User ${!currentStatus ? 'enabled' : 'blocked'} successfully`)
             fetchUsers()

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { adminService } from '../api/admin.api'
+import { getPendingDoctors, verifyDoctor, verifySpecialization } from '../api/admin.api'
 import type { PendingDoctor } from '../interfaces/admin.interface'
 
 import styles from './DoctorVerification.module.css'
@@ -22,7 +22,7 @@ const DoctorVerificationPage = () => {
     const fetchDoctors = async (page = 1, searchQuery = '') => {
         setLoading(true)
         try {
-            const data = await adminService.getPendingDoctors(page, 10, searchQuery)
+            const data = await getPendingDoctors(page, 10, searchQuery)
             setDoctors(data.doctors)
             setPagination(data.pagination)
         } catch (error) {
@@ -34,7 +34,7 @@ const DoctorVerificationPage = () => {
 
     const handleAction = async (doctorId: string, status: 'verified' | 'rejected') => {
         try {
-            await adminService.verifyDoctor(doctorId, status)
+            await verifyDoctor(doctorId, status)
             toast.success(`Doctor ${status === 'verified' ? 'approved' : 'rejected'} successfully`)
             setIsModalOpen(false)
             fetchDoctors(pagination.page, search)
@@ -46,7 +46,7 @@ const DoctorVerificationPage = () => {
     const handleSpecVerify = async (index: number) => {
         if (!selectedDoctor) return
         try {
-            await adminService.verifySpecialization(selectedDoctor._id, index, true)
+            await verifySpecialization(selectedDoctor._id, index, true)
             toast.success('Specialization verified successfully')
 
             const updatedDoctors = doctors.map((d) => {

@@ -2,7 +2,7 @@ import { LayoutDashboard, Users, UserCheck, ShieldPlus, History as HistoryIcon, 
 import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { adminService } from '../api/admin.api'
+import { getPendingCount } from '../api/admin.api'
 
 import styles from './AdminSidebar.module.css'
 
@@ -12,7 +12,7 @@ const AdminSidebar = () => {
     useEffect(() => {
         const fetchCount = async () => {
             try {
-                const data = await adminService.getPendingCount()
+                const data = await getPendingCount()
                 setPendingCount(data.count)
             } catch (error) {
                 console.error('Failed to fetch pending count:', error)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { adminService } from '../api/admin.api'
+import { getPendingCaregivers, verifyCaregiver } from '../api/admin.api'
 import type { PendingCaregiver } from '../interfaces/admin.interface'
 
 import styles from './DoctorVerification.module.css'
@@ -22,7 +22,7 @@ const CaregiverVerificationPage = () => {
     const fetchCaregivers = async (page = 1, searchQuery = '') => {
         setLoading(true)
         try {
-            const data = await adminService.getPendingCaregivers(page, 10, searchQuery)
+            const data = await getPendingCaregivers(page, 10, searchQuery)
             setCaregivers(data.caregivers)
             setPagination(data.pagination)
         } catch (error) {
@@ -34,7 +34,7 @@ const CaregiverVerificationPage = () => {
 
     const handleAction = async (caregiverId: string, status: 'verified' | 'rejected') => {
         try {
-            await adminService.verifyCaregiver(caregiverId, status)
+            await verifyCaregiver(caregiverId, status)
             toast.success(`Caregiver ${status === 'verified' ? 'approved' : 'rejected'} successfully`)
             setIsModalOpen(false)
             fetchCaregivers(pagination.page, search)
