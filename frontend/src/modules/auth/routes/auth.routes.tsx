@@ -1,12 +1,13 @@
 import type { RouteObject } from 'react-router-dom'
+
 import CaregiverRegisterPage from '../pages/CaregiverRegisterPage'
 import DoctorRegisterPage from '../pages/DoctorRegisterPage'
+import ForgotPasswordNewPasswordPage from '../pages/ForgotPasswordNewPasswordPage'
+import ForgotPasswordOtpPage from '../pages/ForgotPasswordOtpPage'
+import ForgotPasswordPage from '../pages/ForgotPasswordPage'
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
 import PatientRegisterPage from '../pages/PatientRegisterPage'
-import ForgotPasswordPage from '../pages/ForgotPasswordPage'
-import ForgotPasswordOtpPage from '../pages/ForgotPasswordOtpPage'
-import ForgotPasswordNewPasswordPage from '../pages/ForgotPasswordNewPasswordPage'
 
 export const AuthRoutes: RouteObject[] = [
     {
