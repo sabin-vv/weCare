@@ -1,6 +1,8 @@
-import Button from '@/shared/components/Button/Button'
-import styles from './FormNavigationButtons.module.css'
 import type { FormNavigationButtonsProps } from '../types/auth.types'
+
+import styles from './FormNavigationButtons.module.css'
+
+import Button from '@/shared/components/Button/Button'
 
 const FormNavigationButtons = ({
     onBack,

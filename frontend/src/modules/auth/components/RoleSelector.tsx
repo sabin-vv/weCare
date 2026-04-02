@@ -1,4 +1,5 @@
 import { Role, type RoleSelectorProps } from '../types/auth.types'
+
 import styles from './RoleSelector.module.css'
 
 const RoleSelector = ({ role, onChange }: RoleSelectorProps) => {

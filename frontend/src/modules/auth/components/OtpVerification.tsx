@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 
-import Button from '@/shared/components/Button/Button'
-import styles from './OtpVerification.module.css'
 import type { OtpVerificationProps } from '../types/auth.types'
+
+import styles from './OtpVerification.module.css'
+
+import Button from '@/shared/components/Button/Button'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 
 const OtpVerification = ({ email, onVerify, onResend, onBack, loading }: OtpVerificationProps) => {

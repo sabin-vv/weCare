@@ -1,12 +1,13 @@
+import { House } from 'lucide-react'
+import { Stethoscope } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+
+import { useLogout } from '../hooks/useLogout'
 
 import styles from './Header.module.css'
 
 import Button from '@/shared/components/Button/Button'
 import { useAuth } from '@/shared/context/AuthContext'
-import { useLogout } from '../hooks/useLogout'
-import { House } from 'lucide-react'
-import { Stethoscope } from 'lucide-react'
 
 const Header = () => {
     const navigate = useNavigate()

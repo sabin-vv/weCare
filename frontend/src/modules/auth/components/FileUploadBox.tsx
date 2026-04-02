@@ -1,10 +1,10 @@
+import { CloudUpload } from 'lucide-react'
 import { useEffect, useState, type ChangeEvent, type DragEvent } from 'react'
 import toast from 'react-hot-toast'
 
-import styles from './FileUploadBox.module.css'
-
-import { CloudUpload } from 'lucide-react'
 import type { FileUploadBoxProps } from '../types/auth.types'
+
+import styles from './FileUploadBox.module.css'
 
 const FileUploadBox = ({ file, accept, onFileSelect }: FileUploadBoxProps) => {
     const [preview, setPreview] = useState<string | null>(null)
