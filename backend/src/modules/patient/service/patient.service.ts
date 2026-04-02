@@ -15,19 +15,18 @@ import { RegisterPatientDTO } from '../validator/patient.schema'
 @injectable()
 export class PatientService implements IPatientService {
     constructor(
-        @inject(TOKENS.IUserRepository) private userRepo: IUserRepository,
-        @inject(TOKENS.IPatientRepository) private patientRepo: IPatientRepository,
+        @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
+        @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
     ) {}
 
     async registerPatient(dto: RegisterPatientDTO): Promise<PatientDocument> {
-        const existing = await this.userRepo.findByEmail(dto.email)
+        const existing = await this._userRepo.findByEmail(dto.email)
         if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
 
         const userData = await toUserEntity(dto, UserRole.PATIENT)
-        const user = await this.userRepo.create(userData)
+        const user = await this._userRepo.create(userData)
 
         const patientData = toPatientEntity(user._id, dto)
-        return this.patientRepo.create(patientData)
+        return this._patientRepo.create(patientData)
     }
 }
-
