@@ -15,10 +15,10 @@ import {
 
 @injectable()
 export class AdminService implements IAdminService {
-    constructor(@inject(TOKENS.IAdminRepository) private adminRepo: IAdminRepository) {}
+    constructor(@inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository) {}
 
     async getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse> {
-        return this.adminRepo.getPendingDoctors(page, limit, search)
+        return this._adminRepo.getPendingDoctors(page, limit, search)
     }
 
     async verifyDoctor(
@@ -29,7 +29,7 @@ export class AdminService implements IAdminService {
         if (status !== 'verified' && status !== 'rejected') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid verification status')
         }
-        return this.adminRepo.verifyDoctor(doctorId, status, adminId)
+        return this._adminRepo.verifyDoctor(doctorId, status, adminId)
     }
 
     async verifySpecialization(
@@ -38,11 +38,11 @@ export class AdminService implements IAdminService {
         verified: boolean,
         adminId: string,
     ): Promise<{ message: string }> {
-        return this.adminRepo.verifySpecialization(doctorId, specIndex, verified, adminId)
+        return this._adminRepo.verifySpecialization(doctorId, specIndex, verified, adminId)
     }
 
     async getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse> {
-        return this.adminRepo.getPendingCaregivers(page, limit, search)
+        return this._adminRepo.getPendingCaregivers(page, limit, search)
     }
 
     async verifyCaregiver(
@@ -53,22 +53,21 @@ export class AdminService implements IAdminService {
         if (status !== 'verified' && status !== 'rejected') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid verification status')
         }
-        return this.adminRepo.verifyCaregiver(caregiverId, status, adminId)
+        return this._adminRepo.verifyCaregiver(caregiverId, status, adminId)
     }
 
     async getPendingCount(): Promise<PendingCountResponse> {
-        return this.adminRepo.getPendingCount()
+        return this._adminRepo.getPendingCount()
     }
 
     async getUsers(role: string, search: string, page: number, limit: number): Promise<UsersResponse> {
-        return this.adminRepo.getUsers(role, search, page, limit)
+        return this._adminRepo.getUsers(role, search, page, limit)
     }
 
     async toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }> {
         if (typeof isActive !== 'boolean') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'isActive must be boolean')
         }
-        return this.adminRepo.toggleUserStatus(userId, isActive)
+        return this._adminRepo.toggleUserStatus(userId, isActive)
     }
 }
-
