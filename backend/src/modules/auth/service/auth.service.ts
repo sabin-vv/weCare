@@ -16,13 +16,13 @@ import { OtpService } from './otp.service'
 @injectable()
 export class AuthService implements IAuthService {
     constructor(
-        @inject(TOKENS.IUserRepository) private userRepo: IUserRepository,
-        @inject(TOKENS.IDoctorRepository) private doctorRepo: IDoctorRepository,
-        @inject(TOKENS.IOtpService) private otpService: OtpService,
+        @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
+        @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
+        @inject(TOKENS.IOtpService) private _otpService: OtpService,
     ) {}
 
     async sendOtp(email: string, purpose: OtpRequestPurpose) {
-        const user = await this.userRepo.findByEmail(email)
+        const user = await this._userRepo.findByEmail(email)
 
         if (purpose === OtpRequestPurpose.REGISTER && user) {
             throw new AppError(HTTP_STATUS.CONFLICT, 'Email already exist')
@@ -31,15 +31,15 @@ export class AuthService implements IAuthService {
         if (purpose === OtpRequestPurpose.PASSWORD_RESET && !user) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
         }
-        await this.otpService.sendOtp(email, purpose)
+        await this._otpService.sendOtp(email, purpose)
     }
 
     async verifyOtp(email: string, otp: string) {
-        await this.otpService.verifyOtp(email, otp)
+        await this._otpService.verifyOtp(email, otp)
     }
 
     async login(email: string, password: string, role: UserRole) {
-        const user = await this.userRepo.findByEmail(email)
+        const user = await this._userRepo.findByEmail(email)
 
         if (!user) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
@@ -56,7 +56,7 @@ export class AuthService implements IAuthService {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'Access denied')
         }
         if (user.role === 'doctor') {
-            const doctor = await this.doctorRepo.findByUserId(user._id)
+            const doctor = await this._doctorRepo.findByUserId(user._id)
 
             if (!doctor) {
                 throw new AppError(HTTP_STATUS.FORBIDDEN, 'Doctor profile not found')
@@ -108,7 +108,7 @@ export class AuthService implements IAuthService {
     async resetpassword(dto: ResetPasswordDTO): Promise<void> {
         const { email, newPassword } = dto
 
-        const user = await this.userRepo.findByEmail(email)
+        const user = await this._userRepo.findByEmail(email)
 
         if (!user) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
@@ -116,6 +116,6 @@ export class AuthService implements IAuthService {
 
         const hashedPassword = await bcrypt.hash(newPassword, 10)
 
-        await this.userRepo.updatePassword(user._id, hashedPassword)
+        await this._userRepo.updatePassword(user._id, hashedPassword)
     }
 }
