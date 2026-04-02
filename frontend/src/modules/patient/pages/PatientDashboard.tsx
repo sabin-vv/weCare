@@ -1,5 +1,5 @@
-import { useAuth } from '@/shared/context/AuthContext'
 import { useLogout } from '@/modules/auth/hooks/useLogout'
+import { useAuth } from '@/shared/context/AuthContext'
 
 const PatientDashboard = () => {
     const { user } = useAuth()
