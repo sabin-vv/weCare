@@ -1,11 +1,12 @@
 import { isValidPhoneNumber } from 'libphonenumber-js'
 import { z } from 'zod'
+
 import { Role } from '../types/auth.types'
 
 export const loginSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Invalid email address'),
     password: z.string().min(1, 'Password is required'),
-    role: z.nativeEnum(Role),
+    role: z.enum([Role.CAREGIVER, Role.DOCTOR, Role.PATIENT]),
 })
 
 export const basicInfoSchema = z
@@ -125,14 +126,6 @@ export const patientRegisterSchema = z
         path: ['confirmPassword'],
     })
 
-export type PatientRegisterData = z.infer<typeof patientRegisterSchema>
-
-export type BasicInfoDTO = z.infer<typeof basicInfoSchema>
-
-export type DoctorDetailesDTO = z.infer<typeof doctorDetailesSchema>
-
-export type CaregiverDetailsDTO = z.infer<typeof caregiverDetailsSchema>
-
 export const resetPasswordSchema = z
     .object({
         newPassword: z
@@ -148,3 +141,11 @@ export const resetPasswordSchema = z
         message: 'password do not match',
         path: ['confirmNewPassword'],
     })
+
+export type PatientRegisterData = z.infer<typeof patientRegisterSchema>
+
+export type BasicInfoDTO = z.infer<typeof basicInfoSchema>
+
+export type DoctorDetailesDTO = z.infer<typeof doctorDetailesSchema>
+
+export type CaregiverDetailsDTO = z.infer<typeof caregiverDetailsSchema>
