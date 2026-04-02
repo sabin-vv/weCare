@@ -17,8 +17,8 @@ export class UploadsController {
 
         if (!env.AWS_BUCKET_NAME) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'AWS_BUCKET_NAME is required')
 
-        if (typeof size === 'number' && size > 10 * 1024 * 1024) {
-            throw new AppError(400, 'File is too large (max 10MB)')
+        if (typeof size === 'number' && size > 5 * 1024 * 1024) {
+            throw new AppError(400, 'File is too large (max 5MB)')
         }
 
         const originalBaseName = path.basename(fileName)
