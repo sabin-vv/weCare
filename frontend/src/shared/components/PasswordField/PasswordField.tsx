@@ -1,10 +1,10 @@
+import { Eye, EyeClosed, LockKeyhole } from 'lucide-react'
 import { useState } from 'react'
 
 import styles from './PasswordField.module.css'
+import type { PasswordFieldProps } from './PasswordField.type'
 
 import ErrorField from '@/shared/components/ErrorField/ErrorField'
-import { Eye, EyeClosed, LockKeyhole } from 'lucide-react'
-import type { PasswordFieldProps } from './PasswordField.type'
 
 const PasswordField = ({ label, onForgotPassword, error, ...props }: PasswordFieldProps) => {
     const [showPassword, setShowPassword] = useState<boolean>(false)

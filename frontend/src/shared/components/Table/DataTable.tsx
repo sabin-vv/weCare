@@ -1,5 +1,6 @@
 import { memo } from 'react'
 import type { ReactNode } from 'react'
+
 import styles from './DataTable.module.css'
 import type { TableProps } from './dataTable.types'
 

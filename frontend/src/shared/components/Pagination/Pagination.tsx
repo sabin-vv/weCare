@@ -1,7 +1,7 @@
-import styles from './Pagination.module.css'
-
 import { ChevronLeft } from 'lucide-react'
 import { ChevronRight } from 'lucide-react'
+
+import styles from './Pagination.module.css'
 import type { PaginationProps } from './Pagination.types'
 
 const Pagination = ({ currentPage, totalPages, onPageChange, totalCount, limit }: PaginationProps) => {
@@ -70,7 +70,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, totalCount, limit }
                         >
                             {page}
                         </button>
-                    )
+                    ),
                 )}
 
                 <button

@@ -1,6 +1,5 @@
-import type { FormWrapperProps } from './FormWrapper.types'
-
 import styles from './FormWrapper.module.css'
+import type { FormWrapperProps } from './FormWrapper.types'
 
 const FormWrapper = ({ title, description, maxWidth, children }: FormWrapperProps) => {
     return (
