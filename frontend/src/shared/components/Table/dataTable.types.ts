@@ -11,4 +11,5 @@ export interface TableProps<T> {
     columns: Column<T>[]
     keyExtractor?: (item: T) => string | number
     isLoading?: boolean
+    children?: ReactNode
 }

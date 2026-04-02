@@ -1,9 +1,9 @@
 import { memo } from 'react'
 import type { ReactNode } from 'react'
 import styles from './DataTable.module.css'
-import type { TableProps } from './table.types'
+import type { TableProps } from './dataTable.types'
 
-const DataTable = <T,>({ data, columns, keyExtractor, isLoading }: TableProps<T>) => {
+const DataTable = <T,>({ data, columns, keyExtractor, isLoading, children }: TableProps<T>) => {
     return (
         <div className={styles.tableContainer}>
             <table className={styles.table}>
@@ -35,7 +35,11 @@ const DataTable = <T,>({ data, columns, keyExtractor, isLoading }: TableProps<T>
                     ) : (
                         data.map((item, rowIndex) => (
                             <tr
-                                key={keyExtractor ? keyExtractor(item) : ((item as any).id ?? rowIndex)}
+                                key={
+                                    keyExtractor
+                                        ? keyExtractor(item)
+                                        : ((item as any).id ?? (item as any)._id ?? rowIndex)
+                                }
                                 className={styles.tr}
                             >
                                 {columns.map((col) => (
@@ -48,6 +52,7 @@ const DataTable = <T,>({ data, columns, keyExtractor, isLoading }: TableProps<T>
                     )}
                 </tbody>
             </table>
+            {children && <div className={styles.tableFooter}>{children}</div>}
         </div>
     )
 }
