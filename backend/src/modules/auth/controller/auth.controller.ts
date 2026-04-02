@@ -16,12 +16,12 @@ const cookieOptions = {
 
 @injectable()
 export class AuthController {
-    constructor(@inject(TOKENS.IAuthService) private authService: IAuthService) {}
+    constructor(@inject(TOKENS.IAuthService) private _authService: IAuthService) {}
 
     sendOtp = async (req: Request, res: Response) => {
         const { email, purpose } = req.body
 
-        await this.authService.sendOtp(email, purpose)
+        await this._authService.sendOtp(email, purpose)
 
         res.status(HTTP_STATUS.OK).json({ success: true, message: 'OTP send successfully' })
     }
@@ -29,7 +29,7 @@ export class AuthController {
     verifyOtp = async (req: Request, res: Response) => {
         const { email, otp } = req.body
 
-        await this.authService.verifyOtp(email, otp)
+        await this._authService.verifyOtp(email, otp)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -40,7 +40,7 @@ export class AuthController {
     login = async (req: Request, res: Response) => {
         const { email, password, role } = req.body
 
-        const result = await this.authService.login(email, password, role)
+        const result = await this._authService.login(email, password, role)
 
         const { accessToken, refreshToken } = result.tokens
 
@@ -52,7 +52,7 @@ export class AuthController {
 
     refreshToken = async (req: Request, res: Response) => {
         const refreshToken = req.cookies?.refreshToken
-        const { accessToken } = await this.authService.refreshToken(refreshToken)
+        const { accessToken } = await this._authService.refreshToken(refreshToken)
 
         res.cookie('accessToken', accessToken, cookieOptions)
 
@@ -60,7 +60,7 @@ export class AuthController {
     }
 
     resetPassword = async (req: Request, res: Response) => {
-        await this.authService.resetpassword(req.body)
+        await this._authService.resetpassword(req.body)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
