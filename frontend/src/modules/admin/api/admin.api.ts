@@ -2,54 +2,67 @@ import type { PendingCaregiversResponse, PendingDoctorsResponse } from '../inter
 
 import { api } from '@/services/api'
 
-export const adminService = {
-    getPendingDoctors: async (page: number, limit: number, search: string) => {
-        const res = await api.get<PendingDoctorsResponse>('/admin/pending-doctors', {
-            params: { page, limit, search },
-        })
-        return res.data
-    },
+export const getPendingDoctors = async (
+    page: number,
+    limit: number,
+    search: string,
+): Promise<PendingDoctorsResponse> => {
+    const res = await api.get('/admin/pending-doctors', {
+        params: { page, limit, search },
+    })
+    return res.data
+}
 
-    verifyDoctor: async (doctorId: string, status: 'verified' | 'rejected') => {
-        const res = await api.patch<{ message: string }>(`/admin/verify-doctor/${doctorId}`, { status })
-        return res.data
-    },
+export const verifyDoctor = async (doctorId: string, status: 'verified' | 'rejected'): Promise<{ message: string }> => {
+    const res = await api.patch(`/admin/verify-doctor/${doctorId}`, { status })
+    return res.data
+}
 
-    verifySpecialization: async (doctorId: string, specIndex: number, verified: boolean) => {
-        const res = await api.patch<{ message: string }>(`/admin/verify-specialization/${doctorId}/${specIndex}`, {
-            verified,
-        })
-        return res.data
-    },
+export const verifySpecialization = async (
+    doctorId: string,
+    specIndex: number,
+    verified: boolean,
+): Promise<{ message: string }> => {
+    const res = await api.patch(`/admin/verify-specialization/${doctorId}/${specIndex}`, {
+        verified,
+    })
+    return res.data
+}
 
-    getPendingCaregivers: async (page: number, limit: number, search: string) => {
-        const res = await api.get<PendingCaregiversResponse>('/admin/pending-caregivers', {
-            params: { page, limit, search },
-        })
-        return res.data
-    },
+export const getPendingCaregivers = async (
+    page: number,
+    limit: number,
+    search: string,
+): Promise<PendingCaregiversResponse> => {
+    const res = await api.get('/admin/pending-caregivers', {
+        params: { page, limit, search },
+    })
+    return res.data
+}
 
-    verifyCaregiver: async (caregiverId: string, status: 'verified' | 'rejected') => {
-        const res = await api.patch<{ message: string }>(`/admin/verify-caregiver/${caregiverId}`, { status })
-        return res.data
-    },
+export const verifyCaregiver = async (
+    caregiverId: string,
+    status: 'verified' | 'rejected',
+): Promise<{ message: string }> => {
+    const res = await api.patch(`/admin/verify-caregiver/${caregiverId}`, { status })
+    return res.data
+}
 
-    getPendingCount: async () => {
-        const res = await api.get<{ count: number }>('/admin/pending-count')
-        return res.data
-    },
+export const getPendingCount = async (): Promise<{ count: number }> => {
+    const res = await api.get('/admin/pending-count')
+    return res.data
+}
 
-    getUsers: async (role: string, search: string, page: number, limit: number) => {
-        const res = await api.get<any>('/admin/users', {
-            params: { role, search, page, limit },
-        })
-        return res.data
-    },
+export const getUsers = async (role: string, search: string, page: number, limit: number) => {
+    const res = await api.get('/admin/users', {
+        params: { role, search, page, limit },
+    })
+    return res.data
+}
 
-    toggleUserStatus: async (userId: string, isActive: boolean) => {
-        const res = await api.patch<{ message: string }>(`/admin/toggle-status/${userId}`, {
-            isActive,
-        })
-        return res.data
-    },
+export const toggleUserStatus = async (userId: string, isActive: boolean): Promise<{ message: string }> => {
+    const res = await api.patch(`/admin/toggle-status/${userId}`, {
+        isActive,
+    })
+    return res.data
 }
