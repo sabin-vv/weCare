@@ -16,14 +16,14 @@ const getSingleParam = (value: string | string[] | undefined, name: string): str
 
 @injectable()
 export class AdminController {
-    constructor(@inject(TOKENS.IAdminService) private adminService: IAdminService) {}
+    constructor(@inject(TOKENS.IAdminService) private _adminService: IAdminService) {}
 
     getPendingDoctors = async (req: Request, res: Response) => {
         const page = Number(req.query.page ?? 1)
         const limit = Number(req.query.limit ?? 10)
         const search = String(req.query.search ?? '')
 
-        const result = await this.adminService.getPendingDoctors(page, limit, search)
+        const result = await this._adminService.getPendingDoctors(page, limit, search)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -34,7 +34,7 @@ export class AdminController {
         const adminId = (req as AuthenticatedRequest).user?.userId
         if (!adminId) throw new Error('Admin id missing from token')
 
-        const result = await this.adminService.verifyDoctor(doctorId, status, adminId)
+        const result = await this._adminService.verifyDoctor(doctorId, status, adminId)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -47,7 +47,7 @@ export class AdminController {
         const adminId = (req as AuthenticatedRequest).user?.userId
         if (!adminId) throw new Error('Admin id missing from token')
 
-        const result = await this.adminService.verifySpecialization(doctorId, Number(specIndex), verified, adminId)
+        const result = await this._adminService.verifySpecialization(doctorId, Number(specIndex), verified, adminId)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -57,7 +57,7 @@ export class AdminController {
         const limit = Number(req.query.limit ?? 10)
         const search = String(req.query.search ?? '')
 
-        const result = await this.adminService.getPendingCaregivers(page, limit, search)
+        const result = await this._adminService.getPendingCaregivers(page, limit, search)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -68,13 +68,13 @@ export class AdminController {
         const adminId = (req as AuthenticatedRequest).user?.userId
         if (!adminId) throw new Error('Admin id missing from token')
 
-        const result = await this.adminService.verifyCaregiver(caregiverId, status, adminId)
+        const result = await this._adminService.verifyCaregiver(caregiverId, status, adminId)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
 
     getPendingCount = async (_req: Request, res: Response) => {
-        const result = await this.adminService.getPendingCount()
+        const result = await this._adminService.getPendingCount()
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -85,7 +85,7 @@ export class AdminController {
         const page = Number(req.query.page ?? 1)
         const limit = Number(req.query.limit ?? 10)
 
-        const result = await this.adminService.getUsers(role, search, page, limit)
+        const result = await this._adminService.getUsers(role, search, page, limit)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -94,7 +94,7 @@ export class AdminController {
         const userId = getSingleParam(req.params.userId, 'userId')
         const { isActive } = req.body as { isActive: boolean }
 
-        const result = await this.adminService.toggleUserStatus(userId, isActive)
+        const result = await this._adminService.toggleUserStatus(userId, isActive)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
