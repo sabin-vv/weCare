@@ -1,10 +1,11 @@
 import type { RouteObject } from 'react-router-dom'
-import AdminLoginPage from '../pages/AdminLoginPage'
-import AdminDashboard from '../pages/AdminDashboard'
-import UserManagementPage from '../pages/UserManagementPage'
-import DoctorVerificationPage from '../pages/DoctorVerificationPage'
-import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
+
 import AdminLayout from '../components/AdminLayout'
+import AdminDashboard from '../pages/AdminDashboard'
+import AdminLoginPage from '../pages/AdminLoginPage'
+import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
+import DoctorVerificationPage from '../pages/DoctorVerificationPage'
+import UserManagementPage from '../pages/UserManagementPage'
 
 export const AdminRoutes: RouteObject[] = [
     {
