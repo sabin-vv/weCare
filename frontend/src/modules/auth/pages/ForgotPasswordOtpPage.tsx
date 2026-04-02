@@ -1,5 +1,6 @@
-import AuthLayout from '@/layout/AuthLayout'
 import ForgotPasswordOtpForm from '../form/forgotPassword/ForgotPasswordOtpForm'
+
+import AuthLayout from '@/layout/AuthLayout'
 
 const ForgotPasswordOtpPage = () => {
     return (

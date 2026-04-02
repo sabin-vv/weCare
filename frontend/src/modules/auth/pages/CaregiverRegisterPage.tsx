@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 
-import { OtpPurpose } from '../types/auth.types'
-import type { CaregiverRegisterState } from '../types/caregiver.types'
-import AuthLayout from '@/layout/AuthLayout'
-import BasicInfoForm from '../form/BasicInfoForm'
+import { sendOtp, verifyOtp } from '../api/auth.api'
 import OtpVerification from '../components/OtpVerification'
+import BasicInfoForm from '../form/BasicInfoForm'
 import CaregiverDetailsForm from '../form/CaregiverDetailsForm'
 import RegistrationSuccessForm from '../form/RegistrationSuccessForm'
-import { sendOtp, verifyOtp } from '../api/auth.api'
+import { OtpPurpose } from '../types/auth.types'
+import type { CaregiverRegisterState } from '../types/caregiver.types'
+
+import AuthLayout from '@/layout/AuthLayout'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const CaregiverRegisterPage = () => {
     const [loading, setLoading] = useState(false)

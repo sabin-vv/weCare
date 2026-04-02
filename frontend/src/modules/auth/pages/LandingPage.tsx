@@ -1,10 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 
+import Header from '../components/Header'
+
 import styles from './LandingPage.module.css'
 
 import Button from '@/shared/components/Button/Button'
 import Footer from '@/shared/components/Footer/Footer'
-import Header from '../components/Header'
 
 const LandingPage = () => {
     const navigate = useNavigate()

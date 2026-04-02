@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 import { useNavigate } from 'react-router-dom'
 
-import AuthLayout from '@/layout/AuthLayout'
-import PatientRegisterForm from '../form/patient/PatientRegisterForm'
-import OtpVerification from '../components/OtpVerification'
 import { sendOtp, verifyOtp, patientRegister } from '../api/auth.api'
-import type { PatientRegisterData } from '../validator/register.schema'
+import OtpVerification from '../components/OtpVerification'
+import PatientRegisterForm from '../form/patient/PatientRegisterForm'
 import { OtpPurpose } from '../types/auth.types'
+import type { PatientRegisterData } from '../validator/register.schema'
+
+import AuthLayout from '@/layout/AuthLayout'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const PatientRegisterPage = () => {
     const navigate = useNavigate()

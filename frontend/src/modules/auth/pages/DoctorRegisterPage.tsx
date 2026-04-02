@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
-import { OtpPurpose, type DoctorRegisterState } from '../types/auth.types'
-import AuthLayout from '@/layout/AuthLayout'
-import BasicInfoForm from '../form/BasicInfoForm'
+import toast from 'react-hot-toast'
+
+import { sendOtp, verifyOtp } from '../api/auth.api'
 import OtpVerification from '../components/OtpVerification'
+import BasicInfoForm from '../form/BasicInfoForm'
 import DoctorDetailsForm from '../form/DoctorDetailesForm'
 import RegistrationSuccessForm from '../form/RegistrationSuccessForm'
-import { sendOtp, verifyOtp } from '../api/auth.api'
-import toast from 'react-hot-toast'
+import { OtpPurpose, type DoctorRegisterState } from '../types/auth.types'
+
+import AuthLayout from '@/layout/AuthLayout'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const DoctorRegisterPage = () => {
