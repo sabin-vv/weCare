@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { resetPasswordSchema } from '../../validator/register.schema'
 import { resetPassword } from '../../api/auth.api'
@@ -15,9 +15,9 @@ import PasswordField from '@/shared/components/PasswordField/PasswordField'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const ForgotPasswordNewPasswordForm = () => {
+    const location = useLocation()
     const [loading, setLoading] = useState<boolean>(false)
     const navigate = useNavigate()
-    const [searchParams] = useSearchParams()
 
     const {
         register,
@@ -31,7 +31,7 @@ const ForgotPasswordNewPasswordForm = () => {
         },
     })
 
-    const email = searchParams.get('email')
+    const email = location?.state?.email
 
     const [done, setDone] = useState(false)
 

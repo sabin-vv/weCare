@@ -24,7 +24,7 @@ const ForgotPasswordEmailForm = () => {
             const result = await sendOtp(email, OtpPurpose.PASSWORD_RESET)
 
             toast.success(result.message)
-            navigate(`/auth/forgot-password/verify-otp?email=${email}`)
+            navigate(`/auth/forgot-password/verify-otp`, { state: { email } })
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
