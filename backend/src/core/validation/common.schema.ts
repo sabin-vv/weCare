@@ -13,6 +13,4 @@ export const passwordSchema = z
     .regex(/[a-z]/, 'Must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Must contain at least one number')
 
-export const mobileSchema = z
-    .string()
-    .refine((value) => isValidPhoneNumber(`+${value}`), { message: 'Invalid Phone Number' })
+export const mobileSchema = z.string().refine((value) => isValidPhoneNumber(value), { message: 'Invalid Phone Number' })
