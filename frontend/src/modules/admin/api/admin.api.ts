@@ -14,8 +14,8 @@ export const getPendingDoctors = async (
 }
 
 export const getRecentDoctorVerifications = async (limit: number = 10): Promise<PendingDoctorsResponse> => {
-    const res = await api.get('/admin/pending-doctors', {
-        params: { page: 1, limit, search: '', status: 'verified,rejected' },
+    const res = await api.get('/admin/recent-doctor-verifications', {
+        params: { limit },
     })
     return res.data
 }
