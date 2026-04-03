@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { getPendingCaregivers, verifyCaregiver } from '../api/admin.api'
-import type { PendingCaregiver } from '../interfaces/admin.interface'
+import { getPendingCaregivers, getRecentCaregiverVerifications, verifyCaregiver } from '../api/admin.api'
+import type { PendingCaregiver, RecentCaregiver } from '../interfaces/admin.interface'
+import { pendingCaregiverColumns, recentCaregiverColumns } from '../columns/caregiverVerification.columns'
 
 import styles from './DoctorVerification.module.css'
 
+import DataTable from '@/shared/components/Table/DataTable'
 import Modal from '@/shared/components/Modal/Modal'
+import Pagination from '@/shared/components/Pagination/Pagination'
+import SearchField from '@/shared/components/SearchField/SearchField'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
 
@@ -14,10 +18,11 @@ const CaregiverVerificationPage = () => {
     const [caregivers, setCaregivers] = useState<PendingCaregiver[]>([])
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState({ page: 1, limit: 10, totalCount: 0, totalPages: 1 })
-    const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedCaregiver, setSelectedCaregiver] = useState<PendingCaregiver | null>(null)
     const [activeTab, setActiveTab] = useState<'certificate' | 'license' | 'govid'>('certificate')
+    const [recentCaregivers, setRecentCaregivers] = useState<RecentCaregiver[]>([])
+    const [recentLoading, setRecentLoading] = useState(true)
 
     const fetchCaregivers = async (page = 1, searchQuery = '') => {
         setLoading(true)
@@ -32,12 +37,25 @@ const CaregiverVerificationPage = () => {
         }
     }
 
+    const fetchRecentCaregivers = async () => {
+        setRecentLoading(true)
+        try {
+            const data = await getRecentCaregiverVerifications(10)
+            setRecentCaregivers(data.caregivers)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setRecentLoading(false)
+        }
+    }
+
     const handleAction = async (caregiverId: string, status: 'verified' | 'rejected') => {
         try {
             await verifyCaregiver(caregiverId, status)
             toast.success(`Caregiver ${status === 'verified' ? 'approved' : 'rejected'} successfully`)
             setIsModalOpen(false)
-            fetchCaregivers(pagination.page, search)
+            fetchCaregivers(pagination.page)
+            fetchRecentCaregivers()
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
@@ -50,9 +68,9 @@ const CaregiverVerificationPage = () => {
     }
 
     useEffect(() => {
-        const timer = setTimeout(() => fetchCaregivers(1, search), 500)
-        return () => clearTimeout(timer)
-    }, [search])
+        fetchCaregivers()
+        fetchRecentCaregivers()
+    }, [])
 
     const currentDocUrl = (() => {
         if (!selectedCaregiver) return ''
@@ -60,6 +78,33 @@ const CaregiverVerificationPage = () => {
         if (activeTab === 'license') return selectedCaregiver.licenseImage
         return selectedCaregiver.govIdImage
     })()
+
+    const columnsWithActions = [
+        ...pendingCaregiverColumns,
+        {
+            header: 'Documents',
+            key: 'documents' as keyof PendingCaregiver,
+            render: (caregiver: PendingCaregiver) => (
+                <button onClick={() => openDocumentViewer(caregiver)} className={styles.viewDocBtn}>
+                    📄 View Documents
+                </button>
+            ),
+        },
+        {
+            header: 'Actions',
+            key: 'actions' as keyof PendingCaregiver,
+            render: (caregiver: PendingCaregiver) => (
+                <div className={styles.actions}>
+                    <button className={styles.approveBtn} onClick={() => handleAction(caregiver._id, 'verified')}>
+                        Approve
+                    </button>
+                    <button className={styles.rejectBtn} onClick={() => handleAction(caregiver._id, 'rejected')}>
+                        Reject
+                    </button>
+                </div>
+            ),
+        },
+    ]
 
     return (
         <div className={styles.container}>
@@ -70,148 +115,38 @@ const CaregiverVerificationPage = () => {
                 </p>
             </div>
 
-            <div className={styles.controls}>
-                <input
-                    type="text"
+            <div className={styles.searchContainer}>
+                <SearchField
                     placeholder="Search caregiver by name or email ..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className={styles.search}
+                    onSearch={(query) => fetchCaregivers(1, query)}
                 />
             </div>
 
-            <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>Caregiver Name</th>
-                            <th>Certificate No</th>
-                            <th>License No</th>
-                            <th>Submission Date</th>
-                            <th>Documents</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>
-                                    Loading...
-                                </td>
-                            </tr>
-                        ) : caregivers.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>
-                                    No pending registrations found
-                                </td>
-                            </tr>
-                        ) : (
-                            caregivers.map((caregiver) => (
-                                <tr key={caregiver._id}>
-                                    <td>
-                                        <div className={styles.doctorInfo}>
-                                            <div className={styles.avatar}>
-                                                {caregiver.profileImage ? (
-                                                    <img
-                                                        src={getFileUrl(caregiver.profileImage)}
-                                                        alt={caregiver.name}
-                                                    />
-                                                ) : (
-                                                    caregiver.name
-                                                        .split(' ')
-                                                        .map((n) => n[0])
-                                                        .join('')
-                                                )}
-                                            </div>
-                                            <div className={styles.infoContent}>
-                                                <h4>{caregiver.name}</h4>
-                                                <p>{caregiver.email}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span className={styles.license}>#{caregiver.certificateNumber}</span>
-                                    </td>
-                                    <td>
-                                        <span className={styles.license}>#{caregiver.licenseNumber}</span>
-                                    </td>
-                                    <td>
-                                        <div className={styles.date}>
-                                            {new Date(caregiver.createdAt).toLocaleDateString('en-US', {
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric',
-                                            })}
-                                            <span className={styles.time}>
-                                                {new Date(caregiver.createdAt).toLocaleTimeString('en-US', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() => openDocumentViewer(caregiver)}
-                                            className={styles.viewDocBtn}
-                                        >
-                                            📄 View Documents
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <div className={styles.actions}>
-                                            <button
-                                                className={styles.approveBtn}
-                                                onClick={() => handleAction(caregiver._id, 'verified')}
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                className={styles.rejectBtn}
-                                                onClick={() => handleAction(caregiver._id, 'rejected')}
-                                            >
-                                                Reject
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+            {caregivers.length > 0 && (
+                <DataTable
+                    data={caregivers}
+                    columns={columnsWithActions}
+                    keyExtractor={(caregiver) => caregiver._id}
+                    isLoading={loading}
+                >
+                    <Pagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPages}
+                        totalCount={pagination.totalCount}
+                        limit={pagination.limit}
+                        onPageChange={(page) => fetchCaregivers(page, '')}
+                    />
+                </DataTable>
+            )}
 
-                <div className={styles.footer}>
-                    <div className={styles.summary}>
-                        Showing {caregivers.length} of {pagination.totalCount} pending registrations
-                    </div>
-                    <div className={styles.pagination}>
-                        <button
-                            disabled={pagination.page === 1}
-                            onClick={() => fetchCaregivers(pagination.page - 1, search)}
-                            className={styles.pageBtn}
-                        >
-                            {' '}
-                            &lt;{' '}
-                        </button>
-                        {Array.from({ length: pagination.totalPages }, (_, i) => (
-                            <button
-                                key={i + 1}
-                                className={`${styles.pageBtn} ${pagination.page === i + 1 ? styles.activePage : ''}`}
-                                onClick={() => fetchCaregivers(i + 1, search)}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                        <button
-                            disabled={pagination.page === pagination.totalPages}
-                            onClick={() => fetchCaregivers(pagination.page + 1, search)}
-                            className={styles.pageBtn}
-                        >
-                            {' '}
-                            &gt;{' '}
-                        </button>
-                    </div>
-                </div>
+            <div className={styles.recentSection}>
+                <h2 className={styles.recentTitle}>Recent Verifications</h2>
+                <DataTable
+                    data={recentCaregivers}
+                    columns={recentCaregiverColumns}
+                    keyExtractor={(caregiver) => caregiver._id}
+                    isLoading={recentLoading}
+                />
             </div>
 
             <Modal
