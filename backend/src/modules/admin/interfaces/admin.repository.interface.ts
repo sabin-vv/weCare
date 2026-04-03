@@ -9,7 +9,7 @@ import {
 
 export interface IAdminRepository {
     getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse>
-    getRecentVerifications(limit: number): Promise<RecentDoctorsResponse>
+    getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse>
     verifyDoctor(doctorId: string, status: AdminVerificationStatus, adminId: string): Promise<{ message: string }>
     verifySpecialization(
         doctorId: string,
