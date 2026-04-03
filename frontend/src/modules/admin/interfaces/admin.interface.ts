@@ -51,3 +51,14 @@ export interface PendingCaregiversResponse {
     caregivers: PendingCaregiver[]
     pagination: Pagination
 }
+
+export interface RecentCaregiver extends PendingCaregiver {
+    updatedAt: string
+    verificationStatus: 'verified' | 'rejected'
+}
+
+export interface RecentCaregiversResponse {
+    success: boolean
+    caregivers: RecentCaregiver[]
+    pagination: Pagination
+}
