@@ -23,6 +23,11 @@
     margin-bottom: 32px;
 }
 
+.searchContainer {
+    max-width: 400px;
+    margin-bottom: 24px;
+}
+
 .search {
     width: 100%;
     max-width: 400px;

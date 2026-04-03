@@ -249,10 +249,12 @@ const DoctorVerificationPage = () => {
                 </p>
             </div>
 
-            <SearchField
-                placeholder="Search pending doctor by name or email ..."
-                onSearch={(query) => fetchDoctors(1, query)}
-            />
+            <div className={styles.searchContainer}>
+                <SearchField
+                    placeholder="Search pending doctor by name or email ..."
+                    onSearch={(query) => fetchDoctors(1, query)}
+                />
+            </div>
 
             {doctors.length > 0 && (
                 <DataTable
