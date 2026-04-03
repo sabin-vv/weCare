@@ -72,6 +72,11 @@ export const resetPassword = async (email: string, newPassword: string): Promise
     return res.data
 }
 
+export const refreshToken = async (): Promise<ApiInterface> => {
+    const res = await api.post('/auth/refresh-token')
+    return res.data
+}
+
 export const adminLogin = async (email: string, password: string): Promise<LoginUser> => {
     const res = await api.post('/admin/login', {
         email,
