@@ -70,6 +70,14 @@ export class AdminController {
         res.status(HTTP_STATUS.OK).json(result)
     }
 
+    getRecentCaregiverVerifications = async (req: Request, res: Response) => {
+        const limit = Number(req.query.limit ?? 10)
+
+        const result = await this._adminService.getRecentCaregiverVerifications(limit)
+
+        res.status(HTTP_STATUS.OK).json(result)
+    }
+
     verifyCaregiver = async (req: Request, res: Response) => {
         const caregiverId = getSingleParam(req.params.caregiverId, 'caregiverId')
         const { status } = req.body as { status: AdminVerificationStatus }
