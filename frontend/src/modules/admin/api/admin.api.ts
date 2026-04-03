@@ -47,6 +47,13 @@ export const getPendingCaregivers = async (
     return res.data
 }
 
+export const getRecentCaregiverVerifications = async (limit: number = 10): Promise<PendingCaregiversResponse> => {
+    const res = await api.get('/admin/recent-caregiver-verifications', {
+        params: { limit },
+    })
+    return res.data
+}
+
 export const verifyCaregiver = async (
     caregiverId: string,
     status: 'verified' | 'rejected',
