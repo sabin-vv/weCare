@@ -20,6 +20,7 @@ export const createAdminRoutes = () => {
     router.patch('/verify-specialization/:doctorId/:specIndex', requireAdmin, adminController.verifySpecialization)
 
     router.get('/pending-caregivers', requireAdmin, adminController.getPendingCaregivers)
+    router.get('/recent-caregiver-verifications', requireAdmin, adminController.getRecentCaregiverVerifications)
     router.patch('/verify-caregiver/:caregiverId', requireAdmin, adminController.verifyCaregiver)
 
     router.get('/pending-count', requireAdmin, adminController.getPendingCount)
