@@ -97,7 +97,7 @@ export class AdminRepository implements IAdminRepository {
         }
     }
 
-    async getRecentVerifications(limit: number): Promise<RecentDoctorsResponse> {
+    async getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse> {
         const limitSafe = Math.max(1, Math.min(limit, 50))
 
         const aggregation = await DoctorModel.aggregate([
@@ -120,15 +120,25 @@ export class AdminRepository implements IAdminRepository {
                     email: '$user.email',
                     profileImage: '$profileImage',
                     medicalCouncilRegisterNumber: '$medicalCouncilRegisterNumber',
-                    verificationStatus: 1,
+                    medicalCertificateNumber: '$medicalCertificateNumber',
+                    medicalCouncilImage: '$medicalCouncilImage',
+                    medicalCertificateImage: '$medicalCertificateImage',
+                    govIdImage: '$govIdImage',
+                    specializations: '$specializations',
+                    createdAt: { $toString: '$createdAt' },
                     updatedAt: { $toString: '$verifiedAt' },
+                    verificationStatus: 1,
                 },
             },
         ])
 
         const doctors = aggregation as RecentDoctor[]
 
-        return { success: true, doctors }
+        return {
+            success: true,
+            doctors,
+            pagination: { page: 1, limit: limitSafe, totalCount: doctors.length, totalPages: 1 },
+        }
     }
 
     async verifyDoctor(
