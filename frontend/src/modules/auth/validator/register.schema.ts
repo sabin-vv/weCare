@@ -1,7 +1,16 @@
-import { isValidPhoneNumber } from 'libphonenumber-js'
 import { z } from 'zod'
 
 import { Role } from '../types/auth.types'
+
+import {
+    confirmPasswordSchema,
+    dateOfBirthSchema,
+    emailSchema,
+    genderSchema,
+    nameSchema,
+    passwordSchema,
+    phoneSchema,
+} from '@/shared/validators/common.schema'
 
 export const loginSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -18,19 +27,10 @@ export const basicInfoSchema = z
             .refine((val) => val.length > 0, 'Name cannot be empty')
             .refine((val) => val.length >= 3, 'Name must be minimum 3 characters')
             .refine((val) => /^[a-zA-Z\s]+$/.test(val), 'Only letters are allowed'),
-        email: z.string().min(1, 'email cannot be empty').email('Invalid email address'),
-        mobile: z
-            .string()
-            .min(1, 'Phone number cannot be empty')
-            .refine((val) => isValidPhoneNumber(`+${val}`), { message: 'Invalid Phone Number' }),
-        password: z
-            .string()
-            .min(1, 'Password cannot be empty')
-            .min(8, 'Password must be minimum 8 characters')
-            .regex(/[a-z]/, 'password must contain at least one lowercase letter')
-            .regex(/[A-Z]/, 'password must contain at least one Uppercase letter')
-            .regex(/[0-9]/, 'password must contain at least one number'),
-        confirmPassword: z.string().min(1, 'confirm password cannot be empty'),
+        email: emailSchema,
+        mobile: phoneSchema,
+        password: passwordSchema,
+        confirmPassword: confirmPasswordSchema,
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'password do not match',
@@ -99,27 +99,13 @@ export const caregiverDetailsSchema = z.object({
 
 export const patientRegisterSchema = z
     .object({
-        name: z
-            .string()
-            .trim()
-            .min(1, 'Name cannot be empty')
-            .min(3, 'Name must be minimum 3 characters')
-            .regex(/^[a-zA-Z\s]+$/, 'Only letters are allowed'),
-        email: z.string().min(1, 'Email cannot be empty').email('Invalid email address'),
-        mobile: z
-            .string()
-            .min(1, 'Phone number cannot be empty')
-            .refine((val) => isValidPhoneNumber(`+${val}`), { message: 'Invalid Phone Number' }),
-        password: z
-            .string()
-            .min(1, 'Password cannot be empty')
-            .min(8, 'Password must be minimum 8 characters')
-            .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-            .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-            .regex(/[0-9]/, 'Password must contain at least one number'),
-        confirmPassword: z.string().min(1, 'Confirm password cannot be empty'),
-        dateOfBirth: z.string().min(1, 'Date of birth is required'),
-        gender: z.string().min(1, 'Gender is required'),
+        name: nameSchema,
+        email: emailSchema,
+        mobile: phoneSchema,
+        password: passwordSchema,
+        confirmPassword: confirmPasswordSchema,
+        dateOfBirth: dateOfBirthSchema,
+        gender: genderSchema,
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: 'Passwords do not match',
@@ -128,14 +114,8 @@ export const patientRegisterSchema = z
 
 export const resetPasswordSchema = z
     .object({
-        newPassword: z
-            .string()
-            .min(1, 'Password cannot be empty')
-            .min(8, 'Password must be minimum 8 characters')
-            .regex(/[a-z]/, 'password must contain at least one lowercase letter')
-            .regex(/[A-Z]/, 'password must contain at least one Uppercase letter')
-            .regex(/[0-9]/, 'password must contain at least one number'),
-        confirmNewPassword: z.string().min(1, 'confirm password cannot be empty'),
+        newPassword: passwordSchema,
+        confirmNewPassword: confirmPasswordSchema,
     })
     .refine((data) => data.newPassword === data.confirmNewPassword, {
         message: 'password do not match',
