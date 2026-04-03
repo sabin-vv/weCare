@@ -22,8 +22,8 @@ export class AdminService implements IAdminService {
         return this._adminRepo.getPendingDoctors(page, limit, search)
     }
 
-    async getRecentVerifications(limit: number): Promise<RecentDoctorsResponse> {
-        return this._adminRepo.getRecentVerifications(limit)
+    async getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse> {
+        return this._adminRepo.getRecentDoctorVerifications(limit)
     }
 
     async verifyDoctor(
