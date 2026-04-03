@@ -16,6 +16,8 @@ export interface PendingDoctor {
     govIdImage: string
     specializations: Specialization[]
     createdAt: string
+    updatedAt?: string
+    verificationStatus?: 'pending' | 'verified' | 'rejected'
 }
 
 export interface Pagination {
