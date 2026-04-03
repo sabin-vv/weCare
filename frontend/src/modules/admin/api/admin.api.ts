@@ -13,6 +13,13 @@ export const getPendingDoctors = async (
     return res.data
 }
 
+export const getRecentVerifications = async (limit: number = 10): Promise<PendingDoctorsResponse> => {
+    const res = await api.get('/admin/pending-doctors', {
+        params: { page: 1, limit, search: '', status: 'verified,rejected' },
+    })
+    return res.data
+}
+
 export const verifyDoctor = async (doctorId: string, status: 'verified' | 'rejected'): Promise<{ message: string }> => {
     const res = await api.patch(`/admin/verify-doctor/${doctorId}`, { status })
     return res.data
