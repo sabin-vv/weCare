@@ -74,6 +74,27 @@ export interface PendingCaregiversResponse {
     pagination: Pagination
 }
 
+export interface RecentCaregiver {
+    _id: string
+    name: string
+    email: string
+    profileImage?: string
+    certificateNumber: string
+    licenseNumber: string
+    certificateImage: string
+    licenseImage: string
+    govIdImage: string
+    createdAt: string
+    updatedAt: string
+    verificationStatus: 'verified' | 'rejected'
+}
+
+export interface RecentCaregiversResponse {
+    success: boolean
+    caregivers: RecentCaregiver[]
+    pagination: Pagination
+}
+
 export interface PendingCountResponse {
     count: number
 }
