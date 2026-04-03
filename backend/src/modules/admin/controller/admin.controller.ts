@@ -28,10 +28,10 @@ export class AdminController {
         res.status(HTTP_STATUS.OK).json(result)
     }
 
-    getRecentVerifications = async (req: Request, res: Response) => {
+    getRecentDoctorVerifications = async (req: Request, res: Response) => {
         const limit = Number(req.query.limit ?? 10)
 
-        const result = await this._adminService.getRecentVerifications(limit)
+        const result = await this._adminService.getRecentDoctorVerifications(limit)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
