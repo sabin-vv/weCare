@@ -19,6 +19,8 @@ import {
     PendingCountResponse,
     PendingDoctor,
     PendingDoctorsResponse,
+    RecentCaregiver,
+    RecentCaregiversResponse,
     RecentDoctor,
     RecentDoctorsResponse,
     UsersResponse,
@@ -250,6 +252,49 @@ export class AdminRepository implements IAdminRepository {
             success: true,
             caregivers,
             pagination: { page: pageSafe, limit: limitSafe, totalCount, totalPages },
+        }
+    }
+
+    async getRecentCaregiverVerifications(limit: number): Promise<RecentCaregiversResponse> {
+        const limitSafe = Math.max(1, Math.min(limit, 50))
+
+        const aggregation = await CaregiverModel.aggregate([
+            { $match: { verificationStatus: { $in: ['verified', 'rejected'] } } },
+            {
+                $lookup: {
+                    from: UserModel.collection.name,
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            { $sort: { verifiedAt: -1 } },
+            { $limit: limitSafe },
+            {
+                $project: {
+                    _id: { $toString: '$_id' },
+                    name: '$user.name',
+                    email: '$user.email',
+                    profileImage: '$profileImage',
+                    certificateNumber: '$certificateNumber',
+                    licenseNumber: '$licenseNumber',
+                    certificateImage: '$certificateImage',
+                    licenseImage: '$licenseImage',
+                    govIdImage: '$govIdImage',
+                    createdAt: { $toString: '$createdAt' },
+                    updatedAt: { $toString: '$verifiedAt' },
+                    verificationStatus: 1,
+                },
+            },
+        ])
+
+        const caregivers = aggregation as RecentCaregiver[]
+
+        return {
+            success: true,
+            caregivers,
+            pagination: { page: 1, limit: limitSafe, totalCount: caregivers.length, totalPages: 1 },
         }
     }
 
