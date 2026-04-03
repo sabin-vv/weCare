@@ -7,6 +7,9 @@ import type { PendingDoctor } from '../interfaces/admin.interface'
 import styles from './DoctorVerification.module.css'
 
 import Modal from '@/shared/components/Modal/Modal'
+import Pagination from '@/shared/components/Pagination/Pagination'
+import SearchField from '@/shared/components/SearchField/SearchField'
+import DataTable from '@/shared/components/Table/DataTable'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
 
@@ -14,10 +17,11 @@ const DoctorVerificationPage = () => {
     const [doctors, setDoctors] = useState<PendingDoctor[]>([])
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState({ page: 1, limit: 10, totalCount: 0, totalPages: 1 })
-    const [search, setSearch] = useState('')
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [selectedDoctor, setSelectedDoctor] = useState<PendingDoctor | null>(null)
     const [activeTab, setActiveTab] = useState<string>('council')
+    const [recentDoctors, setRecentDoctors] = useState<PendingDoctor[]>([])
+    const [recentLoading, setRecentLoading] = useState(true)
 
     const fetchDoctors = async (page = 1, searchQuery = '') => {
         setLoading(true)
@@ -32,12 +36,26 @@ const DoctorVerificationPage = () => {
         }
     }
 
+    const fetchRecentDoctors = async () => {
+        setRecentLoading(true)
+        try {
+            const verified = await getPendingDoctors(1, 5, '')
+            const rejected = await getPendingDoctors(1, 5, '')
+            setRecentDoctors([...verified.doctors, ...rejected.doctors])
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setRecentLoading(false)
+        }
+    }
+
     const handleAction = async (doctorId: string, status: 'verified' | 'rejected') => {
         try {
             await verifyDoctor(doctorId, status)
             toast.success(`Doctor ${status === 'verified' ? 'approved' : 'rejected'} successfully`)
             setIsModalOpen(false)
-            fetchDoctors(pagination.page, search)
+            fetchDoctors(pagination.page)
+            fetchRecentDoctors()
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
@@ -76,9 +94,9 @@ const DoctorVerificationPage = () => {
     }
 
     useEffect(() => {
-        const timer = setTimeout(() => fetchDoctors(1, search), 500)
-        return () => clearTimeout(timer)
-    }, [search])
+        fetchDoctors()
+        fetchRecentDoctors()
+    }, [])
 
     const getDocUrl = () => {
         if (!selectedDoctor) return ''
@@ -96,155 +114,172 @@ const DoctorVerificationPage = () => {
     const currentSpecIndex = activeTab.startsWith('spec-') ? parseInt(activeTab.split('-')[1]) : -1
     const isCurrentSpecVerified = currentSpecIndex !== -1 && selectedDoctor?.specializations[currentSpecIndex]?.verified
 
+    const pendingColumns = [
+        {
+            header: 'Doctor Name',
+            key: 'name' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <div className={styles.doctorInfo}>
+                    <div className={styles.avatar}>
+                        {doctor.profileImage ? (
+                            <img src={getFileUrl(doctor.profileImage)} alt={doctor.name} />
+                        ) : (
+                            doctor.name
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')
+                        )}
+                    </div>
+                    <div className={styles.infoContent}>
+                        <h4>Dr. {doctor.name}</h4>
+                        <p>{doctor.email}</p>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            header: 'License Number',
+            key: 'medicalCouncilRegisterNumber' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <span className={styles.license}>#{doctor.medicalCouncilRegisterNumber}</span>
+            ),
+        },
+        {
+            header: 'Submission Date',
+            key: 'createdAt' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <div className={styles.date}>
+                    {new Date(doctor.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                    })}
+                    <span className={styles.time}>
+                        {new Date(doctor.createdAt).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        })}
+                    </span>
+                </div>
+            ),
+        },
+        {
+            header: 'Specialty',
+            key: 'specializations' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <span className={styles.specialtyBadge}>{doctor.specializations?.[0]?.name || 'General'}</span>
+            ),
+        },
+        {
+            header: 'Documents',
+            key: 'documents' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <button onClick={() => openDocumentViewer(doctor)} className={styles.viewDocBtn}>
+                    📄 View Documents
+                </button>
+            ),
+        },
+        {
+            header: 'Actions',
+            key: 'actions' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <div className={styles.actions}>
+                    <button className={styles.approveBtn} onClick={() => handleAction(doctor._id, 'verified')}>
+                        Approve
+                    </button>
+                    <button className={styles.rejectBtn} onClick={() => handleAction(doctor._id, 'rejected')}>
+                        Reject
+                    </button>
+                </div>
+            ),
+        },
+    ]
+
+    const recentColumns = [
+        {
+            header: 'Doctor Name',
+            key: 'name' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <div className={styles.doctorInfo}>
+                    <div className={styles.avatar}>
+                        {doctor.profileImage ? (
+                            <img src={getFileUrl(doctor.profileImage)} alt={doctor.name} />
+                        ) : (
+                            doctor.name
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')
+                        )}
+                    </div>
+                    <div className={styles.infoContent}>
+                        <h4>Dr. {doctor.name}</h4>
+                        <p>{doctor.email}</p>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            header: 'Status',
+            key: 'verificationStatus' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) => (
+                <span
+                    className={doctor.verificationStatus === 'verified' ? styles.verifiedBadge : styles.rejectedBadge}
+                >
+                    {doctor.verificationStatus}
+                </span>
+            ),
+        },
+        {
+            header: 'Verified/Rejected On',
+            key: 'updatedAt' as keyof PendingDoctor,
+            render: (doctor: PendingDoctor) =>
+                new Date(doctor.updatedAt || doctor.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                }),
+        },
+    ]
+
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Pending Doctor Registrations</h1>
+                <h1 className={styles.title}>Doctor Registrations</h1>
                 <p className={styles.subtitle}>
-                    Review and verify medical credentials for newly registered practitioner accounts.
+                    Review and verify medical credentials or manage existing practitioners.
                 </p>
             </div>
 
-            <div className={styles.controls}>
-                <input
-                    type="text"
-                    placeholder="Search doctor by name or email ..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    className={styles.search}
-                />
-            </div>
+            <SearchField
+                placeholder="Search pending doctor by name or email ..."
+                onSearch={(query) => fetchDoctors(1, query)}
+            />
 
-            <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>Doctor Name</th>
-                            <th>License Number</th>
-                            <th>Submission Date</th>
-                            <th>Specialty</th>
-                            <th>Documents</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>
-                                    Loading...
-                                </td>
-                            </tr>
-                        ) : doctors.length === 0 ? (
-                            <tr>
-                                <td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>
-                                    No pending registrations found
-                                </td>
-                            </tr>
-                        ) : (
-                            doctors.map((doctor) => (
-                                <tr key={doctor._id}>
-                                    <td>
-                                        <div className={styles.doctorInfo}>
-                                            <div className={styles.avatar}>
-                                                {doctor.profileImage ? (
-                                                    <img src={getFileUrl(doctor.profileImage)} alt={doctor.name} />
-                                                ) : (
-                                                    doctor.name
-                                                        .split(' ')
-                                                        .map((n) => n[0])
-                                                        .join('')
-                                                )}
-                                            </div>
-                                            <div className={styles.infoContent}>
-                                                <h4>Dr. {doctor.name}</h4>
-                                                <p>{doctor.email}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span className={styles.license}>#{doctor.medicalCouncilRegisterNumber}</span>
-                                    </td>
-                                    <td>
-                                        <div className={styles.date}>
-                                            {new Date(doctor.createdAt).toLocaleDateString('en-US', {
-                                                month: 'short',
-                                                day: 'numeric',
-                                                year: 'numeric',
-                                            })}
-                                            <span className={styles.time}>
-                                                {new Date(doctor.createdAt).toLocaleTimeString('en-US', {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                })}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span className={styles.specialtyBadge}>
-                                            {doctor.specializations?.[0]?.name || 'General'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() => openDocumentViewer(doctor)}
-                                            className={styles.viewDocBtn}
-                                        >
-                                            📄 View Documents
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <div className={styles.actions}>
-                                            <button
-                                                className={styles.approveBtn}
-                                                onClick={() => handleAction(doctor._id, 'verified')}
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                className={styles.rejectBtn}
-                                                onClick={() => handleAction(doctor._id, 'rejected')}
-                                            >
-                                                Reject
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-                <div className={styles.footer}>
-                    <div className={styles.summary}>
-                        Showing {doctors.length} of {pagination.totalCount} pending registrations
-                    </div>
-                    <div className={styles.pagination}>
-                        <button
-                            disabled={pagination.page === 1}
-                            onClick={() => fetchDoctors(pagination.page - 1, search)}
-                            className={styles.pageBtn}
-                        >
-                            {' '}
-                            &lt;{' '}
-                        </button>
-                        {Array.from({ length: pagination.totalPages }, (_, i) => (
-                            <button
-                                key={i + 1}
-                                className={`${styles.pageBtn} ${pagination.page === i + 1 ? styles.activePage : ''}`}
-                                onClick={() => fetchDoctors(i + 1, search)}
-                            >
-                                {i + 1}
-                            </button>
-                        ))}
-                        <button
-                            disabled={pagination.page === pagination.totalPages}
-                            onClick={() => fetchDoctors(pagination.page + 1, search)}
-                            className={styles.pageBtn}
-                        >
-                            {' '}
-                            &gt;{' '}
-                        </button>
-                    </div>
-                </div>
+            {doctors.length > 0 && (
+                <DataTable
+                    data={doctors}
+                    columns={pendingColumns}
+                    keyExtractor={(doctor) => doctor._id}
+                    isLoading={loading}
+                >
+                    <Pagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPages}
+                        totalCount={pagination.totalCount}
+                        limit={pagination.limit}
+                        onPageChange={(page) => fetchDoctors(page, '')}
+                    />
+                </DataTable>
+            )}
+
+            <div className={styles.recentSection}>
+                <h2 className={styles.recentTitle}>Recent Verifications</h2>
+                <DataTable
+                    data={recentDoctors}
+                    columns={recentColumns}
+                    keyExtractor={(doctor) => doctor._id}
+                    isLoading={recentLoading}
+                />
             </div>
 
             <Modal
