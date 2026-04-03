@@ -19,6 +19,8 @@ import {
     PendingCountResponse,
     PendingDoctor,
     PendingDoctorsResponse,
+    RecentDoctor,
+    RecentDoctorsResponse,
     UsersResponse,
 } from '../types/admin.types'
 import { escapeRegExp } from '../utils/escapeRegExp'
@@ -93,6 +95,40 @@ export class AdminRepository implements IAdminRepository {
             doctors,
             pagination: { page: pageSafe, limit: limitSafe, totalCount, totalPages },
         }
+    }
+
+    async getRecentVerifications(limit: number): Promise<RecentDoctorsResponse> {
+        const limitSafe = Math.max(1, Math.min(limit, 50))
+
+        const aggregation = await DoctorModel.aggregate([
+            { $match: { verificationStatus: { $in: ['verified', 'rejected'] } } },
+            {
+                $lookup: {
+                    from: UserModel.collection.name,
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+            { $unwind: '$user' },
+            { $sort: { verifiedAt: -1 } },
+            { $limit: limitSafe },
+            {
+                $project: {
+                    _id: { $toString: '$_id' },
+                    name: '$user.name',
+                    email: '$user.email',
+                    profileImage: '$profileImage',
+                    medicalCouncilRegisterNumber: '$medicalCouncilRegisterNumber',
+                    verificationStatus: 1,
+                    updatedAt: { $toString: '$verifiedAt' },
+                },
+            },
+        ])
+
+        const doctors = aggregation as RecentDoctor[]
+
+        return { success: true, doctors }
     }
 
     async verifyDoctor(
