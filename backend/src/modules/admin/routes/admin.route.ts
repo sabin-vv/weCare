@@ -15,6 +15,7 @@ export const createAdminRoutes = () => {
     router.post('/login', validate(loginSchema), authController.login)
 
     router.get('/pending-doctors', requireAdmin, adminController.getPendingDoctors)
+    router.get('/recent-doctor-verifications', requireAdmin, adminController.getRecentDoctorVerifications)
     router.patch('/verify-doctor/:doctorId', requireAdmin, adminController.verifyDoctor)
     router.patch('/verify-specialization/:doctorId/:specIndex', requireAdmin, adminController.verifySpecialization)
 
