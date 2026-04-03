@@ -33,6 +33,21 @@ export interface PendingDoctorsResponse {
     pagination: Pagination
 }
 
+export interface RecentDoctor {
+    _id: string
+    name: string
+    email: string
+    profileImage: string
+    medicalCouncilRegisterNumber: string
+    verificationStatus: 'verified' | 'rejected'
+    updatedAt: string
+}
+
+export interface RecentDoctorsResponse {
+    success: boolean
+    doctors: RecentDoctor[]
+}
+
 export interface PendingCaregiver {
     _id: string
     name: string
