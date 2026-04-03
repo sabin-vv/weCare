@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { getPendingDoctors, verifyDoctor, verifySpecialization } from '../api/admin.api'
+import { getPendingDoctors, getRecentDoctorVerifications, verifyDoctor, verifySpecialization } from '../api/admin.api'
 import type { PendingDoctor } from '../interfaces/admin.interface'
 
 import styles from './DoctorVerification.module.css'
@@ -39,9 +39,8 @@ const DoctorVerificationPage = () => {
     const fetchRecentDoctors = async () => {
         setRecentLoading(true)
         try {
-            const verified = await getPendingDoctors(1, 5, '')
-            const rejected = await getPendingDoctors(1, 5, '')
-            setRecentDoctors([...verified.doctors, ...rejected.doctors])
+            const data = await getRecentDoctorVerifications(10)
+            setRecentDoctors(data.doctors)
         } catch (error) {
             toast.error(getErrorMessage(error))
         } finally {
