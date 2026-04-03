@@ -10,9 +10,33 @@
 }
 
 .header {
-    padding: 32px 24px 28px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
     margin-bottom: 20px;
+}
+.logoWrapper {
+    width: 60px;
+    height: 50px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.headerText {
+    display: flex;
+    flex-direction: column;
 }
 
 .title {
@@ -39,7 +63,8 @@
     gap: 4px;
 }
 
-.link, .activeLink {
+.link,
+.activeLink {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -56,8 +81,8 @@
 }
 
 .link:hover {
-    background: rgba(255, 255, 255, 0.03);
-    color: #ffffff;
+    background: rgba(59, 130, 246, 0.08);
+    color: #1e293b;
     transform: translateX(4px);
 }
 

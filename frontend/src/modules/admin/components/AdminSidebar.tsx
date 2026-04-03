@@ -24,8 +24,13 @@ const AdminSidebar = () => {
     return (
         <aside className={styles.sidebar}>
             <div className={styles.header}>
-                <h2 className={styles.title}>Admin Portal</h2>
-                <p className={styles.subtitle}>Healthcare Coordination</p>
+                <div className={styles.logoWrapper}>
+                    <img src="/logo" alt="logo" />
+                </div>
+                <div className={styles.headerText}>
+                    <h2 className={styles.title}>Admin Portal</h2>
+                    <p className={styles.subtitle}>WeCare health</p>
+                </div>
             </div>
 
             <nav className={styles.nav}>
