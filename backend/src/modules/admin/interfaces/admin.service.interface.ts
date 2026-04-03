@@ -3,6 +3,7 @@ import {
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
+    RecentCaregiversResponse,
     RecentDoctorsResponse,
     UsersResponse,
 } from '../types/admin.types'
@@ -18,6 +19,7 @@ export interface IAdminService {
         adminId: string,
     ): Promise<{ message: string }>
     getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse>
+    getRecentCaregiverVerifications(limit: number): Promise<RecentCaregiversResponse>
     verifyCaregiver(
         caregiverId: string,
         status: AdminVerificationStatus,
