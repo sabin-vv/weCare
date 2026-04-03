@@ -39,13 +39,20 @@ export interface RecentDoctor {
     email: string
     profileImage: string
     medicalCouncilRegisterNumber: string
-    verificationStatus: 'verified' | 'rejected'
+    medicalCertificateNumber: string
+    medicalCouncilImage: string
+    medicalCertificateImage: string
+    govIdImage: string
+    specializations: PendingDoctorSpecialization[]
+    createdAt: string
     updatedAt: string
+    verificationStatus: 'verified' | 'rejected'
 }
 
 export interface RecentDoctorsResponse {
     success: boolean
     doctors: RecentDoctor[]
+    pagination: Pagination
 }
 
 export interface PendingCaregiver {
