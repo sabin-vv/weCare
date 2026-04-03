@@ -10,6 +10,7 @@ import {
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
+    RecentCaregiversResponse,
     RecentDoctorsResponse,
     UsersResponse,
 } from '../types/admin.types'
@@ -48,6 +49,10 @@ export class AdminService implements IAdminService {
 
     async getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse> {
         return this._adminRepo.getPendingCaregivers(page, limit, search)
+    }
+
+    async getRecentCaregiverVerifications(limit: number): Promise<RecentCaregiversResponse> {
+        return this._adminRepo.getRecentCaregiverVerifications(limit)
     }
 
     async verifyCaregiver(
