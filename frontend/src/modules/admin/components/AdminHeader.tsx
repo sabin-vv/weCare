@@ -1,5 +1,6 @@
 import { LogOutIcon } from 'lucide-react'
 import { SettingsIcon } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import styles from './AdminHeader.module.css'
 
@@ -9,6 +10,7 @@ import { useAuth } from '@/shared/context/AuthContext'
 const AdminHeader = () => {
     const { user } = useAuth()
     const handleLogout = useLogout()
+    const navigate = useNavigate()
 
     return (
         <header className={styles.header}>
@@ -20,7 +22,9 @@ const AdminHeader = () => {
                     <LogOutIcon />
                     Logout
                 </button>
-                <SettingsIcon />
+                <button className={styles.settingsIcon}>
+                    <SettingsIcon size={24} onClick={() => navigate('/admin/settings')} />
+                </button>
                 <div className={styles.avatar}>👤</div>
             </div>
         </header>
