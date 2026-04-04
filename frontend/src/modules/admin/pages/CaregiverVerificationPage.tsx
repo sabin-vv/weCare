@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { getPendingCaregivers, getRecentCaregiverVerifications, verifyCaregiver } from '../api/admin.api'
-import type { PendingCaregiver, RecentCaregiver } from '../interfaces/admin.interface'
 import { pendingCaregiverColumns, recentCaregiverColumns } from '../columns/caregiverVerification.columns'
+import type { PendingCaregiver, RecentCaregiver } from '../interfaces/admin.interface'
 
 import styles from './DoctorVerification.module.css'
 
-import DataTable from '@/shared/components/Table/DataTable'
 import Modal from '@/shared/components/Modal/Modal'
+import PageHeader from '@/shared/components/PageHeader/PageHeader'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
+import DataTable from '@/shared/components/Table/DataTable'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
 
@@ -108,12 +109,10 @@ const CaregiverVerificationPage = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Pending Caregiver Registrations</h1>
-                <p className={styles.subtitle}>
-                    Review and verify professional credentials for newly registered caregiver accounts.
-                </p>
-            </div>
+            <PageHeader
+                title="Pending Caregiver Registrations"
+                subtitle="Review and verify professional credentials for newly registered caregiver accounts."
+            />
 
             <div className={styles.searchContainer}>
                 <SearchField

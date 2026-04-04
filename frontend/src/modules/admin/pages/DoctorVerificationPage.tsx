@@ -7,6 +7,7 @@ import type { PendingDoctor } from '../interfaces/admin.interface'
 import styles from './DoctorVerification.module.css'
 
 import Modal from '@/shared/components/Modal/Modal'
+import PageHeader from '@/shared/components/PageHeader/PageHeader'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import DataTable from '@/shared/components/Table/DataTable'
@@ -242,12 +243,10 @@ const DoctorVerificationPage = () => {
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Doctor Registrations</h1>
-                <p className={styles.subtitle}>
-                    Review and verify medical credentials or manage existing practitioners.
-                </p>
-            </div>
+            <PageHeader
+                title="Doctor Registrations"
+                subtitle="Review and verify medical credentials or manage existing practitioners."
+            />
 
             <div className={styles.searchContainer}>
                 <SearchField
