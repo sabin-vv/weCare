@@ -62,3 +62,12 @@ export interface RecentCaregiversResponse {
     caregivers: RecentCaregiver[]
     pagination: Pagination
 }
+
+export interface PlatformSettings {
+    platformName: string
+    contactEmail: string
+    address: string
+    platformFee: number
+    platformLogo?: string
+    platformIcon?: string
+}

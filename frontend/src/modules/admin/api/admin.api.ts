@@ -1,6 +1,7 @@
 import type {
     PendingCaregiversResponse,
     PendingDoctorsResponse,
+    PlatformSettings,
     RecentCaregiversResponse,
 } from '../interfaces/admin.interface'
 
@@ -82,5 +83,15 @@ export const toggleUserStatus = async (userId: string, isActive: boolean): Promi
     const res = await api.patch(`/admin/toggle-status/${userId}`, {
         isActive,
     })
+    return res.data
+}
+
+export const getPlatformSettings = async (): Promise<PlatformSettings> => {
+    const res = await api.get('/admin/platform-settings')
+    return res.data
+}
+
+export const updatePlatformSettings = async (settings: Partial<PlatformSettings>): Promise<PlatformSettings> => {
+    const res = await api.put('/admin/platform-settings', settings)
     return res.data
 }
