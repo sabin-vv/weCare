@@ -113,3 +113,12 @@ export interface UsersResponse {
     users: AdminUserProfile[]
     pagination: Pagination
 }
+
+export interface PlatformSettingsDocument extends Document {
+    platformName: string
+    contactEmail: string
+    address: string
+    platformFee: number
+    platformLogo: string
+    platformIcon: string
+}
