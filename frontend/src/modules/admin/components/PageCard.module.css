@@ -1,0 +1,29 @@
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: #777;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
