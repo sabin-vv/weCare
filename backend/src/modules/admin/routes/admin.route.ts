@@ -28,7 +28,7 @@ export const createAdminRoutes = () => {
     router.get('/users', requireAdmin, adminController.getUsers)
     router.patch('/toggle-status/:userId', requireAdmin, adminController.toggleUserStatus)
 
-    router.get('/platform-settings', requireAdmin, adminController.getPlatformSettings)
+    router.get('/platform-settings', adminController.getPlatformSettings)
     router.put('/platform-settings', requireAdmin, adminController.updatePlatformSettings)
 
     return router

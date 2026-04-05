@@ -8,10 +8,12 @@ import styles from './Header.module.css'
 
 import Button from '@/shared/components/Button/Button'
 import { useAuth } from '@/shared/context/AuthContext'
+import { usePlatform } from '@/shared/context/PlatformContext'
 
 const Header = () => {
     const navigate = useNavigate()
     const { isAuthenticated, user } = useAuth()
+    const { settings } = usePlatform()
     const handleLogout = useLogout()
 
     const initials =
@@ -22,11 +24,15 @@ const Header = () => {
             .slice(0, 2)
             .toUpperCase() || 'U'
 
+    const logoUrl = settings?.platformLogo
+        ? `${import.meta.env.VITE_S3_BASE_URL}${settings.platformLogo}`
+        : ''
+
     return (
         <header className={styles.header}>
             <div className={styles.headerContainer}>
                 <div className={styles.logo} onClick={() => navigate('/')}>
-                    <img src="" alt="logo" />
+                    <img src={logoUrl} alt="logo" />
                 </div>
 
                 <nav className={styles.navLinks}>

@@ -18,6 +18,19 @@
     justify-content: space-between;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    height: 100%;
+}
+
+.logo img {
+    max-height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
 .navLinks {
     display: flex;
     gap: 2rem;

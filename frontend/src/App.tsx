@@ -3,12 +3,15 @@ import { RouterProvider } from 'react-router-dom'
 
 import { router } from './router'
 import { AuthProvider } from './shared/context/AuthContext'
+import { PlatformProvider } from './shared/context/PlatformContext'
 
 function App() {
     return (
         <AuthProvider>
-            <Toaster position="top-center" />
-            <RouterProvider router={router} />
+            <PlatformProvider>
+                <Toaster position="top-center" />
+                <RouterProvider router={router} />
+            </PlatformProvider>
         </AuthProvider>
     )
 }
