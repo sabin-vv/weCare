@@ -4,7 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { IAdminService } from '../interfaces/admin.service.interface'
-import { AdminVerificationStatus } from '../types/admin.types'
+import { AdminVerificationStatus, PlatformSettings } from '../types/admin.types'
 
 type AuthenticatedRequest = Request & { user?: { userId: string; role: string } }
 
@@ -111,6 +111,20 @@ export class AdminController {
         const { isActive } = req.body as { isActive: boolean }
 
         const result = await this._adminService.toggleUserStatus(userId, isActive)
+
+        res.status(HTTP_STATUS.OK).json(result)
+    }
+
+    getPlatformSettings = async (_req: Request, res: Response) => {
+        const result = await this._adminService.getPlatformSettings()
+
+        res.status(HTTP_STATUS.OK).json(result)
+    }
+
+    updatePlatformSettings = async (req: Request, res: Response) => {
+        const settings = req.body as Partial<PlatformSettings>
+
+        const result = await this._adminService.updatePlatformSettings(settings)
 
         res.status(HTTP_STATUS.OK).json(result)
     }

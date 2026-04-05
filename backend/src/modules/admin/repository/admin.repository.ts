@@ -10,6 +10,7 @@ import { CaregiverModel } from '../../caregiver/models/caregiver.model'
 import { VerificationStatus } from '../../caregiver/types/caregiver.types'
 import { DoctorModel } from '../../doctor/models/doctor.model'
 import { PatientModel } from '../../patient/models/patient.model'
+import { platFoemSettingsModel } from '../models/platformSettings.model'
 import { IAdminRepository } from '../interfaces/admin.repository.interface'
 import {
     AdminUserProfile,
@@ -19,6 +20,7 @@ import {
     PendingCountResponse,
     PendingDoctor,
     PendingDoctorsResponse,
+    PlatformSettings,
     RecentCaregiver,
     RecentCaregiversResponse,
     RecentDoctor,
@@ -437,5 +439,60 @@ export class AdminRepository implements IAdminRepository {
         }
 
         return { message: `User ${isActive ? 'enabled' : 'blocked'} successfully` }
+    }
+
+    async getPlatformSettings(): Promise<PlatformSettings> {
+        let settings = await platFoemSettingsModel.findOne()
+        if (!settings) {
+            settings = await platFoemSettingsModel.create({
+                platformName: 'WeCare',
+                contactEmail: 'admin@wecare.com',
+                address: '',
+                platformFee: 0,
+                platformLogo: '',
+                platformIcon: '',
+            })
+        }
+        return {
+            platformName: settings.platformName,
+            contactEmail: settings.contactEmail,
+            address: settings.address,
+            platformFee: settings.platformFee,
+            platformLogo: settings.platformLogo,
+            platformIcon: settings.platformIcon,
+        }
+    }
+
+    async updatePlatformSettings(settings: Partial<PlatformSettings>): Promise<PlatformSettings> {
+        let existingSettings = await platFoemSettingsModel.findOne()
+        if (!existingSettings) {
+            existingSettings = await platFoemSettingsModel.create({
+                platformName: 'WeCare',
+                contactEmail: 'admin@wecare.com',
+                address: '',
+                platformFee: 0,
+                platformLogo: '',
+                platformIcon: '',
+            })
+        }
+
+        const updated = await platFoemSettingsModel.findByIdAndUpdate(
+            existingSettings._id,
+            { $set: settings },
+            { new: true },
+        )
+
+        if (!updated) {
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update settings')
+        }
+
+        return {
+            platformName: updated.platformName,
+            contactEmail: updated.contactEmail,
+            address: updated.address,
+            platformFee: updated.platformFee,
+            platformLogo: updated.platformLogo,
+            platformIcon: updated.platformIcon,
+        }
     }
 }

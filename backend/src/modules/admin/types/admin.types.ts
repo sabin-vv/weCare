@@ -122,3 +122,14 @@ export interface PlatformSettingsDocument extends Document {
     platformLogo: string
     platformIcon: string
 }
+
+export interface PlatformSettings {
+    platformName: string
+    contactEmail: string
+    address: string
+    platformFee: number
+    platformLogo?: string
+    platformIcon?: string
+}
+
+export interface PlatformSettingsResponse extends PlatformSettings {}

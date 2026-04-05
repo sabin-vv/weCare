@@ -3,6 +3,7 @@ import {
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
+    PlatformSettings,
     RecentCaregiversResponse,
     RecentDoctorsResponse,
     UsersResponse,
@@ -28,5 +29,7 @@ export interface IAdminService {
     getPendingCount(): Promise<PendingCountResponse>
     getUsers(role: string, search: string, page: number, limit: number): Promise<UsersResponse>
     toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }>
+    getPlatformSettings(): Promise<PlatformSettings>
+    updatePlatformSettings(settings: Partial<PlatformSettings>): Promise<PlatformSettings>
 }
 

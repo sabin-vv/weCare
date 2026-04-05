@@ -10,6 +10,7 @@ import {
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
+    PlatformSettings,
     RecentCaregiversResponse,
     RecentDoctorsResponse,
     UsersResponse,
@@ -79,5 +80,13 @@ export class AdminService implements IAdminService {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'isActive must be boolean')
         }
         return this._adminRepo.toggleUserStatus(userId, isActive)
+    }
+
+    async getPlatformSettings(): Promise<PlatformSettings> {
+        return this._adminRepo.getPlatformSettings()
+    }
+
+    async updatePlatformSettings(settings: Partial<PlatformSettings>): Promise<PlatformSettings> {
+        return this._adminRepo.updatePlatformSettings(settings)
     }
 }
