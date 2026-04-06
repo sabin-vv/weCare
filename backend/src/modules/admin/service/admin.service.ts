@@ -71,6 +71,16 @@ export class AdminService implements IAdminService {
         return this._adminRepo.getPendingCount()
     }
 
+    async getPendingDoctorsCount(): Promise<{ count: number }> {
+        const count = await this._adminRepo.getPendingDoctorsCount()
+        return { count }
+    }
+
+    async getPendingCaregiversCount(): Promise<{ count: number }> {
+        const count = await this._adminRepo.getPendingCaregiversCount()
+        return { count }
+    }
+
     async getUsers(role: string, search: string, page: number, limit: number): Promise<UsersResponse> {
         return this._adminRepo.getUsers(role, search, page, limit)
     }

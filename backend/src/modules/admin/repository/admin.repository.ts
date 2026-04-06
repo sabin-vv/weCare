@@ -333,6 +333,14 @@ export class AdminRepository implements IAdminRepository {
         return { count: pendingDoctors + pendingCaregivers }
     }
 
+    async getPendingDoctorsCount(): Promise<number> {
+        return DoctorModel.countDocuments({ verificationStatus: 'pending' })
+    }
+
+    async getPendingCaregiversCount(): Promise<number> {
+        return CaregiverModel.countDocuments({ verificationStatus: 'pending' })
+    }
+
     async getUsers(role: string, search: string, page: number, limit: number): Promise<UsersResponse> {
         const pageSafe = Math.max(1, page)
         const limitSafe = Math.max(1, limit)

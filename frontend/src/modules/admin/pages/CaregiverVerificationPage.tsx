@@ -12,6 +12,7 @@ import PageHeader from '@/shared/components/PageHeader/PageHeader'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import DataTable from '@/shared/components/Table/DataTable'
+import { usePendingCount } from '@/shared/context/PendingCountContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
 
@@ -24,6 +25,7 @@ const CaregiverVerificationPage = () => {
     const [activeTab, setActiveTab] = useState<'certificate' | 'license' | 'govid'>('certificate')
     const [recentCaregivers, setRecentCaregivers] = useState<RecentCaregiver[]>([])
     const [recentLoading, setRecentLoading] = useState(true)
+    const { refreshCounts } = usePendingCount()
 
     const fetchCaregivers = async (page = 1, searchQuery = '') => {
         setLoading(true)
@@ -57,6 +59,7 @@ const CaregiverVerificationPage = () => {
             setIsModalOpen(false)
             fetchCaregivers(pagination.page)
             fetchRecentCaregivers()
+            refreshCounts()
         } catch (error) {
             toast.error(getErrorMessage(error))
         }

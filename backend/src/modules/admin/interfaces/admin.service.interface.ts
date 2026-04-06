@@ -27,6 +27,8 @@ export interface IAdminService {
         adminId: string,
     ): Promise<{ message: string }>
     getPendingCount(): Promise<PendingCountResponse>
+    getPendingDoctorsCount(): Promise<{ count: number }>
+    getPendingCaregiversCount(): Promise<{ count: number }>
     getUsers(role: string, search: string, page: number, limit: number): Promise<UsersResponse>
     toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }>
     getPlatformSettings(): Promise<PlatformSettings>

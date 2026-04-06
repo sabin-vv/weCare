@@ -95,6 +95,18 @@ export class AdminController {
         res.status(HTTP_STATUS.OK).json(result)
     }
 
+    getPendingDoctorsCount = async (_req: Request, res: Response) => {
+        const result = await this._adminService.getPendingDoctorsCount()
+
+        res.status(HTTP_STATUS.OK).json(result)
+    }
+
+    getPendingCaregiversCount = async (_req: Request, res: Response) => {
+        const result = await this._adminService.getPendingCaregiversCount()
+
+        res.status(HTTP_STATUS.OK).json(result)
+    }
+
     getUsers = async (req: Request, res: Response) => {
         const role = String(req.query.role ?? 'all')
         const search = String(req.query.search ?? '')

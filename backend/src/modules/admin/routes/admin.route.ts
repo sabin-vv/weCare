@@ -24,6 +24,8 @@ export const createAdminRoutes = () => {
     router.patch('/verify-caregiver/:caregiverId', requireAdmin, adminController.verifyCaregiver)
 
     router.get('/pending-count', requireAdmin, adminController.getPendingCount)
+    router.get('/pending-doctors-count', requireAdmin, adminController.getPendingDoctorsCount)
+    router.get('/pending-caregivers-count', requireAdmin, adminController.getPendingCaregiversCount)
 
     router.get('/users', requireAdmin, adminController.getUsers)
     router.patch('/toggle-status/:userId', requireAdmin, adminController.toggleUserStatus)

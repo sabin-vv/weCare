@@ -73,6 +73,16 @@ export const getPendingCount = async (): Promise<{ count: number }> => {
     return res.data
 }
 
+export const getPendingDoctorsCount = async (): Promise<{ count: number }> => {
+    const res = await api.get('/admin/pending-doctors-count')
+    return res.data
+}
+
+export const getPendingCaregiversCount = async (): Promise<{ count: number }> => {
+    const res = await api.get('/admin/pending-caregivers-count')
+    return res.data
+}
+
 export const getUsers = async (role: string, search: string, page: number, limit: number) => {
     const res = await api.get('/admin/users', {
         params: { role, search, page, limit },

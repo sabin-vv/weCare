@@ -1,25 +1,12 @@
 import { LayoutDashboard, Users, UserCheck, ShieldPlus, History as HistoryIcon, CalendarDays } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 
-import { getPendingCount } from '../api/admin.api'
+import { usePendingCount } from '@/shared/context/PendingCountContext'
 
 import styles from './AdminSidebar.module.css'
 
 const AdminSidebar = () => {
-    const [pendingCount, setPendingCount] = useState<number>(0)
-
-    useEffect(() => {
-        const fetchCount = async () => {
-            try {
-                const data = await getPendingCount()
-                setPendingCount(data.count)
-            } catch (error) {
-                console.error('Failed to fetch pending count:', error)
-            }
-        }
-        fetchCount()
-    }, [])
+    const { doctorCount, caregiverCount } = usePendingCount()
 
     return (
         <aside className={styles.sidebar}>
@@ -50,7 +37,7 @@ const AdminSidebar = () => {
                         <ShieldPlus size={20} />
                         <span>Doctor Verification</span>
                     </div>
-                    {pendingCount > 0 && <span className={styles.badge}>{pendingCount}</span>}
+                    {doctorCount > 0 && <span className={styles.badge}>{doctorCount}</span>}
                 </NavLink>
 
                 <NavLink
@@ -59,6 +46,7 @@ const AdminSidebar = () => {
                 >
                     <UserCheck size={20} />
                     <span>Caregiver Verification</span>
+                    {caregiverCount > 0 && <span className={styles.badge}>{caregiverCount}</span>}
                 </NavLink>
 
                 <NavLink to="/admin/users" className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}>

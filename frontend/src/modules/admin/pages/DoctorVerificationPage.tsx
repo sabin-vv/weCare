@@ -11,6 +11,7 @@ import PageHeader from '@/shared/components/PageHeader/PageHeader'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import DataTable from '@/shared/components/Table/DataTable'
+import { usePendingCount } from '@/shared/context/PendingCountContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
 
@@ -23,6 +24,7 @@ const DoctorVerificationPage = () => {
     const [activeTab, setActiveTab] = useState<string>('council')
     const [recentDoctors, setRecentDoctors] = useState<PendingDoctor[]>([])
     const [recentLoading, setRecentLoading] = useState(true)
+    const { refreshCounts } = usePendingCount()
 
     const fetchDoctors = async (page = 1, searchQuery = '') => {
         setLoading(true)
@@ -56,6 +58,7 @@ const DoctorVerificationPage = () => {
             setIsModalOpen(false)
             fetchDoctors(pagination.page)
             fetchRecentDoctors()
+            refreshCounts()
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
