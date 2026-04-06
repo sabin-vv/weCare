@@ -50,7 +50,7 @@ export class AuthService implements IAuthService {
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Something went wrong')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid credentials')
         }
         if (role !== user.role) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'Access denied')

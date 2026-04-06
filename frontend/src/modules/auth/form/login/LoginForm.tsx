@@ -39,7 +39,7 @@ const LoginForm = () => {
     const formSubmit = async (data: LoginFormData) => {
         setIsLoading(true)
         try {
-            const response = await loginUser(data.email, data.password, data.role)
+            const response = await loginUser(data.email, data.password, role)
 
             setAuth({
                 id: response.data.email,
