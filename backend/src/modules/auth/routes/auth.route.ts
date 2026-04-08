@@ -3,7 +3,7 @@ import { container } from 'tsyringe'
 
 import { validate } from '../../../core/middleware/validateMiddleware'
 import { AuthController } from '../controller/auth.controller'
-import { loginSchema, resetPasswordSchema } from '../validator/auth.schema'
+import { loginSchema, registerSchema, resetPasswordSchema } from '../validator/auth.schema'
 import { SendOtpSchema, verifyOtpSchema } from '../validator/sendOtp.schema'
 
 export const createAuthRoutes = () => {
@@ -11,6 +11,7 @@ export const createAuthRoutes = () => {
 
     const authController = container.resolve(AuthController)
 
+    router.post('/register', validate(registerSchema), authController.register)
     router.post('/send-otp', validate(SendOtpSchema), authController.sendOtp)
     router.post('/verify-otp', validate(verifyOtpSchema), authController.verifyOtp)
     router.post('/login', validate(loginSchema), authController.login)
