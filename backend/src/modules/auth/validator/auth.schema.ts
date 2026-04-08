@@ -30,3 +30,4 @@ export const registerSchema = z
 
 export type LoginDTO = z.infer<typeof loginSchema>
 export type RegisterDTO = z.infer<typeof registerSchema>
+export type ResetPasswordDTO = z.infer<typeof resetPasswordSchema>
