@@ -1,8 +1,10 @@
 import { ResetPasswordDTO } from '../dto/resetPassword.dto'
-import { LoginResponse, UserRole } from '../types/auth.types'
+import { LoginResponse, UserDocument, UserRole } from '../types/auth.types'
 import { OtpRequestPurpose } from '../types/otp.types'
+import { RegisterDTO } from '../validator/auth.schema'
 
 export interface IAuthService {
+    register(dto: RegisterDTO): Promise<UserDocument>
     sendOtp(email: string, purpose: OtpRequestPurpose): Promise<void>
 
     verifyOtp(email: string, otp: string): Promise<void>

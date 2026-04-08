@@ -9,8 +9,10 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { ResetPasswordDTO } from '../dto/resetPassword.dto'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { IUserRepository } from '../interfaces/user.repository.interface'
+import { toUserEntity } from '../mapper/auth.mapper'
 import { UserRole } from '../types/auth.types'
 import { OtpRequestPurpose } from '../types/otp.types'
+import { RegisterDTO } from '../validator/auth.schema'
 import { OtpService } from './otp.service'
 
 @injectable()
@@ -20,6 +22,18 @@ export class AuthService implements IAuthService {
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IOtpService) private _otpService: OtpService,
     ) {}
+
+    async register(dto: RegisterDTO) {
+        const existing = await this._userRepo.findByEmail(dto.email)
+
+        if (existing) {
+            throw new AppError(HTTP_STATUS.CONFLICT, 'User already exist')
+        }
+
+        const userData = await toUserEntity(dto, dto.role)
+
+        return await this._userRepo.create({ ...userData, isProfileComplete: false })
+    }
 
     async sendOtp(email: string, purpose: OtpRequestPurpose) {
         const user = await this._userRepo.findByEmail(email)
