@@ -99,6 +99,7 @@ export class AuthService implements IAuthService {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                isProfileComplete: user.isProfileComplete,
             },
             tokens: {
                 accessToken,
