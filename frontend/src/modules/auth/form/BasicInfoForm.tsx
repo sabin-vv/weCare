@@ -3,7 +3,6 @@ import { User } from 'lucide-react'
 import { Mail } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 
-import ProgressBar from '../components/ProgressBar'
 import type { BasicInfoFormProps, RegisterFormData } from '../types/auth.types'
 import { basicInfoSchema } from '../validator/register.schema'
 
@@ -29,7 +28,6 @@ const BasicInfoForm = ({ defaultValues, title, description, onSubmit, loading, r
     return (
         <FormWrapper title={title} maxWidth="520px" description={description}>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <ProgressBar step={1} totalSteps={4} percentage={25} title="Basic Information" />
                 <InputField
                     placeholder="John Doe"
                     icon={<User />}
