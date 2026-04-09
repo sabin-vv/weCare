@@ -3,9 +3,9 @@ import { LogOutIcon } from 'lucide-react'
 import styles from './LogoutButton.module.css'
 
 import { useLogout } from '@/modules/auth/hooks/useLogout'
-const handleLogout = useLogout()
 
 const LogoutButton = () => {
+    const handleLogout = useLogout()
     return (
         <button className={styles.logoutBtn} onClick={handleLogout}>
             <LogOutIcon />
