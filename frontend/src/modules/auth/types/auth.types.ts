@@ -35,7 +35,9 @@ export interface User {
     name: string
     email: string
     role: Role
-    isProfileComplete: boolean
+    isProfileComplete?: boolean
+    profileImage?: string
+    specialization?: string
 }
 export interface AuthContextType {
     user: User | null

@@ -15,6 +15,17 @@ export interface LoginUser extends ApiInterface {
     }
 }
 
+export interface GetCurrentUser extends ApiInterface {
+    data: {
+        id: string
+        name: string
+        email: string
+        role: Role
+        profileImage?: string
+        specialization?: string
+    }
+}
+
 export type AllowedContentType = 'image/png' | 'image/jpeg' | 'application/pdf'
 
 export interface PresignUploadParams {

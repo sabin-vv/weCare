@@ -113,15 +113,9 @@ export const presignUpload = async (params: PresignUploadParams): Promise<Presig
 }
 
 export const uploadToS3 = async (uploadUrl: string, file: File): Promise<void> => {
-    const res = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
+    await api.put(uploadUrl, file, {
         headers: {
             'Content-Type': file.type,
         },
     })
-
-    if (!res.ok) {
-        throw new Error(`S3 upload failed: ${res.status} ${res.statusText}`)
-    }
 }

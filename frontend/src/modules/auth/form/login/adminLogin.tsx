@@ -5,7 +5,8 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
 
-import { adminLogin } from '../../api/auth.api'
+import { getCurrentUser, loginUser } from '../../api/auth.api'
+import { Role } from '../../types/auth.types'
 
 import styles from './AdminLogin.module.css'
 
@@ -36,9 +37,17 @@ const AdminLogin = () => {
 
     const onSubmit = async (data: AdminLoginValues) => {
         try {
-            const res = await adminLogin(data.email, data.password)
+            const res = await loginUser(data.email, data.password, Role.ADMIN)
             if (res.success) {
                 setAuth(res.data)
+
+                try {
+                    const profile = await getCurrentUser()
+                    setAuth(profile.data)
+                } catch {
+                    toast.error('Failed to load profile')
+                }
+
                 toast.success('Admin access granted')
                 navigate('/admin/dashboard')
             }

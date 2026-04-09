@@ -1,6 +1,12 @@
 import type { RegisterFormData, Role } from '../types/auth.types'
 
-import type { ApiInterface, LoginUser, PresignUploadParams, PresignUploadResponse } from './auth.api.types'
+import type {
+    ApiInterface,
+    GetCurrentUser,
+    LoginUser,
+    PresignUploadParams,
+    PresignUploadResponse,
+} from './auth.api.types'
 
 import { api } from '@/services/api'
 import type { PatientRegister } from '@/shared/types/model.types'
@@ -28,11 +34,6 @@ export const register = async (data: RegisterFormData, role: Role): Promise<ApiI
 }
 export const patientRegister = async (data: PatientRegister): Promise<ApiInterface> => {
     const res = await api.post('/patients/register', data)
-    return res.data
-}
-
-export const doctorRegister = async (formData: FormData): Promise<ApiInterface> => {
-    const res = await api.post('/doctors/register', formData)
     return res.data
 }
 
@@ -83,11 +84,7 @@ export const refreshToken = async (): Promise<ApiInterface> => {
     return res.data
 }
 
-export const adminLogin = async (email: string, password: string): Promise<LoginUser> => {
-    const res = await api.post('/admin/login', {
-        email,
-        password,
-        role: 'admin',
-    })
+export const getCurrentUser = async (): Promise<GetCurrentUser> => {
+    const res = await api.get('/auth/me')
     return res.data
 }
