@@ -137,15 +137,18 @@ export class AuthService implements IAuthService {
 
         let profileImage: string | undefined
         let specialization: string | undefined
+        let verificationStatus: string | undefined
 
         switch (role) {
             case UserRole.DOCTOR:
                 const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
+                verificationStatus = doctor?.verificationStatus
                 profileImage = doctor?.profileImage
                 specialization = doctor?.specializations?.[0]?.name
                 break
             case UserRole.CAREGIVER:
                 const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+                verificationStatus = caregiver?.verificationStatus
                 profileImage = caregiver?.profileImage
                 break
             case UserRole.PATIENT:
@@ -159,11 +162,7 @@ export class AuthService implements IAuthService {
         }
 
         return {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            isProfileComplete: user.isProfileComplete,
+            verificationStatus,
             profileImage,
             specialization,
         }

@@ -15,12 +15,11 @@ export interface IAuthService {
 
     resetpassword(dto: ResetPasswordDTO): Promise<void>
 
-    getCurrentUser(userId: string, role: UserRole): Promise<{
-        id: string
-        name: string
-        email: string
-        role: UserRole
-        isProfileComplete: boolean
+    getCurrentUser(
+        userId: string,
+        role: UserRole,
+    ): Promise<{
+        verificationStatus?: string
         profileImage?: string
         specialization?: string
     }>

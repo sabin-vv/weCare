@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
-import { presignUpload, uploadToS3 } from '../../auth/api/auth.api'
+import { getCurrentUser, presignUpload, uploadToS3 } from '../../auth/api/auth.api'
 import FileUploadBox from '../../auth/components/FileUploadBox'
 import { doctorDetailesSchema } from '../../auth/validator/register.schema'
 import { updateProfile } from '../api/doctor.api'
@@ -14,9 +15,11 @@ import Card from '@/shared/components/Card/Card'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
 import InputField from '@/shared/components/InputField/InputField'
+import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const DoctorDetailsForm = () => {
+    const { setAuth } = useAuth()
     const [documents, setDocuments] = useState<DoctorDocuments>({
         govId: null,
         profileImage: null,
@@ -32,6 +35,7 @@ const DoctorDetailsForm = () => {
     const [specializations, setSpecializations] = useState<Specializations[]>([{ name: '', document: null }])
     const [imageCrop, setImageCrop] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
+    const navigate = useNavigate()
 
     const uploadFileToS3 = async (file: File, folder: string): Promise<string> => {
         try {
@@ -133,6 +137,9 @@ const DoctorDetailsForm = () => {
 
             const response = await updateProfile(formData)
             toast.success(response.message)
+            const profile = await getCurrentUser()
+            setAuth({ ...profile.data })
+            navigate('/doctor/dashboard')
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
             return
