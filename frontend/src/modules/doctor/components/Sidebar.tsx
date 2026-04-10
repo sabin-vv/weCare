@@ -8,7 +8,7 @@ const Sidebar = () => {
         <aside className={styles.sidebar}>
             <h3 className={styles.title}>Patient Directory</h3>
 
-            <SearchField onSearch={handleSearch} />
+            <SearchField placeholder="Search patients..." onSearch={handleSearch} />
 
             <div className={styles.filters}>
                 <button className={styles.active}>All</button>
