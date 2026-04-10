@@ -1,0 +1,15 @@
+.Wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.body {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+}
+
+.main {
+    flex: 1;
+    overflow-y: auto;
+}
