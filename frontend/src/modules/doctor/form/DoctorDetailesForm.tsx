@@ -19,7 +19,7 @@ import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const DoctorDetailsForm = () => {
-    const { setAuth } = useAuth()
+    const { user, setAuth } = useAuth()
     const [documents, setDocuments] = useState<DoctorDocuments>({
         govId: null,
         profileImage: null,
@@ -138,7 +138,12 @@ const DoctorDetailsForm = () => {
             const response = await updateProfile(formData)
             toast.success(response.message)
             const profile = await getCurrentUser()
-            setAuth({ ...profile.data })
+            setAuth({
+                ...user!,
+                profileImage: profile.data.profileImage,
+                specialization: profile.data.specialization,
+                verificationStatus: profile.data.verificationStatus,
+            })
             navigate('/doctor/dashboard')
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
