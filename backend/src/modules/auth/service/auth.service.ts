@@ -1,11 +1,15 @@
 import bcrypt from 'bcrypt'
+import { Types } from 'mongoose'
 import { inject, injectable } from 'tsyringe'
 
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../../core/utils/jwt'
+import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
+import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
+import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { IUserRepository } from '../interfaces/user.repository.interface'
 import { toUserEntity } from '../mapper/auth.mapper'
@@ -19,6 +23,9 @@ export class AuthService implements IAuthService {
     constructor(
         @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
+        @inject(TOKENS.ICaregiverRepository) private _caregiverRepo: ICaregiverRepository,
+        @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository,
         @inject(TOKENS.IOtpService) private _otpService: OtpService,
     ) {}
 
@@ -119,5 +126,46 @@ export class AuthService implements IAuthService {
         const hashedPassword = await bcrypt.hash(newPassword, 10)
 
         await this._userRepo.updatePassword(user._id, hashedPassword)
+    }
+
+    async getCurrentUser(userId: string, role: UserRole) {
+        const user = await this._userRepo.findById(userId)
+
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+        }
+
+        let profileImage: string | undefined
+        let specialization: string | undefined
+
+        switch (role) {
+            case UserRole.DOCTOR:
+                const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
+                profileImage = doctor?.profileImage
+                specialization = doctor?.specializations?.[0]?.name
+                break
+            case UserRole.CAREGIVER:
+                const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+                profileImage = caregiver?.profileImage
+                break
+            case UserRole.PATIENT:
+                const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
+                profileImage = patient?.profileImage
+                break
+            case UserRole.ADMIN:
+                const admin = await this._adminRepo.findByUserId(userId)
+                profileImage = admin?.profileImage
+                break
+        }
+
+        return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            isProfileComplete: user.isProfileComplete,
+            profileImage,
+            specialization,
+        }
     }
 }
