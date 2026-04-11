@@ -12,3 +12,18 @@ export interface DoctorDocuments {
     medicalCertificate: Certificate
     councilRegistration: Certificate
 }
+
+export interface DoctorProfile {
+    id: string
+    fullName: string
+    email: string
+    phoneNumber: string
+    profileImage?: string
+    professionalTitle?: string
+    consultationFee: number
+    medicalLicenseNumber: string
+    medicalCouncilRegistrationNumber: string
+    experienceCertificatesCount: number
+    isActive: boolean
+    verificationStatus: 'pending' | 'verified' | 'rejected'
+}
