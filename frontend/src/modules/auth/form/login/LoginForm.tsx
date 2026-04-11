@@ -23,7 +23,7 @@ const LoginForm = () => {
     const [role, setRole] = useState<Role>(Role.DOCTOR)
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
-    const { setAuth } = useAuth()
+    const { setAuth, user, isAuthenticated } = useAuth()
 
     const {
         register,
@@ -77,6 +77,10 @@ const LoginForm = () => {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    if (isAuthenticated && user) {
+        navigate(`/${user.role}/dashboard`)
     }
 
     return (
