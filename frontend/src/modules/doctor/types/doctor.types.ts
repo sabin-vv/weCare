@@ -1,3 +1,5 @@
+import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
+
 export interface Certificate {
     number: string
     document: File | null
@@ -13,7 +15,7 @@ export interface DoctorDocuments {
     councilRegistration: Certificate
 }
 
-export interface DoctorProfile {
+export interface DoctorProfile extends ApiInterface {
     id: string
     fullName: string
     email: string
@@ -26,4 +28,7 @@ export interface DoctorProfile {
     experienceCertificatesCount: number
     isActive: boolean
     verificationStatus: 'pending' | 'verified' | 'rejected'
+}
+export interface DoctorProfileResponse extends ApiInterface {
+    data: DoctorProfile
 }
