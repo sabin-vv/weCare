@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
-import { loginUser, getCurrentUser } from '../../api/auth.api'
+import { loginUser } from '../../api/auth.api'
 import RoleSelector from '../../components/RoleSelector'
 import { Role, type LoginFormData } from '../../types/auth.types'
 import { loginSchema } from '../../validator/register.schema'
@@ -40,22 +40,16 @@ const LoginForm = () => {
         setIsLoading(true)
         try {
             const response = await loginUser(data.email, data.password, role)
-
-            try {
-                const profile = await getCurrentUser()
-                setAuth({
-                    id: response.data.id,
-                    name: response.data.name,
-                    email: response.data.email,
-                    role: response.data.role,
-                    isProfileComplete: response.data.isProfileComplete,
-                    profileImage: profile.data.profileImage,
-                    specialization: profile.data.specialization,
-                    verificationStatus: profile.data.verificationStatus,
-                })
-            } catch {
-                toast.error('Failed to load profile')
-            }
+            setAuth({
+                id: response.data.id,
+                name: response.data.name,
+                email: response.data.email,
+                role: response.data.role,
+                isProfileComplete: response.data.isProfileComplete,
+                profileImage: response.data.profileImage,
+                specialization: response.data.specialization,
+                verificationStatus: response.data.verificationStatus,
+            })
 
             toast.success(response.message)
 
