@@ -45,3 +45,18 @@ export interface DoctorDocument extends Document {
 
     consultationFee: number
 }
+
+export interface DoctorProfileResponse {
+    id: string
+    fullName: string
+    email: string
+    phoneNumber: string
+    profileImage?: string
+    professionalTitle?: string
+    consultationFee: number
+    medicalLicenseNumber: string
+    medicalCouncilRegistrationNumber: string
+    experienceCertificatesCount: number
+    isActive: boolean
+    verificationStatus: verificationStataus
+}

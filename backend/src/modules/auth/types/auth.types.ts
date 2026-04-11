@@ -24,6 +24,10 @@ export interface LoginResponse {
         name: string
         email: string
         role: string
+        isProfileComplete: boolean
+        profileImage?: string
+        specialization?: string
+        verificationStatus?: string
     }
     tokens: {
         accessToken: string

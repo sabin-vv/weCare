@@ -86,6 +86,7 @@ export class AuthService implements IAuthService {
 
         const accessToken = generateAccessToken(payload)
         const refreshToken = generateRefreshToken(payload)
+        const profile = await this.getCurrentUser(user._id.toString(), user.role)
 
         return {
             user: {
@@ -94,6 +95,9 @@ export class AuthService implements IAuthService {
                 email: user.email,
                 role: user.role,
                 isProfileComplete: user.isProfileComplete,
+                profileImage: profile.profileImage,
+                specialization: profile.specialization,
+                verificationStatus: profile.verificationStatus,
             },
             tokens: {
                 accessToken,
