@@ -67,6 +67,11 @@ const doctorSchema = new Schema<DoctorDocument>(
             required: true,
             default: 0,
         },
+        isActive: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
     },
     { timestamps: true },
 )

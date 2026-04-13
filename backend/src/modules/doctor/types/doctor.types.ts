@@ -44,6 +44,7 @@ export interface DoctorDocument extends Document {
     medicalCertificateImage: string
 
     consultationFee: number
+    isActive: boolean
 }
 
 export interface DoctorProfileResponse {
