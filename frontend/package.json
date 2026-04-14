@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
-    "axios": "^1.14.0",
+    "axios": "^1.15.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-react": "^7.37.5",
     "libphonenumber-js": "^1.12.41",
