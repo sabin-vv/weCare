@@ -59,16 +59,8 @@ export class DoctorService implements IDoctorService {
             mobile: dto.phoneNumber,
         })
 
-        const updatedSpecializations =
-            existingDoctor.specializations?.length > 0
-                ? existingDoctor.specializations.map((specialization, index) =>
-                      index === 0 ? { ...specialization, name: dto.professionalTitle } : specialization,
-                  )
-                : []
-
         const doctor = await this._doctorRepo.updateByUserId(new Types.ObjectId(userId), {
             consultationFee: dto.consultationFee,
-            specializations: updatedSpecializations,
             ...(dto.isActive !== undefined ? { isActive: dto.isActive } : {}),
         })
 

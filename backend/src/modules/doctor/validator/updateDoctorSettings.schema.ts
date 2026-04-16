@@ -4,7 +4,6 @@ import { emailschema, mobileSchema, nameSchema } from '../../../core/validation/
 
 export const UpdateDoctorSettingsSchema = z.object({
     fullName: nameSchema,
-    professionalTitle: z.string().min(1, 'Professional title is required'),
     consultationFee: z.coerce.number().min(0, 'Consultation fee must be zero or greater'),
     phoneNumber: mobileSchema,
     email: emailschema,
