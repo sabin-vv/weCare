@@ -14,6 +14,11 @@ export const resetPasswordSchema = z.object({
     newPassword: passwordSchema,
 })
 
+export const changePasswordSchema = z.object({
+    currentPassword: passwordSchema,
+    newPassword: passwordSchema,
+})
+
 export const registerSchema = z
     .object({
         name: nameSchema,
@@ -31,3 +36,4 @@ export const registerSchema = z
 export type LoginDTO = z.infer<typeof loginSchema>
 export type RegisterDTO = z.infer<typeof registerSchema>
 export type ResetPasswordDTO = z.infer<typeof resetPasswordSchema>
+export type ChangePasswordDTO = z.infer<typeof changePasswordSchema>

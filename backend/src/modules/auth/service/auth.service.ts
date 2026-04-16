@@ -15,7 +15,7 @@ import { IUserRepository } from '../interfaces/user.repository.interface'
 import { toUserEntity } from '../mapper/auth.mapper'
 import { UserRole } from '../types/auth.types'
 import { OtpRequestPurpose } from '../types/otp.types'
-import { RegisterDTO, ResetPasswordDTO } from '../validator/auth.schema'
+import { ChangePasswordDTO, RegisterDTO, ResetPasswordDTO } from '../validator/auth.schema'
 import { OtpService } from './otp.service'
 
 @injectable()
@@ -125,6 +125,25 @@ export class AuthService implements IAuthService {
 
         if (!user) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10)
+
+        await this._userRepo.updatePassword(user._id, hashedPassword)
+    }
+
+    async changePassword(userId: string, dto: ChangePasswordDTO): Promise<void> {
+        const { currentPassword, newPassword } = dto
+
+        const user = await this._userRepo.findById(userId)
+
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+        }
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password)
+        if (!isMatch) {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Current password is incorrect')
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10)

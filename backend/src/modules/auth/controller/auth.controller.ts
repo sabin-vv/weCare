@@ -95,4 +95,15 @@ export class AuthController {
 
         res.status(HTTP_STATUS.OK).json({ success: true, data: user })
     }
+
+    changePassword = async (req: Request, res: Response) => {
+        const userId = req?.user?.userId
+
+        await this._authService.changePassword(userId!, req.body)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: 'Password changed successfully',
+        })
+    }
 }
