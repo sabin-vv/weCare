@@ -1,0 +1,44 @@
+.page {
+    padding: 36px;
+    border: 1px solid #e6edf5;
+    border-radius: 24px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 249, 255, 0.98) 100%),
+        #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.06);
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #e7f1fe;
+    color: #2d6fbd;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.title {
+    margin: 18px 0 10px;
+    color: #1b365d;
+    font-size: clamp(2.8rem, 4vw, 4rem);
+    line-height: 1.1;
+}
+
+.description {
+    max-width: 640px;
+    margin: 0;
+    color: #667892;
+    font-size: 1.7rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+    .page {
+        padding: 24px;
+        border-radius: 18px;
+    }
+}
