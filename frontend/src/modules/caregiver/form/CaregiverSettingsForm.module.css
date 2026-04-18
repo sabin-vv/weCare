@@ -1,0 +1,396 @@
+.container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.loadingCard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    background: #ffffff;
+    border: 1px solid #dbe7de;
+    border-radius: 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.loadingText {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #5f7d6d;
+}
+
+.profileCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #ffffff;
+    border: 1px solid #dbe7de;
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.profileMeta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatarWrap {
+    position: relative;
+}
+
+.avatar,
+.avatarFallback {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatarFallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1ecf77, #0ea968);
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.24);
+}
+
+.avatarBadge {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background: #12d26c;
+    border: 3px solid #ffffff;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(18, 210, 108, 0.25);
+}
+
+.profileName {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.profileEmail {
+    margin: 0;
+    color: #6b8a77;
+    font-size: 15px;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.activeBadge {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.inactiveBadge {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.statusToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.switch {
+    position: relative;
+    width: 42px;
+    height: 22px;
+    border: none;
+    border-radius: 999px;
+    background: #d1d5db;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.switchOn {
+    background: #19db82;
+}
+
+.switchThumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.switchOn .switchThumb {
+    transform: translateX(20px);
+}
+
+.section {
+    background: #ffffff;
+    border: 1px solid #dbe7de;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.editButton {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: transparent;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.editButton:hover {
+    background: linear-gradient(135deg, #1ce06f, #12c85d);
+    border-color: #1ce06f;
+    color: #ffffff;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b8a77;
+}
+
+.verifiedRow {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f9f58;
+}
+
+.pendingRow {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #d97706;
+}
+
+.rejectedRow {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #dc2626;
+}
+
+.input {
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b8a77;
+}
+
+.input {
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #d6e2d8;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1f2937;
+    background: #fbfdfb;
+    transition: border-color 0.2s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #1ecf77;
+}
+
+.input:disabled {
+    background: #fbfdfb;
+    color: #374151;
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.readOnly {
+    background: #fbfdfb;
+    color: #64748b;
+}
+
+.securityButton {
+    padding: 12px 20px;
+    border: 1px solid #dce7df;
+    border-radius: 10px;
+    background: #f9fbfa;
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.securityButton:hover {
+    background: #f1f5f9;
+    border-color: #1ecf77;
+}
+
+.securityRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    min-height: 80px;
+}
+
+.securityTitle {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.securitySub {
+    margin: 0;
+    color: #7b8a8b;
+    font-size: 14px;
+}
+
+.secondaryButton {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 10px;
+    border: 1px solid #dce7df;
+    background: #f9fbfa;
+    color: #1f2937;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.discardButton {
+    min-width: 140px;
+    height: 48px;
+    padding: 0 24px;
+    border: none;
+    background: transparent;
+    color: #5e7f6e;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.discardButton:hover {
+    color: #1f2937;
+}
+
+.saveButton {
+    min-width: 190px;
+    height: 48px;
+    padding: 0 24px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1ce06f, #12c85d);
+    color: #073b22;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 14px 24px rgba(34, 197, 94, 0.22);
+}
+
+.saveButton:disabled,
+.discardButton:disabled,
+.securityButton:disabled,
+.editButton:disabled,
+.switch:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+@media (max-width: 960px) {
+    .profileCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .discardButton,
+    .saveButton {
+        width: 100%;
+    }
+}
