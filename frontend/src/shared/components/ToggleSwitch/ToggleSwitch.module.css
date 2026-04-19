@@ -1,0 +1,51 @@
+.toggle {
+    width: 44px;
+    height: 24px;
+    border-radius: 999px;
+    background-color: #d1d5db;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    border: none;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px;
+}
+
+.toggle:hover {
+    background-color: #cbd5f5;
+}
+
+.active {
+    background-color: #2563eb;
+}
+
+.thumb {
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.active .thumb {
+    transform: translateX(20px);
+}
+
+.toggle:focus-visible {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+.disabled {
+    background-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.disabled .thumb {
+    box-shadow: none;
+}
