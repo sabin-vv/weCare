@@ -90,6 +90,8 @@ export interface TimeRangeInputProps {
     value: TimeRange
     onChange: (value: TimeRange) => void
     slotDuration: number
+    minStartTime?: string
+    maxEndTime?: string
     onDelete?: () => void
 }
 
@@ -126,49 +128,21 @@ export interface DateRangePickerProps {
     maxDate?: string
 }
 
+export type WeekDay = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
 export interface WeeklySchedule {
-    day: string
+    day: WeekDay
     isAvailable: boolean
     timeRanges: { startTime: string; endTime: string }[]
 }
 
-export const initialSchedule: WeeklySchedule[] = [
-    {
-        day: 'Monday',
-        isAvailable: true,
-        timeRanges: [{ startTime: '09:00', endTime: '13:00' }],
-    },
-    {
-        day: 'Tuesday',
-        isAvailable: true,
-        timeRanges: [
-            { startTime: '09:00', endTime: '13:00' },
-            { startTime: '14:00', endTime: '17:00' },
-        ],
-    },
-    {
-        day: 'Wednesday',
-        isAvailable: false,
-        timeRanges: [],
-    },
-    {
-        day: 'Thursday',
-        isAvailable: true,
-        timeRanges: [{ startTime: '09:00', endTime: '13:00' }],
-    },
-    {
-        day: 'Friday',
-        isAvailable: true,
-        timeRanges: [{ startTime: '09:00', endTime: '13:00' }],
-    },
-    {
-        day: 'Saturday',
-        isAvailable: false,
-        timeRanges: [],
-    },
-    {
-        day: 'Sunday',
-        isAvailable: false,
-        timeRanges: [],
-    },
-]
+export interface DoctorAvailability {
+    timezone: string
+    weeklySchedule: WeeklySchedule[]
+    slotDuration: number
+    startDate: string
+    endDate: string
+}
+
+export interface DoctorAvailabilityResponse extends ApiInterface {
+    data: DoctorAvailability
+}
