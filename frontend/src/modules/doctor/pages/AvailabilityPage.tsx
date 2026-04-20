@@ -1,16 +1,28 @@
 import { CalendarDays, Clock3 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
+import { getDoctorAvailability, updateDoctorAvailability } from '../api/doctor.api'
 import { DateRangePicker } from '../components/DateRangePicker'
 import { DayScheduleRow } from '../components/DayScheduleRow'
 import { SlotDurationSelector } from '../components/SlotDurationSelector'
-import { initialSchedule, type WeeklySchedule } from '../types/doctor.types'
+import { type WeeklySchedule } from '../types/doctor.types'
 
 import styles from './AvailabilityPage.module.css'
 
 import DoctorLayout from '@/layout/DoctorLayout'
 import PageHeader from '@/shared/components/PageHeader/PageHeader'
-import ToggleSwitch from '@/shared/components/ToggleSwitch/ToggleSwitch'
+import { getErrorMessage } from '@/utils/getErrorMessage'
+
+export const initialSchedule: WeeklySchedule[] = [
+    { day: 'monday', isAvailable: false, timeRanges: [] },
+    { day: 'tuesday', isAvailable: false, timeRanges: [] },
+    { day: 'wednesday', isAvailable: false, timeRanges: [] },
+    { day: 'thursday', isAvailable: false, timeRanges: [] },
+    { day: 'friday', isAvailable: false, timeRanges: [] },
+    { day: 'saturday', isAvailable: false, timeRanges: [] },
+    { day: 'sunday', isAvailable: false, timeRanges: [] },
+]
 
 const addMinutesToTime = (time: string, minutesToAdd: number) => {
     const [hours, minutes] = time.split(':').map(Number)
@@ -39,15 +51,29 @@ const syncScheduleToDuration = (value: WeeklySchedule[], duration: number) =>
 const cloneSchedule = (value: WeeklySchedule[]) =>
     value.map((day) => ({ ...day, timeRanges: day.timeRanges.map((range) => ({ ...range })) }))
 
+const mergeWithDefaultSchedule = (value: WeeklySchedule[]) =>
+    initialSchedule.map((defaultDay) => {
+        const savedDay = value.find((day) => day.day === defaultDay.day)
+
+        return savedDay
+            ? {
+                  ...defaultDay,
+                  ...savedDay,
+                  timeRanges: savedDay.timeRanges.map((range) => ({ ...range })),
+              }
+            : { ...defaultDay, timeRanges: [] }
+    })
+
 const defaultSlotDuration = 15
 const defaultSchedule = syncScheduleToDuration(cloneSchedule(initialSchedule), defaultSlotDuration)
 const defaultDateRange = { start: '', end: '' }
 
 const AvailabilityPage = () => {
     const [slotDuration, setSlotDuration] = useState(defaultSlotDuration)
-    const [autoRepeat, setAutoRepeat] = useState(true)
     const [schedule, setSchedule] = useState<WeeklySchedule[]>(cloneSchedule(defaultSchedule))
     const [dateRange, setDateRange] = useState(defaultDateRange)
+    const [isLoadingAvailability, setIsLoadingAvailability] = useState(true)
+    const [isSaving, setIsSaving] = useState(false)
 
     const updateDay = (index: number, updater: (day: WeeklySchedule) => WeeklySchedule) => {
         setSchedule((current) => current.map((day, dayIndex) => (dayIndex === index ? updater(day) : day)))
@@ -55,7 +81,6 @@ const AvailabilityPage = () => {
 
     const handleReset = () => {
         setSlotDuration(defaultSlotDuration)
-        setAutoRepeat(true)
         setSchedule(cloneSchedule(defaultSchedule))
         setDateRange(defaultDateRange)
     }
@@ -64,6 +89,54 @@ const AvailabilityPage = () => {
         setSlotDuration(duration)
         setSchedule((current) => syncScheduleToDuration(current, duration))
     }
+
+    useEffect(() => {
+        const loadAvailability = async () => {
+            try {
+                const availability = await getDoctorAvailability()
+                setSlotDuration(availability.slotDuration || defaultSlotDuration)
+                setSchedule(mergeWithDefaultSchedule(availability.weeklySchedule || []))
+                setDateRange({
+                    start: availability.startDate || '',
+                    end: availability.endDate || '',
+                })
+            } catch (error) {
+                toast.error(getErrorMessage(error))
+            } finally {
+                setIsLoadingAvailability(false)
+            }
+        }
+
+        loadAvailability()
+    }, [])
+
+    const handleSave = async () => {
+        setIsSaving(true)
+
+        try {
+            const updatedAvailability = await updateDoctorAvailability({
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                weeklySchedule: schedule,
+                slotDuration,
+                startDate: dateRange.start,
+                endDate: dateRange.end,
+            })
+
+            setSlotDuration(updatedAvailability.slotDuration)
+            setSchedule(cloneSchedule(updatedAvailability.weeklySchedule))
+            setDateRange({
+                start: updatedAvailability.startDate,
+                end: updatedAvailability.endDate,
+            })
+            toast.success('Availability saved successfully')
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsSaving(false)
+        }
+    }
+
+    const today = new Date().toISOString().split('T')[0]
 
     return (
         <DoctorLayout>
@@ -74,7 +147,12 @@ const AvailabilityPage = () => {
                         subtitle="Define your standard working hours and consultation slots for the week."
                     />
 
-                    <div className={styles.form}>
+                    {isLoadingAvailability ? (
+                        <div className={styles.loadingCard}>
+                            <p className={styles.loadingText}>Loading availability...</p>
+                        </div>
+                    ) : (
+                        <div className={styles.form}>
                         <section className={styles.card}>
                             <div className={styles.cardHeader}>
                                 <div className={styles.cardTitleWrap}>
@@ -90,16 +168,6 @@ const AvailabilityPage = () => {
                                     <span className={styles.fieldLabel}>Consultation Duration</span>
                                     <SlotDurationSelector value={slotDuration} onChange={handleSlotDurationChange} />
                                 </div>
-
-                                <div className={styles.repeatWrap}>
-                                    <div className={styles.repeatText}>
-                                        <span className={styles.repeatTitle}>Auto-repeat schedule</span>
-                                        <span className={styles.repeatHint}>
-                                            Apply recurring availability every week
-                                        </span>
-                                    </div>
-                                    <ToggleSwitch checked={autoRepeat} onChange={setAutoRepeat} />
-                                </div>
                             </div>
                         </section>
 
@@ -112,7 +180,7 @@ const AvailabilityPage = () => {
                                     <h2 className={styles.cardTitle}>Weekly Schedule</h2>
                                 </div>
 
-                                <DateRangePicker value={dateRange} onChange={setDateRange} />
+                                <DateRangePicker value={dateRange} onChange={setDateRange} minDate={today} />
                             </div>
 
                             <div className={styles.daysList}>
@@ -151,7 +219,8 @@ const AvailabilityPage = () => {
                                         onAddRange={() =>
                                             updateDay(index, (currentDay) => {
                                                 const previousEndTime =
-                                                    currentDay.timeRanges[currentDay.timeRanges.length - 1]?.endTime ?? '09:00'
+                                                    currentDay.timeRanges[currentDay.timeRanges.length - 1]?.endTime ??
+                                                    '09:00'
 
                                                 if (toMinutes(previousEndTime) >= 23 * 60 + 45) {
                                                     return currentDay
@@ -191,11 +260,17 @@ const AvailabilityPage = () => {
                             <button type="button" className={styles.secondaryButton} onClick={handleReset}>
                                 Cancel
                             </button>
-                            <button type="button" className={styles.primaryButton}>
-                                Save Changes
+                            <button
+                                type="button"
+                                className={styles.primaryButton}
+                                onClick={handleSave}
+                                disabled={isSaving || isLoadingAvailability}
+                            >
+                                {isSaving ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
                     </div>
+                    )}
                 </div>
             </div>
         </DoctorLayout>
