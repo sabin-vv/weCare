@@ -1,4 +1,5 @@
 import { Trash2 } from 'lucide-react'
+import { useEffect } from 'react'
 
 import type { TimeRangeInputProps } from '../types/doctor.types'
 
@@ -12,6 +13,11 @@ const addMinutesToTime = (time: string, minutesToAdd: number) => {
     const nextMinutes = normalizedMinutes % 60
 
     return `${String(nextHours).padStart(2, '0')}:${String(nextMinutes).padStart(2, '0')}`
+}
+
+const toMinutes = (time: string) => {
+    const [hours, minutes] = time.split(':').map(Number)
+    return hours * 60 + minutes
 }
 
 const buildTimeOptions = (stepMinutes: number) => {
@@ -35,12 +41,13 @@ const formatTimeLabel = (time: string) => {
 }
 
 const startTimeOptions = buildTimeOptions(15)
-const buildEndTimeOptions = (startTime: string, slotDuration: number) => {
-    const [startHours, startMinutes] = startTime.split(':').map(Number)
-    const startTotalMinutes = startHours * 60 + startMinutes
+const lastEndTimeMinutes = 23 * 60 + 45
+const buildEndTimeOptions = (startTime: string, slotDuration: number, maxEndTime?: string) => {
+    const startTotalMinutes = toMinutes(startTime)
+    const maxEndMinutes = maxEndTime ? Math.min(toMinutes(maxEndTime), lastEndTimeMinutes) : lastEndTimeMinutes
     const options = []
 
-    for (let nextMinutes = startTotalMinutes + slotDuration; nextMinutes < 24 * 60; nextMinutes += slotDuration) {
+    for (let nextMinutes = startTotalMinutes + slotDuration; nextMinutes <= maxEndMinutes; nextMinutes += slotDuration) {
         const hours = Math.floor(nextMinutes / 60)
         const minutes = nextMinutes % 60
         options.push(`${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`)
@@ -49,20 +56,47 @@ const buildEndTimeOptions = (startTime: string, slotDuration: number) => {
     return options
 }
 
-const TimeRangeInput = ({ value, slotDuration, onChange, onDelete }: TimeRangeInputProps) => {
-    const minimumEndTime = addMinutesToTime(value.startTime, slotDuration)
-    const endTimeOptions = buildEndTimeOptions(value.startTime, slotDuration)
+const TimeRangeInput = ({
+    value,
+    slotDuration,
+    minStartTime,
+    maxEndTime,
+    onChange,
+    onDelete,
+}: TimeRangeInputProps) => {
+    const minStartMinutes = minStartTime ? toMinutes(minStartTime) : 0
+    const maxStartMinutes = maxEndTime
+        ? Math.min(toMinutes(maxEndTime), lastEndTimeMinutes) - slotDuration
+        : lastEndTimeMinutes - slotDuration
+    const availableStartTimeOptions = startTimeOptions.filter((option) => {
+        const optionMinutes = toMinutes(option)
+        return optionMinutes >= minStartMinutes && optionMinutes <= maxStartMinutes
+    })
+    const selectedStartTime = availableStartTimeOptions.includes(value.startTime)
+        ? value.startTime
+        : (availableStartTimeOptions[0] ?? value.startTime)
+    const minimumEndTime = addMinutesToTime(selectedStartTime, slotDuration)
+    const endTimeOptions = buildEndTimeOptions(selectedStartTime, slotDuration, maxEndTime)
 
-    const selectedEndTime = endTimeOptions.includes(value.endTime) ? value.endTime : minimumEndTime
+    const selectedEndTime = endTimeOptions.includes(value.endTime) ? value.endTime : (endTimeOptions[0] ?? minimumEndTime)
+
+    useEffect(() => {
+        if (selectedStartTime !== value.startTime || selectedEndTime !== value.endTime) {
+            onChange({
+                startTime: selectedStartTime,
+                endTime: selectedEndTime,
+            })
+        }
+    }, [onChange, selectedEndTime, selectedStartTime, value.endTime, value.startTime])
 
     return (
         <div className={styles.wrapper}>
             <div className={styles.timeBox}>
                 <select
-                    value={value.startTime}
+                    value={selectedStartTime}
                     onChange={(e) => {
                         const nextStartTime = e.target.value
-                        const nextEndTimeOptions = buildEndTimeOptions(nextStartTime, slotDuration)
+                        const nextEndTimeOptions = buildEndTimeOptions(nextStartTime, slotDuration, maxEndTime)
                         const nextMinimumEndTime = addMinutesToTime(nextStartTime, slotDuration)
 
                         onChange({
@@ -73,7 +107,7 @@ const TimeRangeInput = ({ value, slotDuration, onChange, onDelete }: TimeRangeIn
                     aria-label="Start time"
                     className={`${styles.input} ${styles.select}`}
                 >
-                    {startTimeOptions.map((option) => (
+                    {availableStartTimeOptions.map((option) => (
                         <option key={option} value={option}>
                             {formatTimeLabel(option)}
                         </option>
