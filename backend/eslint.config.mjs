@@ -6,6 +6,9 @@ import simpleImportSort from "eslint-plugin-simple-import-sort"
 
 export default defineConfig([
     {
+        ignores: ["dist/**"],
+    },
+    {
         files: ["**/*.{js,mjs,cjs}"],
         ...js.configs.recommended,
         languageOptions: {
