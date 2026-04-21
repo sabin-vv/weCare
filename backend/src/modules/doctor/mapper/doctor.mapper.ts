@@ -2,7 +2,7 @@ import { Types } from 'mongoose'
 
 import { UserDocument } from '../../auth/types/auth.types'
 import { DoctorEntity } from '../types/doctor.types'
-import { DoctorDocument, DoctorProfileResponse } from '../types/doctor.types'
+import { DoctorDocument, DoctorProfileResponse, DoctorSearchResult } from '../types/doctor.types'
 import { DoctorDTO } from '../validator/registerDoctor.schema'
 
 export const toDoctorEntity = (userId: Types.ObjectId, dto: DoctorDTO): DoctorEntity => {
@@ -37,5 +37,15 @@ export const toDoctorProfileResponse = (user: UserDocument, doctor: DoctorDocume
         experienceCertificatesCount: doctor.specializations?.length ?? 0,
         isActive: doctor.isActive,
         verificationStatus: doctor.verificationStatus,
+    }
+}
+
+export const toDoctorPublicResponse = (doctor: DoctorDocument, user: UserDocument | null): DoctorSearchResult => {
+    const userName = user?.name || 'Unknown Doctor'
+    return {
+        id: doctor._id.toString(),
+        name: userName,
+        specialty: doctor.specializations.map((s) => s.name).join(', '),
+        profileImage: doctor.profileImage,
     }
 }
