@@ -83,4 +83,32 @@ export class DoctorController {
             total: result.total,
         })
     }
+
+    getDoctorById = async (req: Request, res: Response) => {
+        const doctorId = req.params.doctorId as string
+
+        const result = await this._doctorService.getDoctorById(doctorId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: result,
+        })
+    }
+
+    getDoctorSlots = async (req: Request, res: Response) => {
+        const doctorId = req.params.doctorId as string
+        const rawDate = req.query.date
+        const dateParam = typeof rawDate === 'string' ? rawDate : undefined
+
+        if (!dateParam) {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Date query parameter is required')
+        }
+
+        const result = await this._doctorService.getDoctorSlots(doctorId, dateParam)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: result,
+        })
+    }
 }
