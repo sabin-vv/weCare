@@ -102,8 +102,7 @@ export interface DoctorSearchResult {
     id: string
     name: string
     specialty: string
-    accent: string
-    initials: string
+
     profileImage?: string
 }
 
@@ -121,4 +120,18 @@ export interface DoctorSearchFilter {
         'specializations.name'?: { $regex: string; $options: string }
         'userId.name'?: { $regex: string; $options: string }
     }>
+}
+
+export interface DoctorSlot {
+    start: string
+    end: string
+    available: boolean
+}
+
+export interface DoctorSlotsResponse {
+    doctorId: string
+    date: string
+    timezone: string
+    slotDuration: number
+    slots: DoctorSlot[]
 }
