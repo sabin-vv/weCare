@@ -64,4 +64,23 @@ export class DoctorController {
 
         res.status(HTTP_STATUS.OK).json({ success: true, message: 'Doctor availability updated', data: result })
     }
+
+    searchDoctors = async (req: Request, res: Response) => {
+        const { search, specialty, page, limit } = req.query
+
+        const result = await this._doctorService.searchDoctors({
+            search: search as string,
+            specialty: specialty as string,
+            page: parseInt(page as string) || 1,
+            limit: parseInt(limit as string) || 8,
+        })
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: 'Doctors fetched successfully',
+            data: result.doctors,
+            specialties: result.specialties,
+            total: result.total,
+        })
+    }
 }
