@@ -1,5 +1,6 @@
 import { BadgeCheck, ChevronDown, UserRound, Loader2 } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { getDoctors } from '../api/patient.api'
 import type { Specialist } from '../types/patient.types'
@@ -12,6 +13,7 @@ import SearchField from '@/shared/components/SearchField/SearchField'
 import SelectField from '@/shared/components/SelectField/SelectField'
 
 const DoctorBookingPage = () => {
+    const navigate = useNavigate()
     const [query, setQuery] = useState('')
     const [selectedSpecialty, setSelectedSpecialty] = useState('')
     const [specialtyOptions, setSpecialtyOptions] = useState<{ label: string; value: string }[]>([])
@@ -116,7 +118,11 @@ const DoctorBookingPage = () => {
                             <h2 className={styles.doctorName}>{doctor.name}</h2>
                             <p className={styles.specialty}>{doctor.specialty}</p>
 
-                            <button type="button" className={styles.bookButton}>
+                            <button 
+                                type="button" 
+                                className={styles.bookButton}
+                                onClick={() => navigate(`/appointments/doctor/${doctor.id}`)}
+                            >
                                 Book Appointment
                             </button>
                         </article>
