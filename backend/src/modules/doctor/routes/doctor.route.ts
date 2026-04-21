@@ -13,6 +13,8 @@ export const createDoctorRoutes = () => {
     const router = Router()
     const doctorController = container.resolve(DoctorController)
 
+    router.get('/', doctorController.searchDoctors)
+
     router.use(requireAuth)
 
     router.get('/me', doctorController.getProfile)
