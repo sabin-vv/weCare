@@ -11,4 +11,6 @@ export const TOKENS = {
     IOtpService: Symbol('IOtpService'),
     IAdminRepository: Symbol('IAdminRepository'),
     IAdminService: Symbol('IAdminService'),
+    IAppointmentRepository: Symbol('IAppointmentRepository'),
+    IAppointmentService: Symbol('IAppointmentService'),
 }

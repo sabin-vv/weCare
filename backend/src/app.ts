@@ -4,6 +4,7 @@ import express from 'express'
 
 import { errorMiddleware } from './core/middleware/errorMiddleware'
 import { createAdminRoutes } from './modules/admin/routes/admin.route'
+import { createAppointmentRoutes } from './modules/appointment/routes/appointment.route'
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
 import { createDoctorRoutes } from './modules/doctor/routes/doctor.route'
@@ -29,6 +30,7 @@ app.use('/api/doctors', createDoctorRoutes())
 app.use('/api/caregivers', createCaregiverRoutes())
 
 app.use('/api/patients', createPatientRoutes())
+app.use('/api/appointments', createAppointmentRoutes())
 
 app.use('/api/uploads', createUploadsRoutes())
 
