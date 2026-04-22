@@ -44,6 +44,7 @@ export interface PendingCaregiver {
     licenseImage: string
     govIdImage: string
     createdAt: string
+    verificationStatus: 'pending' | 'verified' | 'rejected'
 }
 
 export interface PendingCaregiversResponse {
