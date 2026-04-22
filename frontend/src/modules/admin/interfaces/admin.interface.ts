@@ -18,6 +18,7 @@ export interface PendingDoctor {
     createdAt: string
     updatedAt?: string
     verificationStatus?: 'pending' | 'verified' | 'rejected'
+    rejectReason?: string
 }
 
 export interface Pagination {

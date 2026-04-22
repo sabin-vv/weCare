@@ -26,8 +26,12 @@ export const getRecentDoctorVerifications = async (limit: number = 10): Promise<
     return res.data
 }
 
-export const verifyDoctor = async (doctorId: string, status: 'verified' | 'rejected'): Promise<{ message: string }> => {
-    const res = await api.patch(`/admin/verify-doctor/${doctorId}`, { status })
+export const verifyDoctor = async (
+    doctorId: string,
+    status: 'verified' | 'rejected',
+    reason?: string,
+): Promise<{ message: string }> => {
+    const res = await api.patch(`/admin/verify-doctor/${doctorId}`, { status, reason })
     return res.data
 }
 
