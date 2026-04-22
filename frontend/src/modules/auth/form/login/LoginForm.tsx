@@ -61,7 +61,7 @@ const LoginForm = () => {
                     navigate('/caregiver/dashboard')
                     break
                 case Role.PATIENT:
-                    navigate('/patient/dashboard')
+                    navigate('/dashboard')
                     break
                 default:
                     navigate('/')

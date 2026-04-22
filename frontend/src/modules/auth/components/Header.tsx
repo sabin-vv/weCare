@@ -1,5 +1,4 @@
-import { House } from 'lucide-react'
-import { Stethoscope } from 'lucide-react'
+import { House, Stethoscope, LayoutDashboard, Calendar } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { useLogout } from '../hooks/useLogout'
@@ -39,10 +38,20 @@ const Header = () => {
                     <button className={styles.navLink} onClick={() => navigate('/')}>
                         <House /> Home
                     </button>
-                    <button className={styles.navLink} onClick={() => navigate('/appointments')}>
+                    {isAuthenticated && (
+                        <button className={styles.navLink} onClick={() => navigate('/dashboard')}>
+                            <LayoutDashboard /> Dashboard
+                        </button>
+                    )}
+                    <button className={styles.navLink} onClick={() => navigate('/doctors')}>
                         <Stethoscope />
                         Book an Appointment
                     </button>
+                    {isAuthenticated && (
+                        <button className={styles.navLink} onClick={() => navigate('/appointments')}>
+                            <Calendar /> My Appointments
+                        </button>
+                    )}
                 </nav>
 
                 <div className={styles.actionButtons}>
