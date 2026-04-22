@@ -48,6 +48,7 @@ export interface RecentDoctor {
     createdAt: string
     updatedAt: string
     verificationStatus: 'verified' | 'rejected'
+    rejectReason?: string
 }
 
 export interface RecentDoctorsResponse {

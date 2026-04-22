@@ -45,6 +45,7 @@ export const toRecentDoctorDTO = (doctor: RawRecord): RecentDoctor => {
         govIdImage: pending.govIdImage || '',
         updatedAt: ((doctor.updatedAt || doctor.verifiedAt) as { toString(): string })?.toString() || '',
         verificationStatus: doctor.verificationStatus as 'verified' | 'rejected',
+        rejectReason: (doctor.rejectReason as string) || '',
     }
 }
 
