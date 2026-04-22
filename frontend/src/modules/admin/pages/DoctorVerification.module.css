@@ -447,3 +447,161 @@
     font-weight: 700;
     text-transform: capitalize;
 }
+.rejectionBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.rejectionBody p {
+    font-size: 14px;
+    color: #475569;
+    margin: 0;
+}
+
+.rejectionTextarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #1e293b;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.rejectionTextarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.cancelBtn {
+    background: #fff;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #f8fafc;
+    color: #1e293b;
+}
+.statusCell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rejectReasonText {
+    margin: 0;
+    font-size: 11px;
+    color: #ef4444;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-style: italic;
+}
+
+.headInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.specList {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 16px;
+    border-left: 1px solid #e2e8f0;
+}
+
+.specItems {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.specItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #f1f5f9;
+}
+
+.specItemName {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.miniVerified {
+    font-size: 11px;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.miniActions {
+    display: flex;
+    gap: 4px;
+}
+
+.miniApprove, .miniReject {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.miniApprove {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.miniApprove:hover {
+    background: #bbf7d0;
+}
+
+.miniReject {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.miniReject:hover {
+    background: #fecaca;
+}
+
+.specActions {
+    display: flex;
+    gap: 12px;
+}
+
+.specRejectBtn {
+    padding: 6px 16px;
+    background: #fff;
+    color: #ef4444;
+    border: 1px solid #fee2e2;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.specRejectBtn:hover {
+    background: #fef2f2;
+}

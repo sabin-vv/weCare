@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -24,6 +25,8 @@ const DoctorVerificationPage = () => {
     const [activeTab, setActiveTab] = useState<string>('council')
     const [recentDoctors, setRecentDoctors] = useState<PendingDoctor[]>([])
     const [recentLoading, setRecentLoading] = useState(true)
+    const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false)
+    const [rejectionReason, setRejectionReason] = useState('')
     const { refreshCounts } = usePendingCount()
 
     const fetchDoctors = async (page = 1, searchQuery = '') => {
@@ -51,17 +54,24 @@ const DoctorVerificationPage = () => {
         }
     }
 
-    const handleAction = async (doctorId: string, status: 'verified' | 'rejected') => {
+    const handleAction = async (doctorId: string, status: 'verified' | 'rejected', reason?: string) => {
         try {
-            await verifyDoctor(doctorId, status)
+            await verifyDoctor(doctorId, status, reason)
             toast.success(`Doctor ${status === 'verified' ? 'approved' : 'rejected'} successfully`)
             setIsModalOpen(false)
+            setIsRejectionModalOpen(false)
+            setRejectionReason('')
             fetchDoctors(pagination.page)
             fetchRecentDoctors()
             refreshCounts()
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
+    }
+
+    const openRejectionModal = () => {
+        setRejectionReason('Information provided is insufficient')
+        setIsRejectionModalOpen(true)
     }
 
     const handleSpecVerify = async (index: number) => {
@@ -190,7 +200,13 @@ const DoctorVerificationPage = () => {
                     <button className={styles.approveBtn} onClick={() => handleAction(doctor._id, 'verified')}>
                         Approve
                     </button>
-                    <button className={styles.rejectBtn} onClick={() => handleAction(doctor._id, 'rejected')}>
+                    <button
+                        className={styles.rejectBtn}
+                        onClick={() => {
+                            setSelectedDoctor(doctor)
+                            openRejectionModal()
+                        }}
+                    >
                         Reject
                     </button>
                 </div>
@@ -225,11 +241,20 @@ const DoctorVerificationPage = () => {
             header: 'Status',
             key: 'verificationStatus' as keyof PendingDoctor,
             render: (doctor: PendingDoctor) => (
-                <span
-                    className={doctor.verificationStatus === 'verified' ? styles.verifiedBadge : styles.rejectedBadge}
-                >
-                    {doctor.verificationStatus}
-                </span>
+                <div className={styles.statusCell}>
+                    <span
+                        className={
+                            doctor.verificationStatus === 'verified' ? styles.verifiedBadge : styles.rejectedBadge
+                        }
+                    >
+                        {doctor.verificationStatus}
+                    </span>
+                    {doctor.verificationStatus === 'rejected' && doctor.rejectReason && (
+                        <p className={styles.rejectReasonText} title={doctor.rejectReason}>
+                            Reason: {doctor.rejectReason}
+                        </p>
+                    )}
+                </div>
             ),
         },
         {
@@ -301,10 +326,7 @@ const DoctorVerificationPage = () => {
                 footer={
                     selectedDoctor?.verificationStatus === 'pending' ? (
                         <>
-                            <button
-                                className={styles.rejectBtn}
-                                onClick={() => selectedDoctor && handleAction(selectedDoctor._id, 'rejected')}
-                            >
+                            <button className={styles.rejectBtn} onClick={openRejectionModal}>
                                 Reject
                             </button>
                             <button
@@ -371,12 +393,14 @@ const DoctorVerificationPage = () => {
                                     </div>
                                 ) : (
                                     selectedDoctor?.verificationStatus === 'pending' && (
-                                        <button
-                                            className={styles.specVerifyBtn}
-                                            onClick={() => handleSpecVerify(currentSpecIndex)}
-                                        >
-                                            Verify This Certificate
-                                        </button>
+                                        <div className={styles.specActionBar}>
+                                            <button
+                                                className={styles.specVerifyBtn}
+                                                onClick={() => handleSpecVerify(currentSpecIndex)}
+                                            >
+                                                Verify This Certificate
+                                            </button>
+                                        </div>
                                     )
                                 )}
                             </div>
@@ -403,6 +427,38 @@ const DoctorVerificationPage = () => {
                         </div>
                     </div>
                 )}
+            </Modal>
+
+            <Modal
+                isOpen={isRejectionModalOpen}
+                onClose={() => setIsRejectionModalOpen(false)}
+                title="Reason for Rejection"
+                footer={
+                    <>
+                        <button className={styles.cancelBtn} onClick={() => setIsRejectionModalOpen(false)}>
+                            Cancel
+                        </button>
+                        <button
+                            className={styles.rejectBtn}
+                            onClick={() =>
+                                selectedDoctor && handleAction(selectedDoctor._id, 'rejected', rejectionReason)
+                            }
+                        >
+                            Confirm Reject
+                        </button>
+                    </>
+                }
+            >
+                <div className={styles.rejectionBody}>
+                    <p>Please provide a reason for rejecting Dr. {selectedDoctor?.name}'s application:</p>
+                    <textarea
+                        className={styles.rejectionTextarea}
+                        value={rejectionReason}
+                        onChange={(e) => setRejectionReason(e.target.value)}
+                        placeholder="e.g. Medical certificate is expired or invalid..."
+                        rows={4}
+                    />
+                </div>
             </Modal>
         </div>
     )
