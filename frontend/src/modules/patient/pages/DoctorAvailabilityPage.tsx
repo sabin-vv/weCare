@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useParams, useNavigate } from 'react-router-dom'
 
+import { getDoctorSlots, createAppointment, verifyPayment } from '../api/patient.api'
+import { type DoctorSlot } from '../types/patient.types'
+
 import styles from './DoctorAvailabilityPage.module.css'
 
 import { env } from '@/config/env'
 import AuthLayout from '@/layout/AuthLayout'
 import { api } from '@/services/api'
 import Button from '@/shared/components/Button/Button'
+import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
@@ -19,12 +23,6 @@ type DoctorInfo = {
     initials: string
     accent: string
     consultationFee: number
-}
-
-type DoctorSlot = {
-    start: string
-    end: string
-    isBooked?: boolean
 }
 
 const DoctorAvailabilityPage = () => {
@@ -50,12 +48,9 @@ const DoctorAvailabilityPage = () => {
     const fetchSlots = async (date: Date) => {
         try {
             setLoading(true)
-
-            const res = await api.get(`/doctors/${doctorId}/slots`, { params: { date: formatDate(date) } })
-
-            setSlots(res.data.data.slots)
+            const data = await getDoctorSlots(doctorId!, formatDate(date))
+            setSlots(data.slots)
         } catch (err) {
-            console.error('Error fetching slots:', err)
             toast.error(getErrorMessage(err))
             setSlots([])
         } finally {
@@ -100,20 +95,70 @@ const DoctorAvailabilityPage = () => {
 
     const groupedSlots = groupSlots(slots)
 
+    const { user } = useAuth()
+
     const handleBookAppointment = async () => {
-        if (!selectedTimeSlot) {
-            alert('Please select a time slot')
+        if (!selectedTimeSlot || !selectedDate) {
+            toast.error('Please select a date and time slot')
+            return
+        }
+        if (!user) {
+            toast.error('Please login to continue')
             return
         }
 
-        await api.post('/appointments', {
-            doctorId,
-            appointmentDate: selectedDate,
-            slotStart: selectedTimeSlot,
-        })
-        alert(
-            `Booking appointment with ${doctor?.fullName} on ${selectedDate?.toLocaleDateString()} at ${selectedTimeSlot}`,
-        )
+        try {
+            setLoading(true)
+
+            const order = await createAppointment({
+                doctorId: doctorId!,
+                appointmentDate: selectedDate,
+                slotStart: selectedTimeSlot,
+            })
+
+            const options = {
+                key: env.RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: 'WeCare',
+                description: `Appointment with ${doctor?.fullName}`,
+                order_id: order.id,
+                handler: async (response: any) => {
+                    try {
+                        await verifyPayment({
+                            razorpayOrderId: response.razorpay_order_id,
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            razorpaySignature: response.razorpay_signature,
+                        })
+                        toast.success('Appointment booked successfully!')
+                        navigate('/appointments')
+                    } catch (err) {
+                        console.error('Verification failed:', err)
+                        toast.error('Payment verification failed. Please contact support.')
+                    }
+                },
+                prefill: {
+                    name: user?.name || '',
+                    email: user?.email || '',
+                    Contact: '',
+                },
+                theme: {
+                    color: '#007bff',
+                },
+                modal: {
+                    ondismiss: () => {
+                        setLoading(false)
+                    },
+                },
+            }
+
+            const rzp = new (window as any).Razorpay(options)
+            rzp.open()
+        } catch (err) {
+            console.error('Booking failed:', err)
+            toast.error(getErrorMessage(err))
+            setLoading(false)
+        }
     }
 
     const totalFee = (doctor?.consultationFee ?? 0) + (settings?.platformFee ?? 0)
@@ -204,12 +249,12 @@ const DoctorAvailabilityPage = () => {
                                         {slots.map((slot) => (
                                             <button
                                                 key={slot.start}
-                                                disabled={slot.isBooked}
+                                                disabled={!slot.available}
                                                 onClick={() => setSelectedTimeSlot(slot.start)}
                                                 className={`
               ${styles.timeSlot}
               ${selectedTimeSlot === slot.start ? styles.selected : ''}
-              ${slot.isBooked ? styles.unavailable : ''}
+              ${!slot.available ? styles.unavailable : ''}
             `}
                                             >
                                                 {slot.start}
