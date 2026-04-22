@@ -25,6 +25,7 @@ export interface PendingDoctor {
     govIdImage?: string
     specializations: PendingDoctorSpecialization[]
     createdAt: string
+    verificationStatus: 'pending' | 'verified' | 'rejected'
 }
 
 export interface PendingDoctorsResponse {
@@ -66,6 +67,7 @@ export interface PendingCaregiver {
     licenseImage: string
     govIdImage: string
     createdAt: string
+    verificationStatus: 'pending' | 'verified' | 'rejected'
 }
 
 export interface PendingCaregiversResponse {

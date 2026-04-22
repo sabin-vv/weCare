@@ -15,17 +15,33 @@ import {
     RecentDoctorsResponse,
     UsersResponse,
 } from '../types/admin.types'
+import { 
+    toPendingDoctorDTO, 
+    toRecentDoctorDTO, 
+    toPendingCaregiverDTO, 
+    toRecentCaregiverDTO, 
+    toAdminUserProfileDTO, 
+    toPlatformSettingsDTO 
+} from '../mapper/admin.mapper'
 
 @injectable()
 export class AdminService implements IAdminService {
     constructor(@inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository) {}
 
     async getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse> {
-        return this._adminRepo.getPendingDoctors(page, limit, search)
+        const result = await this._adminRepo.getPendingDoctors(page, limit, search)
+        return {
+            ...result,
+            doctors: result.doctors.map(toPendingDoctorDTO)
+        }
     }
 
     async getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse> {
-        return this._adminRepo.getRecentDoctorVerifications(limit)
+        const result = await this._adminRepo.getRecentDoctorVerifications(limit)
+        return {
+            ...result,
+            doctors: result.doctors.map(toRecentDoctorDTO)
+        }
     }
 
     async verifyDoctor(
@@ -49,11 +65,19 @@ export class AdminService implements IAdminService {
     }
 
     async getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse> {
-        return this._adminRepo.getPendingCaregivers(page, limit, search)
+        const result = await this._adminRepo.getPendingCaregivers(page, limit, search)
+        return {
+            ...result,
+            caregivers: result.caregivers.map(toPendingCaregiverDTO)
+        }
     }
 
     async getRecentCaregiverVerifications(limit: number): Promise<RecentCaregiversResponse> {
-        return this._adminRepo.getRecentCaregiverVerifications(limit)
+        const result = await this._adminRepo.getRecentCaregiverVerifications(limit)
+        return {
+            ...result,
+            caregivers: result.caregivers.map(toRecentCaregiverDTO)
+        }
     }
 
     async verifyCaregiver(
@@ -82,7 +106,11 @@ export class AdminService implements IAdminService {
     }
 
     async getUsers(role: string, search: string, page: number, limit: number): Promise<UsersResponse> {
-        return this._adminRepo.getUsers(role, search, page, limit)
+        const result = await this._adminRepo.getUsers(role, search, page, limit)
+        return {
+            ...result,
+            users: result.users.map(toAdminUserProfileDTO)
+        }
     }
 
     async toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }> {
@@ -93,10 +121,12 @@ export class AdminService implements IAdminService {
     }
 
     async getPlatformSettings(): Promise<PlatformSettings> {
-        return this._adminRepo.getPlatformSettings()
+        const settings = await this._adminRepo.getPlatformSettings()
+        return toPlatformSettingsDTO(settings)
     }
 
     async updatePlatformSettings(settings: Partial<PlatformSettings>): Promise<PlatformSettings> {
-        return this._adminRepo.updatePlatformSettings(settings)
+        const updated = await this._adminRepo.updatePlatformSettings(settings)
+        return toPlatformSettingsDTO(updated)
     }
 }
