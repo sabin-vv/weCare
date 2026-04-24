@@ -109,11 +109,14 @@ export interface DoctorSearchResult {
 export interface DoctorSearchResponse {
     doctors: DoctorSearchResult[]
     specialties: string[]
-    total: number
+    totalCount: number
+    totalPages: number
+    currentPage: number
 }
 
 export interface DoctorSearchFilter {
     isActive?: boolean
+    verificationStatus: verificationStatus
     'specializations.name'?: string
     'userId.name'?: string
     $or?: Array<{
