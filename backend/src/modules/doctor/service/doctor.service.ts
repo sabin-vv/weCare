@@ -91,10 +91,8 @@ export class DoctorService implements IDoctorService {
 
         const doctorData = toDoctorEntity(new Types.ObjectId(userId), dto)
 
-        const doctor = await this._doctorRepo.create(doctorData)
+        await this._doctorRepo.create(doctorData)
         await this._userRepo.update(userId, { isProfileComplete: true })
-
-        return doctor
     }
 
     async getProfile(userId: string): Promise<DoctorProfileResponse> {
@@ -185,7 +183,9 @@ export class DoctorService implements IDoctorService {
         page: number
         limit: number
     }): Promise<DoctorSearchResponse> {
-        const filter: DoctorSearchFilter = { isActive: true }
+        const page = params.page || 1
+        const limit = params.limit || 8
+        const filter: DoctorSearchFilter = { isActive: true, verificationStatus: 'verified' }
 
         if (params.specialty) {
             filter['specializations.name'] = params.specialty
@@ -199,8 +199,8 @@ export class DoctorService implements IDoctorService {
         }
 
         const { doctors, total } = await this._doctorRepo.search(filter, {
-            page: params.page || 1,
-            limit: params.limit || 8,
+            page,
+            limit,
         })
 
         const mappedDoctors = doctors.map((doc: PopulatedDoctorDocument): DoctorSearchResult => {
@@ -214,8 +214,9 @@ export class DoctorService implements IDoctorService {
         })
 
         const specialties = await this.getSpecialties()
+        const totalPages = Math.ceil(total / limit)
 
-        return { doctors: mappedDoctors, specialties, total } as DoctorSearchResponse
+        return { doctors: mappedDoctors, specialties, totalCount: total, totalPages, currentPage: page }
     }
 
     async getSpecialties(): Promise<string[]> {
