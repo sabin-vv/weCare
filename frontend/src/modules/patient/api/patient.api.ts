@@ -13,7 +13,9 @@ import { api } from '@/services/api'
 export type GetDoctorsResponse = {
     data: Specialist[]
     specialties: string[]
-    total: number
+    totalPages: number
+    totalCount: number
+    currentPage: number
 }
 
 export const getDoctors = async (params: GetDoctorsParams): Promise<GetDoctorsResponse> => {
