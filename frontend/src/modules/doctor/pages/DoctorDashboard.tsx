@@ -1,18 +1,67 @@
+import { useEffect, useState } from 'react'
+
+import { getDoctorProfile } from '../api/doctor.api'
 import DoctorDetailsForm from '../form/DoctorDetailesForm'
+import type { DoctorDocuments, Specializations } from '../types/doctor.types'
 
 import styles from './DoctorDashboard.module.css'
 
+import { env } from '@/config/env'
 import DoctorLayout from '@/layout/DoctorLayout'
 import { VerificationStatus } from '@/modules/auth/types/auth.types'
 import { useAuth } from '@/shared/context/AuthContext'
 
 const DoctorDashboard = () => {
     const { user } = useAuth()
+    const [documents, setDocuments] = useState<DoctorDocuments>()
+    const [specializations, setSpecializations] = useState<Specializations[]>([{ name: '', documentImage: null }])
+    const [rejectReason, setRejectReason] = useState<string>()
+
+    const baseUrl = env.AWS_BASE_URL
+    useEffect(() => {
+        if (user?.verificationStatus === 'rejected') {
+            const getProfile = async () => {
+                const profile = await getDoctorProfile()
+
+                setDocuments({
+                    govId: `${baseUrl}${profile.govIdImage}`,
+                    profileImage: `${baseUrl}${profile.profileImage}`,
+                    medicalCertificate: {
+                        number: profile.medicalCertificateNumber,
+                        document: `${baseUrl}${profile.medicalCertificateImage}`,
+                    },
+                    councilRegistration: {
+                        number: profile.medicalCouncilRegistrationNumber,
+                        document: `${baseUrl}${profile.medicalCouncilImage}`,
+                    },
+                })
+                setSpecializations(
+                    profile.specialization.map((spec) => ({
+                        name: spec.name,
+                        documentImage: `${baseUrl}${spec.documentImage}`,
+                    })),
+                )
+                if (profile.rejectReason) setRejectReason(profile.rejectReason)
+            }
+
+            getProfile()
+        }
+    }, [user])
+
     return (
         <DoctorLayout>
             <main className={styles.content}>
-                {!user?.isProfileComplete ? (
-                    <DoctorDetailsForm />
+                {!user?.isProfileComplete || user.verificationStatus === 'rejected' ? (
+                    <>
+                        {user && user.verificationStatus === 'rejected' && (
+                            <div className={styles.rejectBox}>
+                                <strong>Profile Rejected</strong>
+                                <p>{rejectReason}</p>
+                            </div>
+                        )}
+
+                        <DoctorDetailsForm document={documents} specialization={specializations} />
+                    </>
                 ) : user.verificationStatus === VerificationStatus.Verified ? (
                     <section className={styles.statusPanel}>
                         <span className={`${styles.badge} ${styles.successBadge}`}>Verified Account</span>
