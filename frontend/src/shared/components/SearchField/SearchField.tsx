@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import styles from './SearchField.module.css'
 import type { SearchFieldProps } from './SearchField.types'
 
-const SearchField = ({ placeholder, onSearch, delay = 500 }: SearchFieldProps) => {
-    const [query, setQuery] = useState<string>('')
+const SearchField = ({ value, placeholder, onSearch, delay = 500 }: SearchFieldProps) => {
     const isFirstMount = useRef(true)
 
     useEffect(() => {
@@ -13,24 +12,19 @@ const SearchField = ({ placeholder, onSearch, delay = 500 }: SearchFieldProps) =
             return
         }
 
-        if (query === '') {
-            onSearch('')
-            return
-        }
-
         const handler = setTimeout(() => {
-            onSearch(query)
+            onSearch(value)
         }, delay)
 
         return () => clearTimeout(handler)
-    }, [query, delay])
+    }, [value, delay])
 
     return (
         <div className={styles.searchWrapper}>
             <input
                 type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                value={value}
+                onChange={(e) => onSearch(e.target.value)}
                 placeholder={placeholder}
                 className={styles.searchInput}
             />
