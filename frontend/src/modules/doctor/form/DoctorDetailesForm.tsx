@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
@@ -10,6 +10,7 @@ import type { DoctorDocuments, Specializations } from '../types/doctor.types'
 
 import styles from './DoctorDetailsForm.module.css'
 
+import { env } from '@/config/env'
 import Button from '@/shared/components/Button/Button'
 import Card from '@/shared/components/Card/Card'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
@@ -18,7 +19,11 @@ import InputField from '@/shared/components/InputField/InputField'
 import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
-const DoctorDetailsForm = () => {
+export interface DoctorDetailsProps {
+    document?: DoctorDocuments
+    specialization?: Specializations[]
+}
+const DoctorDetailsForm = ({ document, specialization }: DoctorDetailsProps) => {
     const { user, setAuth } = useAuth()
     const [documents, setDocuments] = useState<DoctorDocuments>({
         govId: null,
@@ -32,10 +37,34 @@ const DoctorDetailsForm = () => {
             document: null,
         },
     })
-    const [specializations, setSpecializations] = useState<Specializations[]>([{ name: '', document: null }])
+    const [specializations, setSpecializations] = useState<Specializations[]>([{ name: '', documentImage: null }])
     const [imageCrop, setImageCrop] = useState<string | null>(null)
     const [isUploading, setIsUploading] = useState(false)
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if (document) {
+            setDocuments((prev) => ({
+                ...prev,
+                govId: document.govId,
+                profileImage: document.profileImage,
+                medicalCertificate: {
+                    number: document.medicalCertificate?.number,
+                    document: document.medicalCertificate?.document,
+                },
+                councilRegistration: {
+                    number: document.councilRegistration?.number,
+                    document: document.councilRegistration?.document,
+                },
+            }))
+        }
+        if (specialization) setSpecializations(specialization)
+    }, [document, specialization])
+
+    const getStoredFileKey = (value: string) => {
+        const baseUrl = env.AWS_BASE_URL.replace(/\/$/, '')
+        return value.startsWith(baseUrl) ? value.slice(baseUrl.length).replace(/^\/+/, '') : value
+    }
 
     const uploadFileToS3 = async (file: File, folder: string): Promise<string> => {
         try {
@@ -65,7 +94,7 @@ const DoctorDetailsForm = () => {
         })
     }
     const addSpecialization = () => {
-        setSpecializations((prev) => [...prev, { name: '', document: null }])
+        setSpecializations((prev) => [...prev, { name: '', documentImage: null }])
     }
 
     const removeSpecialization = (index: number) => {
@@ -74,6 +103,7 @@ const DoctorDetailsForm = () => {
 
     const handleRegister = async () => {
         const result = doctorDetailesSchema.safeParse({ specializations, documents })
+
         if (!result.success) {
             const message = result.error.issues[0].message
             toast.error(message)
@@ -81,42 +111,57 @@ const DoctorDetailsForm = () => {
         }
         setIsUploading(true)
         try {
+            const hasExistingProfile = !!user?.isProfileComplete
             const formData = new FormData()
 
-            if (documents.govId) {
+            if (documents.govId instanceof File) {
                 const govIdKey = await uploadFileToS3(documents.govId, 'documents/govId')
                 formData.append('govIdImage', govIdKey)
+            } else if (typeof document?.govId === 'string') {
+                formData.append('govIdImage', getStoredFileKey(document.govId))
             }
 
-            if (documents.profileImage) {
+            if (documents.profileImage instanceof File) {
                 const profileImageKey = await uploadFileToS3(documents.profileImage, 'documents/profileImage')
                 formData.append('profileImage', profileImageKey)
+            } else if (typeof document?.profileImage === 'string') {
+                formData.append('profileImage', getStoredFileKey(document.profileImage))
             }
 
             formData.append('medicalCertificateNumber', documents.medicalCertificate.number)
-            if (documents.medicalCertificate.document) {
+            if (documents.medicalCertificate.document instanceof File) {
                 const certKey = await uploadFileToS3(
                     documents.medicalCertificate.document,
                     'documents/medicalCertificate',
                 )
                 formData.append('medicalCertificateImage', certKey)
+            } else if (typeof documents.medicalCertificate.document === 'string') {
+                formData.append('medicalCertificateImage', getStoredFileKey(documents.medicalCertificate.document))
+            } else if (typeof document?.medicalCertificate.document === 'string') {
+                formData.append('medicalCertificateImage', getStoredFileKey(document.medicalCertificate.document))
             }
 
             formData.append('medicalCouncilRegisterNumber', documents.councilRegistration.number)
-            if (documents.councilRegistration.document) {
+            if (documents.councilRegistration.document instanceof File) {
                 const councilKey = await uploadFileToS3(
                     documents.councilRegistration.document,
                     'documents/medicalCouncil',
                 )
                 formData.append('medicalCouncilImage', councilKey)
+            } else if (typeof documents.councilRegistration.document === 'string') {
+                formData.append('medicalCouncilImage', getStoredFileKey(documents.councilRegistration.document))
+            } else if (typeof document?.councilRegistration.document === 'string') {
+                formData.append('medicalCouncilImage', getStoredFileKey(document.councilRegistration.document))
             }
 
             const specializationKeys: (string | null)[] = []
             for (let i = 0; i < specializations.length; i++) {
                 const spec = specializations[i]
-                if (spec.document) {
-                    const specKey = await uploadFileToS3(spec.document, `documents/specializations`)
+                if (spec.documentImage instanceof File) {
+                    const specKey = await uploadFileToS3(spec.documentImage, `documents/specializations`)
                     specializationKeys.push(specKey)
+                } else if (typeof spec.documentImage === 'string') {
+                    specializationKeys.push(getStoredFileKey(spec.documentImage))
                 } else {
                     specializationKeys.push(null)
                 }
@@ -135,16 +180,17 @@ const DoctorDetailsForm = () => {
                 formData.append('specializationDocumentKeys', JSON.stringify(specializationKeys))
             }
 
-            const response = await updateProfile(formData)
+            const response = await updateProfile(formData, hasExistingProfile)
             toast.success(response.message)
             const profile = await getCurrentUser()
             setAuth({
                 ...user!,
                 profileImage: profile.data.profileImage,
-                specialization: profile.data.specialization,
+                professionalTitle: profile.data.professionalTitle,
                 verificationStatus: profile.data.verificationStatus,
                 isProfileComplete: true,
             })
+
             navigate('/doctor/dashboard')
         } catch (error: unknown) {
             toast.error(getErrorMessage(error))
@@ -164,9 +210,10 @@ const DoctorDetailsForm = () => {
                 <Card
                     title="Government Issued ID"
                     description="Upload a clear photo of your Passport, Driver's License, or National ID Card."
+                    required
                 >
                     <FileUploadBox
-                        file={documents.govId}
+                        file={documents.govId as File}
                         accept="image/png,image/jpeg,application/pdf"
                         onFileSelect={(file) =>
                             setDocuments((prev) => ({
@@ -179,6 +226,7 @@ const DoctorDetailsForm = () => {
                 <Card
                     title="Profile Image"
                     description="Upload a clear, front-facing photo of yourself for your professional profile."
+                    required
                 >
                     <FileUploadBox
                         file={documents.profileImage}
@@ -192,6 +240,7 @@ const DoctorDetailsForm = () => {
                 <Card
                     title="Medical Certificate"
                     description="Verification of your professional certificate is required for all doctors."
+                    required
                 >
                     <InputField
                         type="text"
@@ -208,7 +257,7 @@ const DoctorDetailsForm = () => {
                         }
                     />
                     <FileUploadBox
-                        file={documents.medicalCertificate.document}
+                        file={documents.medicalCertificate.document as File}
                         accept="image/png,image/jpeg,application/pdf"
                         onFileSelect={(file) =>
                             setDocuments((prev) => ({
@@ -224,6 +273,7 @@ const DoctorDetailsForm = () => {
                 <Card
                     title="Medical Council Registration"
                     description="Verification of your medical council registration is valid."
+                    required
                 >
                     <InputField
                         type="text"
@@ -241,7 +291,7 @@ const DoctorDetailsForm = () => {
                     />
 
                     <FileUploadBox
-                        file={documents.councilRegistration.document}
+                        file={documents.councilRegistration.document as File}
                         accept="image/png,image/jpeg,application/pdf"
                         onFileSelect={(file) =>
                             setDocuments((prev) => ({
@@ -256,51 +306,56 @@ const DoctorDetailsForm = () => {
                 </Card>
             </div>
 
-            <h3 className={styles.sectionTitle}>Specializations</h3>
-            <div className={styles.specializationGrid}>
-                {specializations.map((item, index) => (
-                    <div key={index} className={styles.specializationCard}>
-                        <div className={styles.cardHeader}>
-                            <InputField
-                                type="text"
-                                placeholder="Enter your specialization"
-                                value={item.name}
-                                onChange={(e) => handleChange(index, e.target.value)}
+            <Card title="Specializations" required>
+                <div className={styles.specializationGrid}>
+                    {specializations.map((item, index) => (
+                        <div key={index} className={styles.specializationCard}>
+                            <div className={styles.cardHeader}>
+                                <InputField
+                                    type="text"
+                                    placeholder="Enter your specialization"
+                                    value={item.name}
+                                    onChange={(e) => handleChange(index, e.target.value)}
+                                />
+                                {specializations.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className={styles.removeBtn}
+                                        onClick={() => removeSpecialization(index)}
+                                    >
+                                        ✕
+                                    </button>
+                                )}
+                            </div>
+                            <FileUploadBox
+                                file={item.documentImage as File}
+                                accept="image/png,image/jpeg,application/pdf"
+                                onFileSelect={(file) =>
+                                    setSpecializations((prev) => {
+                                        const updated = [...prev]
+                                        updated[index] = {
+                                            ...updated[index],
+                                            documentImage: file,
+                                        }
+                                        return updated
+                                    })
+                                }
                             />
-                            {specializations.length > 1 && (
-                                <button
-                                    type="button"
-                                    className={styles.removeBtn}
-                                    onClick={() => removeSpecialization(index)}
-                                >
-                                    ✕
-                                </button>
-                            )}
                         </div>
-                        <FileUploadBox
-                            file={item.document}
-                            accept="image/png,image/jpeg,application/pdf"
-                            onFileSelect={(file) =>
-                                setSpecializations((prev) => {
-                                    const updated = [...prev]
-                                    updated[index] = {
-                                        ...updated[index],
-                                        document: file,
-                                    }
-                                    return updated
-                                })
-                            }
-                        />
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            </Card>
 
             <button className={styles.addSpecializationButton} onClick={addSpecialization}>
                 + Add Specialization
             </button>
             <div className={styles.btnWrapper}>
                 <Button disabled={isUploading} onClick={handleRegister}>
-                    {isUploading ? 'Uploading...' : 'Complete Profile'}
+                    {isUploading
+                        ? 'Uploading...'
+                        : user?.verificationStatus === 'rejected'
+                          ? 'Update Profile'
+                          : 'Complete Profile'}
                 </Button>
             </div>
             {imageCrop && (
