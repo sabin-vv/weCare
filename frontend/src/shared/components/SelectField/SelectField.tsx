@@ -13,7 +13,6 @@ const SelectField = ({ label, id, options, errors, ...rest }: SelectFieldProps) 
             )}
             <div className={styles.selectContainer}>
                 <select id={id} className={styles.select} {...rest}>
-                    <option value="">Select</option>
                     {options.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}
