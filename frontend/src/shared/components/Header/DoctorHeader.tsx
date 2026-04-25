@@ -10,7 +10,7 @@ const doctorNavLinks: NavLink[] = [
 
 const DoctorHeader = () => {
     const { user } = useAuth()
-    return <Header titlePrefix="Dr. " subtitle={user?.specialization} navLinks={doctorNavLinks} />
+    return <Header titlePrefix="Dr. " subtitle={user?.professionalTitle} navLinks={doctorNavLinks} />
 }
 
 export default DoctorHeader
