@@ -14,6 +14,10 @@ const FileUploadBox = ({ file, accept, onFileSelect }: FileUploadBoxProps) => {
             setPreview(null)
             return
         }
+        if (typeof file === 'string') {
+            setPreview(file)
+            return
+        }
         if (file.type.startsWith('image/')) {
             const url = URL.createObjectURL(file)
             setPreview(url)
@@ -58,7 +62,13 @@ const FileUploadBox = ({ file, accept, onFileSelect }: FileUploadBoxProps) => {
         <label className={styles.box} onDrop={handleDrop} onDragOver={handleDragOver}>
             <input type="file" hidden accept={accept} onChange={handleChange} />
             {file ? (
-                file.type.startsWith('image/') ? (
+                typeof file === 'string' ? (
+                    preview?.includes('.pdf') ? (
+                        <p className={styles.fileName}>📄 Existing Document</p>
+                    ) : (
+                        <img src={preview!} className={styles.previewImage} />
+                    )
+                ) : file.type.startsWith('image/') ? (
                     <img src={preview!} className={styles.previewImage} />
                 ) : (
                     <p className={styles.fileName}>📄 {file.name}</p>
