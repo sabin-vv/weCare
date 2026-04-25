@@ -35,9 +35,31 @@
     align-items: center;
     gap: 12px;
 }
-.filters > *:first-child {
+.filters > *:last-child {
     flex: 1;
     min-width: 200px;
+}
+
+.clearButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f2;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #4f6780;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    max-width: 100px;
+}
+.clearButton:hover {
+    background: #f8fafc;
+    color: #e54d4d;
+    border-color: #e54d4d;
 }
 
 .selectIcon {

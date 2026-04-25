@@ -1,4 +1,4 @@
-import { BadgeCheck, UserRound, Loader2 } from 'lucide-react'
+import { BadgeCheck, UserRound, Loader2, X } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -66,6 +66,14 @@ const DoctorBookingPage = () => {
         setPage(1)
     }, [query, selectedSpecialty])
 
+    const clearFilters = () => {
+        setQuery('')
+        setSelectedSpecialty('')
+        setPage(1)
+    }
+
+    const hasFilters = query || selectedSpecialty
+
     return (
         <AuthLayout>
             <section className={styles.panel}>
@@ -78,7 +86,12 @@ const DoctorBookingPage = () => {
                     </div>
 
                     <div className={styles.filters}>
-                        <SearchField onSearch={setQuery} placeholder="Search doctor or specialty" />
+                        {hasFilters && (
+                            <button type="button" className={styles.clearButton} onClick={clearFilters}>
+                                Clear All
+                                <X size={16} />
+                            </button>
+                        )}
                         <SelectField
                             label=""
                             id="specialty"
@@ -86,6 +99,7 @@ const DoctorBookingPage = () => {
                             value={selectedSpecialty}
                             onChange={(e) => setSelectedSpecialty(e.target.value)}
                         />
+                        <SearchField value={query} onSearch={setQuery} placeholder="Search doctor or specialty" />
                     </div>
                 </div>
 
