@@ -17,6 +17,5 @@ export interface PatientEntity {
     patientId: string
     dateOfBirth: Date
     gender: string
-    mobile: string
     profileImage?: string
 }

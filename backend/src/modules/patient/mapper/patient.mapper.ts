@@ -9,7 +9,6 @@ export interface PatientResponseDTO {
     patientId: string
     dateOfBirth: string
     gender: string
-    mobile: string
     profileImage?: string
     isActive: boolean
 }
@@ -20,7 +19,6 @@ export const toPatientEntity = (userId: Types.ObjectId, patientId: string, dto: 
         patientId,
         dateOfBirth: new Date(dto.dateOfBirth),
         gender: dto.gender,
-        mobile: dto.mobile,
     }
 }
 
@@ -31,10 +29,7 @@ export const toPatientResponseDTO = (patient: PatientDocument): PatientResponseD
         patientId: patient.patientId,
         dateOfBirth: patient.dateOfBirth.toISOString(),
         gender: patient.gender,
-        mobile: patient.mobile,
         profileImage: patient.profileImage,
         isActive: patient.isActive,
     }
 }
-
-
