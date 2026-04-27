@@ -83,6 +83,7 @@ export interface DoctorProfileResponse {
     id: string
     name: string
     email: string
+    mobile: string
 
     profileImage?: string
     professionalTitle?: string

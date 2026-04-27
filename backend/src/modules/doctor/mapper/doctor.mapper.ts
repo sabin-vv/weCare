@@ -28,6 +28,7 @@ export const toDoctorProfileResponse = (user: UserDocument, doctor: DoctorDocume
         id: user._id.toString(),
         name: user.name,
         email: user.email,
+        mobile: user.mobile,
 
         govIdImage: doctor.govIdImage,
         profileImage: doctor.profileImage,
