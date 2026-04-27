@@ -7,6 +7,32 @@ export interface Specialist {
     profileImage?: string
 }
 
+export interface PatientProfileData {
+    id: string
+    name: string
+    email: string
+    mobile: string
+    patientId: string
+    dateOfBirth: string
+    gender: string
+    conditions: string[]
+    profileImage?: string
+    isActive: boolean
+}
+
+export interface PatientProfileResponse {
+    success: boolean
+    message: string
+    data: PatientProfileData
+}
+
+export interface UpdatePatientProfileData {
+    name?: string
+    email?: string
+    mobile?: string
+    profileImage?: string
+}
+
 export interface GetDoctorsParams {
     search?: string
     specialty?: string
