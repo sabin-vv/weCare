@@ -1,14 +1,17 @@
+import { useState } from 'react'
+
 import styles from './Sidebar.module.css'
 
 import SearchField from '@/shared/components/SearchField/SearchField'
 
 const Sidebar = () => {
-    const handleSearch = () => {}
+    const [query, setQuery] = useState<string>('')
+
     return (
         <aside className={styles.sidebar}>
             <h3 className={styles.title}>Patient Directory</h3>
 
-            <SearchField placeholder="Search patients..." onSearch={handleSearch} />
+            <SearchField placeholder="Search patients..." value={query} onSearch={setQuery} />
 
             <div className={styles.filters}>
                 <button className={styles.active}>All</button>
