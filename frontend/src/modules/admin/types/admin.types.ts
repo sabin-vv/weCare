@@ -16,3 +16,9 @@ export interface PageCardProps {
     actions?: ReactNode
     children: ReactNode
 }
+
+export interface StatCardProps {
+    title: string
+    value: string | number
+    icon?: string
+}
