@@ -18,6 +18,7 @@ import { getFileUrl } from '@/utils/getFileUrl'
 
 const DoctorVerificationPage = () => {
     const [doctors, setDoctors] = useState<PendingDoctor[]>([])
+    const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState({ page: 1, limit: 10, totalCount: 0, totalPages: 1 })
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -287,8 +288,12 @@ const DoctorVerificationPage = () => {
 
             <div className={styles.searchContainer}>
                 <SearchField
+                    value={search}
                     placeholder="Search pending doctor by name or email ..."
-                    onSearch={(query) => fetchDoctors(1, query)}
+                    onSearch={(query) => {
+                        setSearch(query)
+                        fetchDoctors(1, query)
+                    }}
                 />
             </div>
 
@@ -304,7 +309,7 @@ const DoctorVerificationPage = () => {
                         totalPages={pagination.totalPages}
                         totalCount={pagination.totalCount}
                         limit={pagination.limit}
-                        onPageChange={(page) => fetchDoctors(page, '')}
+                        onPageChange={(page) => fetchDoctors(page, search)}
                     />
                 </DataTable>
             )}

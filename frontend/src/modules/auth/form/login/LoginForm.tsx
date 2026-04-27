@@ -23,7 +23,7 @@ const LoginForm = () => {
     const [role, setRole] = useState<Role>(Role.DOCTOR)
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
-    const { setAuth, user, isAuthenticated } = useAuth()
+    const { setAuth } = useAuth()
 
     const {
         register,
@@ -40,6 +40,7 @@ const LoginForm = () => {
         setIsLoading(true)
         try {
             const response = await loginUser(data.email, data.password, role)
+
             setAuth({
                 id: response.data.id,
                 name: response.data.name,
@@ -47,13 +48,13 @@ const LoginForm = () => {
                 role: response.data.role,
                 isProfileComplete: response.data.isProfileComplete,
                 profileImage: response.data.profileImage,
-                specialization: response.data.specialization,
+                professionalTitle: response.data.professionalTitle,
                 verificationStatus: response.data.verificationStatus,
             })
 
             toast.success(response.message)
 
-            switch (data.role) {
+            switch (response.data.role) {
                 case Role.DOCTOR:
                     navigate('/doctor/dashboard')
                     break
@@ -71,10 +72,6 @@ const LoginForm = () => {
         } finally {
             setIsLoading(false)
         }
-    }
-
-    if (isAuthenticated && user) {
-        navigate(`/${user.role}/dashboard`)
     }
 
     return (

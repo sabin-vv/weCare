@@ -13,7 +13,7 @@ export interface LoginUser extends ApiInterface {
         role: Role
         isProfileComplete: boolean
         profileImage?: string
-        specialization?: string
+        professionalTitle?: string
         verificationStatus?: VerificationStatus
     }
 }
@@ -21,7 +21,7 @@ export interface LoginUser extends ApiInterface {
 export interface GetCurrentUser extends ApiInterface {
     data: {
         profileImage?: string
-        specialization?: string
+        professionalTitle?: string
         verificationStatus?: VerificationStatus
     }
 }

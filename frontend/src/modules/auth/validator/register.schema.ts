@@ -12,6 +12,8 @@ import {
     phoneSchema,
 } from '@/shared/validators/common.schema'
 
+const fileOrUrlSchema = z.union([z.instanceof(File), z.string().min(1)])
+
 export const loginSchema = z.object({
     email: z.string().min(1, 'Email is required').email('Invalid email address'),
     password: z.string().min(1, 'Password is required'),
@@ -39,21 +41,21 @@ export const basicInfoSchema = z
 
 export const doctorDetailesSchema = z.object({
     documents: z.object({
-        govId: z.instanceof(File, {
+        govId: fileOrUrlSchema.refine(Boolean, {
             message: 'Please upload a Government ID',
         }),
-        profileImage: z.instanceof(File, {
+        profileImage: fileOrUrlSchema.refine(Boolean, {
             message: 'Please upload your profile image',
         }),
         medicalCertificate: z.object({
             number: z.string().trim().min(1, 'Enter Medical certificate number'),
-            document: z.instanceof(File, {
+            document: fileOrUrlSchema.refine(Boolean, {
                 message: 'upload your medical cerificate',
             }),
         }),
         councilRegistration: z.object({
             number: z.string().trim().min(1, 'Enter your Medical council Registration number'),
-            document: z.instanceof(File, {
+            document: fileOrUrlSchema.refine(Boolean, {
                 message: 'Please upload your medical council document',
             }),
         }),
@@ -66,7 +68,7 @@ export const doctorDetailesSchema = z.object({
                     .trim()
                     .min(1, 'specialization name cannot be empty')
                     .regex(/^[a-zA-Z\s]+$/, 'Specialization name should be in letters'),
-                document: z.instanceof(File, {
+                documentImage: fileOrUrlSchema.refine(Boolean, {
                     message: 'please upload specialization documents',
                 }),
             }),

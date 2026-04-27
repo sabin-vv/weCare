@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 
 export interface CardProps {
-    children: ReactNode
     title: string
     description?: string
+    children: ReactNode
+    required?: boolean
 }

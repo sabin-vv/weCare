@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronDown, UserRound, Loader2 } from 'lucide-react'
+import { BadgeCheck, UserRound, Loader2, X } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -9,6 +9,8 @@ import styles from './DoctorBookingPage.module.css'
 
 import { env } from '@/config/env'
 import AuthLayout from '@/layout/AuthLayout'
+import Button from '@/shared/components/Button/Button'
+import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import SelectField from '@/shared/components/SelectField/SelectField'
 
@@ -18,12 +20,13 @@ const DoctorBookingPage = () => {
     const [selectedSpecialty, setSelectedSpecialty] = useState('')
     const [specialtyOptions, setSpecialtyOptions] = useState<{ label: string; value: string }[]>([])
     const [doctors, setDoctors] = useState<Specialist[]>([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [page, setPage] = useState(1)
-    const [hasMore, setHasMore] = useState(true)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [page, setPage] = useState<number>(1)
+    const [totalPages, setTotalPages] = useState<number>(1)
+    const [totalCount, setTotalCount] = useState<number>(0)
 
     const fetchDoctors = useCallback(
-        async (pageNum: number, isAppending: boolean) => {
+        async (pageNum: number) => {
             setIsLoading(true)
             try {
                 const response = await getDoctors({
@@ -33,15 +36,19 @@ const DoctorBookingPage = () => {
                     limit: 8,
                 })
 
-                if (pageNum === 1 && !isAppending) {
+                setDoctors(response.data)
+                setTotalPages(response.totalPages)
+                setTotalCount(response.totalCount)
+
+                if (!specialtyOptions.length) {
                     setSpecialtyOptions([
                         { label: 'All Specialties', value: '' },
-                        ...response.specialties.map((s: string) => ({ label: s, value: s })),
+                        ...response.specialties.map((s: string) => ({
+                            label: s,
+                            value: s,
+                        })),
                     ])
                 }
-
-                setDoctors((prev) => (isAppending ? [...prev, ...response.data] : response.data))
-                setHasMore(response.data.length === 8)
             } catch (error) {
                 console.error('Failed to fetch doctors:', error)
             } finally {
@@ -52,16 +59,20 @@ const DoctorBookingPage = () => {
     )
 
     useEffect(() => {
-        setPage(1)
-        fetchDoctors(1, false)
-    }, [query, selectedSpecialty, fetchDoctors])
+        fetchDoctors(page)
+    }, [page, fetchDoctors])
 
-    const handleLoadMore = () => {
-        if (isLoading || !hasMore) return
-        const nextPage = page + 1
-        setPage(nextPage)
-        fetchDoctors(nextPage, true)
+    useEffect(() => {
+        setPage(1)
+    }, [query, selectedSpecialty])
+
+    const clearFilters = () => {
+        setQuery('')
+        setSelectedSpecialty('')
+        setPage(1)
     }
+
+    const hasFilters = query || selectedSpecialty
 
     return (
         <AuthLayout>
@@ -75,7 +86,12 @@ const DoctorBookingPage = () => {
                     </div>
 
                     <div className={styles.filters}>
-                        <SearchField onSearch={setQuery} placeholder="Search doctor or specialty" />
+                        {hasFilters && (
+                            <button type="button" className={styles.clearButton} onClick={clearFilters}>
+                                Clear All
+                                <X size={16} />
+                            </button>
+                        )}
                         <SelectField
                             label=""
                             id="specialty"
@@ -83,6 +99,7 @@ const DoctorBookingPage = () => {
                             value={selectedSpecialty}
                             onChange={(e) => setSelectedSpecialty(e.target.value)}
                         />
+                        <SearchField value={query} onSearch={setQuery} placeholder="Search doctor or specialty" />
                     </div>
                 </div>
 
@@ -118,16 +135,21 @@ const DoctorBookingPage = () => {
                             <h2 className={styles.doctorName}>{doctor.name}</h2>
                             <p className={styles.specialty}>{doctor.specialty}</p>
 
-                            <button 
-                                type="button" 
-                                className={styles.bookButton}
-                                onClick={() => navigate(`/doctors/${doctor.id}`)}
-                            >
+                            <Button type="button" onClick={() => navigate(`/doctors/${doctor.id}`)}>
                                 Book Appointment
-                            </button>
+                            </Button>
                         </article>
                     ))}
                 </div>
+                {doctors.length > 0 && (
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        totalCount={totalCount}
+                        limit={8}
+                        onPageChange={(newPage) => setPage(newPage)}
+                    />
+                )}
 
                 {isLoading && !doctors.length && (
                     <div className={styles.loadingState}>
@@ -139,20 +161,6 @@ const DoctorBookingPage = () => {
                 {!isLoading && doctors.length === 0 && (
                     <div className={styles.emptyState}>
                         <p>No specialists found matching your search.</p>
-                    </div>
-                )}
-
-                {hasMore && (
-                    <div className={styles.moreWrap}>
-                        <button
-                            type="button"
-                            className={styles.moreButton}
-                            onClick={handleLoadMore}
-                            disabled={isLoading}
-                        >
-                            {isLoading ? 'Loading...' : 'Show More Specialists'}
-                            {!isLoading && <ChevronDown size={16} />}
-                        </button>
                     </div>
                 )}
             </section>

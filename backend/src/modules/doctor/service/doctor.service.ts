@@ -14,6 +14,7 @@ import { toDoctorSlotsResponse } from '../mapper/doctor-slots.mapper'
 import {
     DoctorAvailability,
     DoctorAvailabilityDocument,
+    DoctorDocument,
     DoctorProfileResponse,
     DoctorSearchFilter,
     DoctorSearchResponse,
@@ -91,10 +92,8 @@ export class DoctorService implements IDoctorService {
 
         const doctorData = toDoctorEntity(new Types.ObjectId(userId), dto)
 
-        const doctor = await this._doctorRepo.create(doctorData)
+        await this._doctorRepo.create(doctorData)
         await this._userRepo.update(userId, { isProfileComplete: true })
-
-        return doctor
     }
 
     async getProfile(userId: string): Promise<DoctorProfileResponse> {
@@ -131,17 +130,54 @@ export class DoctorService implements IDoctorService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
         }
 
-        await this._userRepo.update(userId, {
-            name: dto.fullName,
-            email: dto.email,
-            mobile: dto.phoneNumber,
-        })
+        const userUpdates: Record<string, string> = {}
+        if (dto.fullName !== undefined) {
+            userUpdates.name = dto.fullName
+        }
+        if (dto.email !== undefined) {
+            userUpdates.email = dto.email
+        }
+        if (dto.phoneNumber !== undefined) {
+            userUpdates.mobile = dto.phoneNumber
+        }
+        if (Object.keys(userUpdates).length > 0) {
+            await this._userRepo.update(userId, userUpdates)
+        }
 
-        const doctor = await this._doctorRepo.updateByUserId(new Types.ObjectId(userId), {
-            consultationFee: dto.consultationFee,
+        const hasVerificationResubmission =
+            dto.govIdImage !== undefined ||
+            dto.medicalCertificateNumber !== undefined ||
+            dto.medicalCertificateImage !== undefined ||
+            dto.medicalCouncilRegisterNumber !== undefined ||
+            dto.medicalCouncilImage !== undefined ||
+            dto.specializations !== undefined ||
+            dto.specializationDocumentKeys !== undefined
+
+        const doctorUpdates: Partial<DoctorDocument> = {
+            consultationFee: dto.consultationFee ?? existingDoctor.consultationFee,
             isActive: dto.isActive !== undefined ? dto.isActive : existingDoctor.isActive,
-            profileImage: dto.profileImage || existingDoctor.profileImage,
-        })
+            profileImage: dto.profileImage ?? existingDoctor.profileImage,
+            govIdImage: dto.govIdImage ?? existingDoctor.govIdImage,
+            medicalCertificateNumber: dto.medicalCertificateNumber ?? existingDoctor.medicalCertificateNumber,
+            medicalCertificateImage: dto.medicalCertificateImage ?? existingDoctor.medicalCertificateImage,
+            medicalCouncilRegisterNumber:
+                dto.medicalCouncilRegisterNumber ?? existingDoctor.medicalCouncilRegisterNumber,
+            medicalCouncilImage: dto.medicalCouncilImage ?? existingDoctor.medicalCouncilImage,
+        }
+
+        if (dto.specializations && dto.specializationDocumentKeys) {
+            doctorUpdates.specializations = dto.specializations.map((spec, index) => ({
+                name: spec.name,
+                documentImage: dto.specializationDocumentKeys?.[index] ?? '',
+            }))
+        }
+
+        if (hasVerificationResubmission) {
+            doctorUpdates.verificationStatus = 'pending'
+            doctorUpdates.rejectReason = ''
+        }
+
+        const doctor = await this._doctorRepo.updateByUserId(new Types.ObjectId(userId), doctorUpdates)
 
         const updatedUser = await this._userRepo.findById(userId)
         if (!updatedUser) {
@@ -185,7 +221,9 @@ export class DoctorService implements IDoctorService {
         page: number
         limit: number
     }): Promise<DoctorSearchResponse> {
-        const filter: DoctorSearchFilter = { isActive: true }
+        const page = params.page || 1
+        const limit = params.limit || 8
+        const filter: DoctorSearchFilter = { isActive: true, verificationStatus: 'verified' }
 
         if (params.specialty) {
             filter['specializations.name'] = params.specialty
@@ -199,8 +237,8 @@ export class DoctorService implements IDoctorService {
         }
 
         const { doctors, total } = await this._doctorRepo.search(filter, {
-            page: params.page || 1,
-            limit: params.limit || 8,
+            page,
+            limit,
         })
 
         const mappedDoctors = doctors.map((doc: PopulatedDoctorDocument): DoctorSearchResult => {
@@ -214,8 +252,9 @@ export class DoctorService implements IDoctorService {
         })
 
         const specialties = await this.getSpecialties()
+        const totalPages = Math.ceil(total / limit)
 
-        return { doctors: mappedDoctors, specialties, total } as DoctorSearchResponse
+        return { doctors: mappedDoctors, specialties, totalCount: total, totalPages, currentPage: page }
     }
 
     async getSpecialties(): Promise<string[]> {

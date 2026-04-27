@@ -18,6 +18,7 @@ import { getFileUrl } from '@/utils/getFileUrl'
 
 const CaregiverVerificationPage = () => {
     const [caregivers, setCaregivers] = useState<PendingCaregiver[]>([])
+    const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(true)
     const [pagination, setPagination] = useState({ page: 1, limit: 10, totalCount: 0, totalPages: 1 })
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -135,8 +136,12 @@ const CaregiverVerificationPage = () => {
 
             <div className={styles.searchContainer}>
                 <SearchField
+                    value={search}
                     placeholder="Search caregiver by name or email ..."
-                    onSearch={(query) => fetchCaregivers(1, query)}
+                    onSearch={(query) => {
+                        setSearch(query)
+                        fetchCaregivers(1, query)
+                    }}
                 />
             </div>
 
@@ -152,7 +157,7 @@ const CaregiverVerificationPage = () => {
                         totalPages={pagination.totalPages}
                         totalCount={pagination.totalCount}
                         limit={pagination.limit}
-                        onPageChange={(page) => fetchCaregivers(page, '')}
+                        onPageChange={(page) => fetchCaregivers(page, search)}
                     />
                 </DataTable>
             )}

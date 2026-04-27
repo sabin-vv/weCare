@@ -26,9 +26,9 @@ const DoctorSettingsProfileCard = ({
                         style={{ display: 'none' }}
                     />
                     {profileImageUrl ? (
-                        <img src={profileImageUrl} alt={savedState.fullName} className={styles.avatar} />
+                        <img src={profileImageUrl} alt={savedState.name} className={styles.avatar} />
                     ) : (
-                        <div className={styles.avatarFallback}>{savedState.fullName.charAt(0).toUpperCase()}</div>
+                        <div className={styles.avatarFallback}>{savedState.name.charAt(0).toUpperCase()}</div>
                     )}
                     <span className={styles.avatarBadge}>
                         <Camera size={12} />
@@ -36,7 +36,7 @@ const DoctorSettingsProfileCard = ({
                 </div>
 
                 <div>
-                    <h1 className={styles.doctorName}>Dr. {savedState.fullName}</h1>
+                    <h1 className={styles.doctorName}>Dr. {savedState.name}</h1>
                     <p className={styles.doctorMetaLine}>{savedState.email}</p>
                 </div>
             </div>

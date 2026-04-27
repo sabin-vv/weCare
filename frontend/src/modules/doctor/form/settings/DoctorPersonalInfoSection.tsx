@@ -31,8 +31,8 @@ const DoctorPersonalInfoSection = ({
                     <InputField
                         id="doctor-full-name"
                         label="Full Name"
-                        value={formState.fullName}
-                        onChange={onFieldChange('fullName')}
+                        value={formState.name}
+                        onChange={onFieldChange('name')}
                         disabled={!isEditing}
                     />
                 </div>
@@ -54,8 +54,8 @@ const DoctorPersonalInfoSection = ({
                             <InputField
                                 id="doctor-phone"
                                 label="Phone Number"
-                                value={formState.phoneNumber}
-                                onChange={onFieldChange('phoneNumber')}
+                                value={formState.mobile}
+                                onChange={onFieldChange('mobile')}
                                 disabled={!isEditing}
                             />
                         </div>

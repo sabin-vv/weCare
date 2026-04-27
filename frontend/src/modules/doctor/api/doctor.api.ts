@@ -9,8 +9,8 @@ import type {
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
 
-export const updateProfile = async (data: FormData): Promise<ApiInterface> => {
-    const res = await api.post('/doctors/profile', data)
+export const updateProfile = async (data: FormData, hasExistingProfile = false): Promise<ApiInterface> => {
+    const res = hasExistingProfile ? await api.put('/doctors/me', data) : await api.post('/doctors/profile', data)
 
     return res.data
 }

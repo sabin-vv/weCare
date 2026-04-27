@@ -36,7 +36,10 @@ export class DoctorRepository extends BaseRepository<DoctorDocument> implements 
     async search(filter: DoctorSearchFilter, options: { page: number; limit: number }) {
         const skip = (options.page - 1) * options.limit
 
-        const baseFilter: Record<string, unknown> = { isActive: filter.isActive }
+        const baseFilter: Record<string, unknown> = {
+            isActive: filter.isActive,
+            ...(filter.verificationStatus && { verificationStatus: filter.verificationStatus }),
+        }
         const searchOrConditions: Array<Record<string, unknown>> = []
 
         if (filter['specializations.name']) {

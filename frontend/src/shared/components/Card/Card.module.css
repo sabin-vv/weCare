@@ -36,3 +36,8 @@
     color: #64748b;
     line-height: 1.4;
 }
+
+.required {
+    color: #ef4444;
+    font-weight: 600;
+}

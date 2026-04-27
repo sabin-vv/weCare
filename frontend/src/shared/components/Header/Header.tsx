@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 
 import styles from './Header.module.css'
 
+import { env } from '@/config/env'
 import LogoutButton from '@/shared/components/LogoutButton/LogoutButton'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
@@ -24,7 +25,7 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children }: HeaderP
     const navigate = useNavigate()
     const { user } = useAuth()
     const { settings } = usePlatform()
-    const baseUrl = import.meta.env.VITE_S3_BASE_URL
+    const baseUrl = env.AWS_BASE_URL
 
     return (
         <header className={styles.navbar}>

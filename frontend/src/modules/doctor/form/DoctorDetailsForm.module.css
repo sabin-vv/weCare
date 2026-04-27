@@ -6,14 +6,6 @@
     margin-bottom: 8px;
 }
 
-.sectionTitle {
-    margin-top: 20px;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin-bottom: 8px;
-}
-
 .specializationGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -50,28 +42,37 @@
     border: 2px dashed #dc2626;
     background: #f8fafc;
     color: #964444;
+    margin-top: 8px;
 }
 .addSpecializationButton:hover {
     cursor: pointer;
 }
 .removeBtn {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 34px;
     border-radius: 50px;
     border: none;
     background: #fee2e2;
     color: #dc2626;
     cursor: pointer;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-bottom: 6px;
 }
 
 .removeBtn:hover {
-    background: #fee2e2;
+    background: #fecaca;
     color: #dc2626;
+    transform: scale(1.05);
 }
 .cardHeader {
     display: flex;
     gap: 8px;
+    justify-content: center;
+    align-items: center;
 }
 .cardHeader input {
     flex: 1;

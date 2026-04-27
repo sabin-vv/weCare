@@ -12,7 +12,14 @@ import DoctorSecuritySection from './settings/DoctorSecuritySection'
 import DoctorSettingsActions from './settings/DoctorSettingsActions'
 import DoctorSettingsProfileCard from './settings/DoctorSettingsProfileCard'
 
-import { changePassword, getCurrentUser, presignUpload, sendOtp, uploadToS3, verifyOtp } from '@/modules/auth/api/auth.api'
+import {
+    changePassword,
+    getCurrentUser,
+    presignUpload,
+    sendOtp,
+    uploadToS3,
+    verifyOtp,
+} from '@/modules/auth/api/auth.api'
 import OtpVerification from '@/modules/auth/components/OtpVerification'
 import { OtpPurpose } from '@/modules/auth/types/auth.types'
 import ChangePasswordForm from '@/shared/components/ChangePasswordForm'
@@ -26,15 +33,15 @@ const createFormState = (
         name?: string
         specialization?: string
         email?: string
+        mobile?: string
     } | null,
 ): DoctorSettingsFormState => ({
-    fullName: user?.name || '',
+    name: user?.name || '',
+    mobile: user?.mobile || '',
     consultationFee: '',
-    phoneNumber: '',
     email: user?.email || '',
-    medicalLicenseNumber: '',
+    medicalCertificateNumber: '',
     medicalCouncilRegistrationNumber: '',
-    experienceCertificatesCount: 0,
     isActive: true,
 })
 
@@ -77,14 +84,19 @@ const DoctorSettingsForm = () => {
         const loadDoctorProfile = async () => {
             try {
                 const profile = await getDoctorProfile()
-                const formStateData: DoctorSettingsFormState = {
-                    fullName: profile.fullName,
-                    consultationFee: String(profile.consultationFee || 0),
-                    phoneNumber: profile.phoneNumber,
+
+                const formStateData = {
+                    name: profile.name,
+                    mobile: profile.mobile,
                     email: profile.email,
-                    medicalLicenseNumber: profile.medicalLicenseNumber,
+
+                    consultationFee: String(profile.consultationFee || 0),
+                    medicalCertificateNumber: profile.medicalCertificateNumber,
+                    medicalCertificateImage: profile.medicalCertificateImage,
                     medicalCouncilRegistrationNumber: profile.medicalCouncilRegistrationNumber,
-                    experienceCertificatesCount: profile.experienceCertificatesCount,
+                    medicalCouncilImage: profile.medicalCouncilImage,
+                    specialization: profile.specialization,
+
                     isActive: profile.isActive,
                 }
                 setFormState(formStateData)
@@ -140,9 +152,9 @@ const DoctorSettingsForm = () => {
 
         try {
             const updatedProfile = await updateDoctorProfile({
-                fullName: formState.fullName,
+                name: formState.name,
                 consultationFee: Number(formState.consultationFee),
-                phoneNumber: formState.phoneNumber,
+
                 email: formState.email,
                 isActive: formState.isActive,
             })
@@ -150,19 +162,19 @@ const DoctorSettingsForm = () => {
             if (user) {
                 setAuth({
                     ...user,
-                    name: formState.fullName,
+                    name: formState.name,
                     email: formState.email,
                 })
             }
 
             const formStateData: DoctorSettingsFormState = {
-                fullName: updatedProfile.fullName,
+                name: updatedProfile.name,
+                mobile: updatedProfile.mobile,
                 consultationFee: String(updatedProfile.consultationFee || 0),
-                phoneNumber: updatedProfile.phoneNumber,
+
                 email: updatedProfile.email,
-                medicalLicenseNumber: updatedProfile.medicalLicenseNumber,
+                medicalCertificateNumber: updatedProfile.medicalCertificateNumber,
                 medicalCouncilRegistrationNumber: updatedProfile.medicalCouncilRegistrationNumber,
-                experienceCertificatesCount: updatedProfile.experienceCertificatesCount,
                 isActive: updatedProfile.isActive,
             }
             setSavedState(formStateData)
@@ -232,7 +244,6 @@ const DoctorSettingsForm = () => {
         const toastId = toast.loading('Uploading profile image...')
 
         try {
-            // 1. Presign upload
             const presignRes = await presignUpload({
                 fileName: croppedFile.name,
                 contentType: croppedFile.type as 'image/png' | 'image/jpeg',
@@ -240,17 +251,14 @@ const DoctorSettingsForm = () => {
                 size: croppedFile.size,
             })
 
-            // 2. Upload to S3
             await uploadToS3(presignRes.uploadUrl, croppedFile)
 
-            // 3. Update profile
             await updateDoctorProfile({
                 ...formState,
                 consultationFee: Number(formState.consultationFee),
                 profileImage: presignRes.key,
             })
 
-            // 4. Update auth context
             const profile = await getCurrentUser()
             if (user) {
                 setAuth({

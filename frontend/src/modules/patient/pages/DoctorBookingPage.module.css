@@ -35,37 +35,31 @@
     align-items: center;
     gap: 12px;
 }
+.filters > *:last-child {
+    flex: 1;
+    min-width: 200px;
+}
 
-.searchField,
-.selectField {
+.clearButton {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    height: 44px;
-    padding: 0 14px;
-    border: 1px solid #dfe7f3;
+    gap: 6px;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f2;
     border-radius: 10px;
     background: #ffffff;
-    color: #8da1b8;
-}
-
-.searchField input,
-.selectField select {
-    border: none;
-    outline: none;
-    background: transparent;
-    color: #49637e;
+    color: #4f6780;
     font-size: 13px;
-}
-
-.searchField input {
-    width: 210px;
-}
-
-.selectField select {
-    min-width: 126px;
-    appearance: none;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    max-width: 100px;
+}
+.clearButton:hover {
+    background: #f8fafc;
+    color: #e54d4d;
+    border-color: #e54d4d;
 }
 
 .selectIcon {
@@ -251,14 +245,6 @@
 
     .title {
         font-size: 26px;
-    }
-
-    .searchField,
-    .selectField,
-    .searchField input,
-    .selectField select {
-        width: 100%;
-        min-width: 0;
     }
 
     .filters {

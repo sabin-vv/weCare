@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import styles from './Navbar.module.css'
 
+import { env } from '@/config/env'
 import LogoutButton from '@/shared/components/LogoutButton/LogoutButton'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
@@ -11,7 +12,7 @@ const Navbar = () => {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { settings } = usePlatform()
-    const baseUrl = import.meta.env.VITE_S3_BASE_URL
+    const baseUrl = env.AWS_BASE_URL
 
     return (
         <header className={styles.navbar}>
@@ -40,7 +41,7 @@ const Navbar = () => {
                 <div className={styles.profile}>
                     <div className={styles.profileText}>
                         <h4>Dr.{user?.name}</h4>
-                        <p>{user?.specialization}</p>
+                        <p>{user?.professionalTitle}</p>
                     </div>
                     {user?.profileImage ? (
                         <img src={`${baseUrl}${user?.profileImage}`} alt="/profile" className={styles.profileImg} />

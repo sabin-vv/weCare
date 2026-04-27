@@ -1,10 +1,6 @@
-import styles from './StatCard.module.css'
+import type { StatCardProps } from '../types/admin.types'
 
-type StatCardProps = {
-    title: string
-    value: string | number
-    icon?: string
-}
+import styles from './StatCard.module.css'
 
 const StatCard = ({ title, value, icon }: StatCardProps) => {
     return (

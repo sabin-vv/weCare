@@ -26,17 +26,25 @@ export const toDoctorEntity = (userId: Types.ObjectId, dto: DoctorDTO): DoctorEn
 export const toDoctorProfileResponse = (user: UserDocument, doctor: DoctorDocument): DoctorProfileResponse => {
     return {
         id: user._id.toString(),
-        fullName: user.name,
+        name: user.name,
         email: user.email,
-        phoneNumber: user.mobile,
+        mobile: user.mobile,
+
+        govIdImage: doctor.govIdImage,
         profileImage: doctor.profileImage,
-        professionalTitle: doctor.specializations?.[0]?.name,
+        professionalTitle: doctor.specializations.map((s) => s.name).join(','),
         consultationFee: doctor.consultationFee ?? 0,
-        medicalLicenseNumber: doctor.medicalCertificateNumber,
+
+        medicalCertificateNumber: doctor.medicalCertificateNumber,
+        medicalCertificateImage: doctor.medicalCertificateImage,
         medicalCouncilRegistrationNumber: doctor.medicalCouncilRegisterNumber,
-        experienceCertificatesCount: doctor.specializations?.length ?? 0,
+        medicalCouncilImage: doctor.medicalCouncilImage,
+
+        specialization: doctor.specializations.map((spec) => ({ name: spec.name, documentImage: spec.documentImage })),
+
         isActive: doctor.isActive,
         verificationStatus: doctor.verificationStatus,
+        rejectReason: doctor.rejectReason,
     }
 }
 

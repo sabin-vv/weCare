@@ -80,7 +80,9 @@ export class DoctorController {
             message: 'Doctors fetched successfully',
             data: result.doctors,
             specialties: result.specialties,
-            total: result.total,
+            totalCount: result.totalCount,
+            totalPages: result.totalPages,
+            currentPage: result.currentPage,
         })
     }
 

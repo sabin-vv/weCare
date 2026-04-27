@@ -81,15 +81,23 @@ export interface DoctorDocument extends Document {
 
 export interface DoctorProfileResponse {
     id: string
-    fullName: string
+    name: string
     email: string
-    phoneNumber: string
+    mobile: string
+
     profileImage?: string
     professionalTitle?: string
     consultationFee: number
-    medicalLicenseNumber: string
+
+    govIdImage: string
+    medicalCertificateNumber: string
+    medicalCertificateImage: string
     medicalCouncilRegistrationNumber: string
-    experienceCertificatesCount: number
+    medicalCouncilImage: string
+    rejectReason?: string
+
+    specialization: DoctorSpecialization[]
+
     isActive: boolean
     verificationStatus: verificationStatus
 }
@@ -109,11 +117,14 @@ export interface DoctorSearchResult {
 export interface DoctorSearchResponse {
     doctors: DoctorSearchResult[]
     specialties: string[]
-    total: number
+    totalCount: number
+    totalPages: number
+    currentPage: number
 }
 
 export interface DoctorSearchFilter {
     isActive?: boolean
+    verificationStatus: verificationStatus
     'specializations.name'?: string
     'userId.name'?: string
     $or?: Array<{
