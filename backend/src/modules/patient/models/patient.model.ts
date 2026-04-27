@@ -22,13 +22,33 @@ const patientSchema = new Schema<PatientDocument>(
             type: String,
             required: true,
         },
-        isActive: {
-            type: Boolean,
-            required: true,
-            default: true,
-        },
         profileImage: {
             type: String,
+        },
+        conditions: {
+            type: [String],
+            default: [],
+        },
+        riskLevel: {
+            type: String,
+            enum: ['mild', 'moderate', 'severe', 'high_risk'],
+        },
+        accountStatus: {
+            type: String,
+            enum: ['suspended', 'active', 'archived'],
+        },
+        clinicalStatus: {
+            type: String,
+            enum: ['active', 'hospitalized', 'deceased'],
+            default: 'active',
+        },
+        primaryDoctorId: {
+            type: Types.ObjectId,
+            ref: 'Doctor',
+        },
+        caregiverId: {
+            type: Types.ObjectId,
+            ref: 'Caregiver',
         },
     },
     { timestamps: true },
