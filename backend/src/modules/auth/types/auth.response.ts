@@ -4,6 +4,7 @@ export interface BaseUserResponse {
     id: string
     name: string
     email: string
+    mobile: string
     role: UserRole
     profileImage?: string
 }
