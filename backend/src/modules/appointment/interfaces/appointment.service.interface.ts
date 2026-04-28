@@ -1,4 +1,5 @@
 import { AppointmentResponseDTO } from '../mapper/appointment.mapper'
+import { CreateAppointmentDTO } from '../validator/appointment.schema'
 
 export interface RazorpayOrder {
     id: string
@@ -7,15 +8,18 @@ export interface RazorpayOrder {
     amount_paid: number | string
     amount_due: number | string
     currency: string
-    receipt: string
+    receipt?: string
     status: string
     attempts: number
     created_at: number
 }
 
 export interface IAppointmentService {
-    createOrder(patientId: string, doctorId: string, appointmentDate: string, slotStart: string): Promise<RazorpayOrder>
-    verifyPayment(razorpayOrderId: string, razorpayPaymentId: string, razorpaySignature: string): Promise<AppointmentResponseDTO>
+    createAppointment(
+        dto: CreateAppointmentDTO & { patientId: string },
+    ): Promise<{ order: RazorpayOrder; paymentId: string }>
+
     getPatientAppointments(patientId: string): Promise<AppointmentResponseDTO[]>
+
     getDoctorAppointments(doctorId: string): Promise<AppointmentResponseDTO[]>
 }
