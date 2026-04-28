@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import { useParams, useNavigate } from 'react-router-dom'
 
 import { getDoctorSlots, createAppointment, verifyPayment } from '../api/patient.api'
-import { type DoctorSlot } from '../types/patient.types'
+import { type DoctorInfo, type DoctorSlot, type RazorpayResponse } from '../types/patient.types'
 
 import styles from './DoctorAvailabilityPage.module.css'
 
@@ -14,22 +14,6 @@ import Button from '@/shared/components/Button/Button'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-
-type DoctorInfo = {
-    id: string
-    fullName: string
-    professionalTitle: string
-    profileImage?: string
-    initials: string
-    accent: string
-    consultationFee: number
-}
-
-interface RazorpayResponse {
-    razorpay_order_id: string
-    razorpay_payment_id: string
-    razorpay_signature: string
-}
 
 const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js'
 
@@ -67,7 +51,10 @@ const DoctorAvailabilityPage = () => {
     const navigate = useNavigate()
     const [doctor, setDoctor] = useState<DoctorInfo | null>(null)
 
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null)
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState<Omit<DoctorSlot, 'available'>>({
+        start: '',
+        end: '',
+    })
     const [slots, setSlots] = useState<DoctorSlot[]>([])
 
     const [isLoading, setIsLoading] = useState(true)
@@ -104,7 +91,6 @@ const DoctorAvailabilityPage = () => {
 
                 setSelectedDate(new Date())
             } catch (err) {
-                console.error('Error fetching doctor:', err)
                 toast.error(getErrorMessage(err))
             } finally {
                 setIsLoading(false)
@@ -117,7 +103,7 @@ const DoctorAvailabilityPage = () => {
     useEffect(() => {
         if (doctorId && selectedDate) {
             fetchSlots(selectedDate)
-            setSelectedTimeSlot(null)
+            // setSelectedTimeSlot(null)
         }
     }, [selectedDate, doctorId])
 
@@ -149,10 +135,11 @@ const DoctorAvailabilityPage = () => {
 
             await loadRazorpayScript()
 
-            const order = await createAppointment({
+            const { order, paymentId } = await createAppointment({
                 doctorId: doctorId!,
-                appointmentDate: selectedDate,
-                slotStart: selectedTimeSlot,
+                appointmentDate: selectedDate.toISOString(),
+                slotStart: selectedTimeSlot.start,
+                slotEnd: selectedTimeSlot.end,
             })
 
             const options = {
@@ -160,26 +147,28 @@ const DoctorAvailabilityPage = () => {
                 amount: order.amount,
                 currency: order.currency,
                 name: 'WeCare',
-                description: `Appointment with ${doctor?.fullName}`,
+                description: `Appointment with ${doctor?.name}`,
                 order_id: order.id,
                 handler: async (response: RazorpayResponse) => {
                     try {
                         await verifyPayment({
+                            paymentId,
                             razorpayOrderId: response.razorpay_order_id,
                             razorpayPaymentId: response.razorpay_payment_id,
                             razorpaySignature: response.razorpay_signature,
                         })
                         toast.success('Appointment booked successfully!')
+                        setLoading(false)
                         navigate('/appointments')
                     } catch (err) {
-                        console.error('Verification failed:', err)
-                        toast.error('Payment verification failed. Please contact support.')
+                        toast.error(getErrorMessage(err))
+                        setLoading(false)
                     }
                 },
                 prefill: {
                     name: user?.name || '',
                     email: user?.email || '',
-                    contact: '',
+                    contact: user?.mobile || '',
                 },
                 theme: {
                     color: '#007bff',
@@ -192,9 +181,15 @@ const DoctorAvailabilityPage = () => {
             }
 
             const rzp = new window.Razorpay(options)
+
+            await loadRazorpayScript().catch(() => {
+                toast.error('Payment service unavailable')
+                setLoading(false)
+                throw new Error('Razorpay load failed')
+            })
+
             rzp.open()
         } catch (err) {
-            console.error('Booking failed:', err)
             toast.error(getErrorMessage(err))
             setLoading(false)
         }
@@ -248,7 +243,7 @@ const DoctorAvailabilityPage = () => {
                         )}
 
                         <div>
-                            <h4>{doctor?.fullName}</h4>
+                            <h4>{doctor?.name}</h4>
                             <p>{doctor?.professionalTitle}</p>
                         </div>
                     </div>
@@ -289,10 +284,12 @@ const DoctorAvailabilityPage = () => {
                                             <button
                                                 key={slot.start}
                                                 disabled={!slot.available}
-                                                onClick={() => setSelectedTimeSlot(slot.start)}
+                                                onClick={() =>
+                                                    setSelectedTimeSlot({ start: slot.start, end: slot.end })
+                                                }
                                                 className={`
               ${styles.timeSlot}
-              ${selectedTimeSlot === slot.start ? styles.selected : ''}
+              ${selectedTimeSlot.start === slot.start ? styles.selected : ''}
               ${!slot.available ? styles.unavailable : ''}
             `}
                                             >
@@ -312,7 +309,7 @@ const DoctorAvailabilityPage = () => {
 
                         <div className={styles.summaryRow}>
                             <span className={styles.summaryLabel}>Doctor</span>
-                            <span className={styles.summaryValue}>{doctor?.fullName}</span>
+                            <span className={styles.summaryValue}>{doctor?.name}</span>
                         </div>
 
                         <div className={styles.summaryRow}>
@@ -333,7 +330,7 @@ const DoctorAvailabilityPage = () => {
 
                         <div className={styles.summaryRow}>
                             <span className={styles.summaryLabel}>Time</span>
-                            <span className={styles.summaryValue}>{selectedTimeSlot || 'Not selected'}</span>
+                            <span className={styles.summaryValue}>{selectedTimeSlot.start || 'Not selected'}</span>
                         </div>
 
                         <div className={styles.totalRow}>
