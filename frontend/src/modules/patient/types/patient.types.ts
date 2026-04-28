@@ -56,9 +56,11 @@ export interface CreateAppointmentRequest {
     doctorId: string
     appointmentDate: Date | string
     slotStart: string
+    slotEnd: string
 }
 
 export interface VerifyPaymentRequest {
+    paymentId: string
     razorpayOrderId: string
     razorpayPaymentId: string
     razorpaySignature: string
@@ -73,15 +75,42 @@ export interface Appointment {
     }
     appointmentDate: string
     slotStart: string
-    status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
-    paymentStatus: 'pending' | 'paid' | 'failed'
+    slotEnd: string
+    status: 'pending_payment' | 'confirmed' | 'cancelled' | 'in_consultation' | 'completed'
+    paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
     amount: number
 }
 
+export interface RazorpayOrder {
+    id: string
+    amount: number
+    currency: string
+}
+
+export interface CreateAppointmentResponse {
+    order: RazorpayOrder
+    paymentId: string
+}
 export interface RazorpayOrderResponse {
     id: string
     amount: number | string
     currency: string
     receipt?: string
     status?: string
+}
+
+export interface DoctorInfo {
+    id: string
+    name: string
+    professionalTitle: string
+    profileImage?: string
+    initials: string
+    accent: string
+    consultationFee: number
+}
+
+export interface RazorpayResponse {
+    razorpay_order_id: string
+    razorpay_payment_id: string
+    razorpay_signature: string
 }
