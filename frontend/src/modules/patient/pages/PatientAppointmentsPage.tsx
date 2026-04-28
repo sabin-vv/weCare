@@ -46,7 +46,7 @@ const PatientAppointmentsPage = () => {
     const getStatusClass = (status: string) => {
         switch (status) {
             case 'confirmed': return styles.statusConfirmed
-            case 'pending': return styles.statusPending
+            case 'pending_payment': return styles.statusPending
             case 'cancelled': return styles.statusCancelled
             default: return ''
         }
