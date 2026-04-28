@@ -26,12 +26,14 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
     async findByPatientId(patientId: string): Promise<AppointmentDocument[]> {
         return await AppointmentModel.find({ patientId })
             .populate('doctorId', 'name email')
+            .populate('paymentId', 'status totalAmount')
             .sort({ appointmentDate: -1, slotStart: -1 })
     }
 
     async findByDoctorId(doctorId: string): Promise<AppointmentDocument[]> {
         return await AppointmentModel.find({ doctorId })
             .populate('patientId', 'name email')
+            .populate('paymentId', 'status totalAmount')
             .sort({ appointmentDate: -1, slotStart: -1 })
     }
 
@@ -44,7 +46,7 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
         return await AppointmentModel.find({
             doctorId,
             appointmentDate: { $gte: startOfDay, $lte: endOfDay },
-            status: { $in: ['confirmed', 'pending'] },
+            status: { $in: ['confirmed', 'pending_payment'] },
         })
     }
 
