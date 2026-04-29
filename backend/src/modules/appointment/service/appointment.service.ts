@@ -6,6 +6,7 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { logger } from '../../../core/logger/logger'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
@@ -110,6 +111,7 @@ export class AppointmentService implements IAppointmentService {
 
     async getPatientAppointments(patientId: string): Promise<AppointmentResponseDTO[]> {
         const appointments = await this._appointmentRepo.findByPatientId(patientId)
+        logger.info({ Appointment: appointments })
         return toAppointmentListResponseDTO(appointments)
     }
 

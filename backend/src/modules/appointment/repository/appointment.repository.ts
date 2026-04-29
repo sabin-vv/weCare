@@ -25,7 +25,13 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
 
     async findByPatientId(patientId: string): Promise<AppointmentDocument[]> {
         return await AppointmentModel.find({ patientId })
-            .populate('doctorId', 'name email')
+            .populate({
+                path: 'doctorId',
+                populate: {
+                    path: 'userId',
+                    select: 'name email',
+                },
+            })
             .populate('paymentId', 'status totalAmount')
             .sort({ appointmentDate: -1, slotStart: -1 })
     }
