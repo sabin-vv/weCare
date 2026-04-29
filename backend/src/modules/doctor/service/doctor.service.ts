@@ -4,13 +4,13 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
-import { AppointmentRepository } from '../../appointment/repository/appointment.repository'
+import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
 import { IDoctorService } from '../interfaces/doctor.service.interface'
 import { IDoctorAvailabilityRepository } from '../interfaces/doctor-availability.repository.interface'
 import { toDoctorEntity, toDoctorProfileResponse } from '../mapper/doctor.mapper'
-import { toDoctorSlotsResponse } from '../mapper/doctor-slots.mapper'
+import { toDoctorSlotsResponse } from '../mapper/doctorSlots.mapper'
 import {
     DoctorAvailability,
     DoctorAvailabilityDocument,
@@ -81,7 +81,7 @@ export class DoctorService implements IDoctorService {
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IDoctorAvailabilityRepository)
         private _doctorAvailabilityRepo: IDoctorAvailabilityRepository,
-        @inject(TOKENS.IAppointmentRepository) private _appointmentRepo: AppointmentRepository,
+        @inject(TOKENS.IAppointmentRepository) private _appointmentRepo: IAppointmentRepository,
     ) {}
 
     async createProfile(userId: string, dto: DoctorDTO) {
@@ -268,7 +268,7 @@ export class DoctorService implements IDoctorService {
         }
 
         const availability = await this._doctorAvailabilityRepo.findByDoctorId(doctor._id as Types.ObjectId)
-        const appointments = await this._appointmentRepo.findActiveAppointments(doctor.userId.toString(), date)
+        const appointments = await this._appointmentRepo.findActiveAppointments(doctor._id.toString(), date)
 
         return toDoctorSlotsResponse(doctorId, date, availability, appointments)
     }
