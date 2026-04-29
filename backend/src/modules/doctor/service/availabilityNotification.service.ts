@@ -101,6 +101,10 @@ export class AvailabilityNotificationService implements IAvailabilityNotificatio
                     })
                     response.on('end', () => {
                         if (response.statusCode && response.statusCode >= 200 && response.statusCode < 300) {
+                            logger.info(
+                                { appointmentId: payload.appointmentId, message: buildSmsText(payload) },
+                                'Cancellation SMS sent successfully',
+                            )
                             resolve(null)
                             return
                         }
