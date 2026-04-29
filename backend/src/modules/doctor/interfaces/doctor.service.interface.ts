@@ -3,6 +3,7 @@ import {
     DoctorProfileResponse,
     DoctorSearchResponse,
     DoctorSlotsResponse,
+    UpdateDoctorAvailabilityResult,
 } from '../types/doctor.types'
 import { DoctorDTO } from '../validator/registerDoctor.schema'
 import { UpdateDoctorAvailabilityDTO } from '../validator/updateDoctorAvailability.schema'
@@ -13,7 +14,7 @@ export interface IDoctorService {
     getProfile(userId: string): Promise<DoctorProfileResponse>
     updateProfile(userId: string, dto: UpdateDoctorSettingsDTO): Promise<DoctorProfileResponse>
     getAvailability(userId: string): Promise<DoctorAvailability>
-    updateAvailability(userId: string, dto: UpdateDoctorAvailabilityDTO): Promise<DoctorAvailability>
+    updateAvailability(userId: string, dto: UpdateDoctorAvailabilityDTO): Promise<UpdateDoctorAvailabilityResult>
     searchDoctors(params: {
         search?: string
         specialty?: string

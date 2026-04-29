@@ -23,6 +23,29 @@ export interface DoctorAvailability {
     endDate: string
 }
 
+export interface CancelledAppointmentSummary {
+    appointmentId: string
+    patientName: string
+    patientEmail: string
+    appointmentDate: string
+    slotStart: string
+    slotEnd: string
+    refundPending: boolean
+}
+
+export interface NotificationFailure {
+    appointmentId: string
+    channel: 'email' | 'sms'
+    reason: string
+}
+
+export interface UpdateDoctorAvailabilityResult {
+    availability: DoctorAvailability
+    cancelledCount: number
+    cancelledAppointments: CancelledAppointmentSummary[]
+    notificationFailures: NotificationFailure[]
+}
+
 export interface DoctorAvailabilityDocument extends Document {
     doctorId: Types.ObjectId
     timezone: string
