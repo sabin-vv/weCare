@@ -17,7 +17,7 @@ export interface PaymentDocument extends Document {
     razorpayPaymentId?: string
     razorpaySignature?: string
 
-    status: 'pending' | 'success' | 'failed' | 'refunded'
+    status: 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
 
     paidAt?: Date
 
