@@ -1,7 +1,8 @@
-import { House, Stethoscope, LayoutDashboard, Calendar } from 'lucide-react'
+import { House, Stethoscope, LayoutDashboard, Calendar, Settings } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { useLogout } from '../hooks/useLogout'
+import { Role } from '../types/auth.types'
 
 import styles from './Header.module.css'
 
@@ -23,9 +24,7 @@ const Header = () => {
             .slice(0, 2)
             .toUpperCase() || 'U'
 
-    const logoUrl = settings?.platformLogo
-        ? `${import.meta.env.VITE_S3_BASE_URL}${settings.platformLogo}`
-        : ''
+    const logoUrl = settings?.platformLogo ? `${import.meta.env.VITE_S3_BASE_URL}${settings.platformLogo}` : ''
 
     return (
         <header className={styles.header}>
@@ -57,6 +56,15 @@ const Header = () => {
                 <div className={styles.actionButtons}>
                     {isAuthenticated ? (
                         <>
+                            {user?.role === Role.PATIENT && (
+                                <button
+                                    className={styles.settingsBtn}
+                                    onClick={() => navigate('/settings')}
+                                    title="Settings"
+                                >
+                                    <Settings size={20} />
+                                </button>
+                            )}
                             <button className={styles.logoutBtn} onClick={handleLogout}>
                                 Logout
                             </button>
