@@ -70,8 +70,10 @@ export interface Appointment {
     _id: string
     doctorId: {
         _id: string
-        name: string
-        email: string
+        userId: {
+            name: string
+            email: string
+        }
     }
     appointmentDate: string
     slotStart: string
