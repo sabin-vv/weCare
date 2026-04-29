@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Mail } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
@@ -23,7 +23,24 @@ const LoginForm = () => {
     const [role, setRole] = useState<Role>(Role.DOCTOR)
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
-    const { setAuth } = useAuth()
+    const { user, setAuth } = useAuth()
+
+    useEffect(() => {
+        if (!user) return
+        switch (user.role) {
+            case Role.DOCTOR:
+                navigate('/doctor/dashboard')
+                break
+            case Role.CAREGIVER:
+                navigate('/caregiver/dashboard')
+                break
+            case Role.PATIENT:
+                navigate('/dashboard')
+                break
+            default:
+                navigate('/')
+        }
+    })
 
     const {
         register,

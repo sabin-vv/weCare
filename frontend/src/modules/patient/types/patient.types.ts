@@ -104,8 +104,7 @@ export interface DoctorInfo {
     name: string
     professionalTitle: string
     profileImage?: string
-    initials: string
-    accent: string
+
     consultationFee: number
 }
 

@@ -103,7 +103,7 @@ const DoctorAvailabilityPage = () => {
     useEffect(() => {
         if (doctorId && selectedDate) {
             fetchSlots(selectedDate)
-            // setSelectedTimeSlot(null)
+            setSelectedTimeSlot({ start: '', end: '' })
         }
     }, [selectedDate, doctorId])
 
@@ -197,6 +197,14 @@ const DoctorAvailabilityPage = () => {
 
     const totalFee = (doctor?.consultationFee ?? 0) + (settings?.platformFee ?? 0)
 
+    const doctorInitials =
+        doctor?.name
+            ?.split(' ')
+            .map((part) => part[0])
+            .join('')
+            .slice(0, 2)
+            .toUpperCase() || ''
+
     if (isLoading) {
         return (
             <AuthLayout>
@@ -239,12 +247,12 @@ const DoctorAvailabilityPage = () => {
                                 className={styles.miniDoctorImage}
                             />
                         ) : (
-                            <div className={styles.avatarPlaceholder}>{doctor?.initials}</div>
+                            <div className={styles.avatarPlaceholder}>{doctorInitials}</div>
                         )}
 
                         <div>
                             <h4>{doctor?.name}</h4>
-                            <p>{doctor?.professionalTitle}</p>
+                            <p className={styles.doctorSpeciality}>{doctor?.professionalTitle}</p>
                         </div>
                     </div>
 
@@ -307,19 +315,20 @@ const DoctorAvailabilityPage = () => {
                     <div className={styles.bookingSummary}>
                         <h2 className={styles.sectionTitle}>Booking Summary</h2>
 
-                        <div className={styles.summaryRow}>
-                            <span className={styles.summaryLabel}>Doctor</span>
-                            <span className={styles.summaryValue}>{doctor?.name}</span>
+                        {/* Doctor Info (No Image) */}
+                        <div className={styles.doctorInfo}>
+                            <div>
+                                <h3 className={styles.doctorName}>{doctor?.name}</h3>
+                                <p className={styles.doctorSpeciality}>{doctor?.professionalTitle}</p>
+                            </div>
                         </div>
 
-                        <div className={styles.summaryRow}>
-                            <span className={styles.summaryLabel}>Specialization</span>
-                            <span className={styles.summaryValue}>{doctor?.professionalTitle}</span>
-                        </div>
+                        <hr className={styles.divider} />
 
-                        <div className={styles.summaryRow}>
-                            <span className={styles.summaryLabel}>Date</span>
-                            <span className={styles.summaryValue}>
+                        {/* Date */}
+                        <div className={styles.infoRow}>
+                            <span className={styles.infoLabel}>Date</span>
+                            <span className={styles.infoValue}>
                                 {selectedDate?.toLocaleDateString('en-US', {
                                     weekday: 'short',
                                     month: 'short',
@@ -328,29 +337,39 @@ const DoctorAvailabilityPage = () => {
                             </span>
                         </div>
 
-                        <div className={styles.summaryRow}>
-                            <span className={styles.summaryLabel}>Time</span>
-                            <span className={styles.summaryValue}>{selectedTimeSlot.start || 'Not selected'}</span>
+                        <hr className={styles.divider} />
+
+                        {/* Time */}
+                        <div className={styles.infoRow}>
+                            <span className={styles.infoLabel}>Time Slot</span>
+                            <span className={styles.infoValue}>{selectedTimeSlot.start || 'Not selected'}</span>
                         </div>
 
+                        <hr className={styles.divider} />
+
+                        {/* Fees */}
+                        <div className={styles.feeRow}>
+                            <span>Consultation Fee</span>
+                            <span>₹{doctor?.consultationFee}</span>
+                        </div>
+
+                        <div className={styles.feeRow}>
+                            <span>Platform Fee</span>
+                            <span>₹{settings?.platformFee}</span>
+                        </div>
+
+                        <hr className={styles.divider} />
+
+                        {/* Total */}
                         <div className={styles.totalRow}>
-                            <span className={styles.totalLabel}>Consultation Fee</span>
-                            <span className={styles.totalValue}>₹{doctor.consultationFee}</span>
+                            <span>Total</span>
+                            <span>₹{totalFee}</span>
                         </div>
 
-                        <div className={styles.totalRow}>
-                            <span className={styles.totalLabel}>Platform Fee</span>
-                            <span className={styles.totalValue}>₹{settings?.platformFee}</span>
-                        </div>
-
-                        <div className={styles.totalRow}>
-                            <span className={styles.totalLabel}>Total</span>
-                            <span className={styles.totalValue}>₹{totalFee}</span>
-                        </div>
-
+                        {/* Button */}
                         <Button
                             onClick={handleBookAppointment}
-                            disabled={!selectedDate || !selectedTimeSlot || loading}
+                            disabled={!selectedDate || !selectedTimeSlot.start || loading}
                         >
                             {loading ? 'Processing...' : 'Pay with Razorpay'}
                         </Button>
