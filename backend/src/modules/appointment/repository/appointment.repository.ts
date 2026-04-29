@@ -46,7 +46,13 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
         return await AppointmentModel.find({
             doctorId,
             appointmentDate: { $gte: startOfDay, $lte: endOfDay },
-            status: { $in: ['confirmed', 'pending_payment'] },
+            $or: [
+                { status: { $in: ['confirmed', 'in_consultation'] } },
+                {
+                    status: 'pending_payment',
+                    expiredAt: { $gt: new Date() },
+                },
+            ],
         })
     }
 

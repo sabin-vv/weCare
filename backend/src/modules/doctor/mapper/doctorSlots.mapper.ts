@@ -36,7 +36,7 @@ const generateSlots = (
 
                 if (app.status === 'confirmed') return true
 
-                if (app.status === 'pending') {
+                if (app.status === 'pending_payment') {
                     return new Date(app.createdAt) > fifteenMinutesAgo
                 }
 
@@ -61,7 +61,9 @@ export const toDoctorSlotsResponse = (
     availability: DoctorAvailabilityDocument | null,
     appointments: AppointmentDocument[] = [],
 ): DoctorSlotsResponse => {
-    const dayOfWeek = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as WeeklySchedule['day']
+    const dayOfWeek = new Date(date)
+        .toLocaleDateString('en-US', { weekday: 'long' })
+        .toLowerCase() as WeeklySchedule['day']
 
     const schedule = availability?.weeklySchedule.find((s) => s.day === dayOfWeek) || {
         day: dayOfWeek,
