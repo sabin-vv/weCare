@@ -3,6 +3,8 @@ import type {
     DoctorAvailabilityResponse,
     DoctorProfile,
     DoctorProfileResponse,
+    DoctorAvailabilityUpdateResponse,
+    DoctorAvailabilityUpdateResult,
     UpdateDoctorProfileData,
 } from '../types/doctor.types'
 
@@ -36,7 +38,7 @@ export const getDoctorAvailability = async (): Promise<DoctorAvailability> => {
     return unwrapDoctorAvailability(res.data)
 }
 
-export const updateDoctorAvailability = async (data: DoctorAvailability): Promise<DoctorAvailability> => {
-    const res = await api.put<DoctorAvailability | DoctorAvailabilityResponse>('/doctors/availability', data)
-    return unwrapDoctorAvailability(res.data)
+export const updateDoctorAvailability = async (data: DoctorAvailability): Promise<DoctorAvailabilityUpdateResult> => {
+    const res = await api.put<DoctorAvailabilityUpdateResponse>('/doctors/availability', data)
+    return res.data.data
 }

@@ -130,13 +130,23 @@ const AvailabilityPage = () => {
         try {
             const updatedAvailability = await updateDoctorAvailability(availabilityData)
 
-            setSlotDuration(updatedAvailability.slotDuration)
-            setSchedule(cloneSchedule(updatedAvailability.weeklySchedule))
+            setSlotDuration(updatedAvailability.availability.slotDuration)
+            setSchedule(cloneSchedule(updatedAvailability.availability.weeklySchedule))
             setDateRange({
-                start: updatedAvailability.startDate,
-                end: updatedAvailability.endDate,
+                start: updatedAvailability.availability.startDate,
+                end: updatedAvailability.availability.endDate,
             })
-            toast.success('Availability saved successfully')
+            if (updatedAvailability.cancelledCount > 0) {
+                toast.success(`Availability saved. ${updatedAvailability.cancelledCount} appointment(s) were cancelled.`)
+            } else {
+                toast.success('Availability saved successfully')
+            }
+
+            if (updatedAvailability.notificationFailures.length > 0) {
+                toast.error(
+                    `${updatedAvailability.notificationFailures.length} notification(s) could not be delivered.`,
+                )
+            }
         } catch (error) {
             toast.error(getErrorMessage(error))
         } finally {

@@ -161,3 +161,30 @@ export interface DoctorAvailability {
 export interface DoctorAvailabilityResponse extends ApiInterface {
     data: DoctorAvailability
 }
+
+export interface CancelledAppointmentSummary {
+    appointmentId: string
+    patientName: string
+    patientEmail: string
+    appointmentDate: string
+    slotStart: string
+    slotEnd: string
+    refundPending: boolean
+}
+
+export interface NotificationFailure {
+    appointmentId: string
+    channel: 'email' | 'sms'
+    reason: string
+}
+
+export interface DoctorAvailabilityUpdateResult {
+    availability: DoctorAvailability
+    cancelledCount: number
+    cancelledAppointments: CancelledAppointmentSummary[]
+    notificationFailures: NotificationFailure[]
+}
+
+export interface DoctorAvailabilityUpdateResponse extends ApiInterface {
+    data: DoctorAvailabilityUpdateResult
+}
