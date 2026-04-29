@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
+import { getCurrentUser } from '../../auth/api/auth.api'
 import { getDoctorProfile } from '../api/doctor.api'
 import DoctorDetailsForm from '../form/DoctorDetailesForm'
-import type { DoctorDocuments, Specializations } from '../types/doctor.types'
+import type { DoctorDocuments, Specialization } from '../types/doctor.types'
 
 import styles from './DoctorDashboard.module.css'
 
@@ -10,43 +12,72 @@ import { env } from '@/config/env'
 import DoctorLayout from '@/layout/DoctorLayout'
 import { VerificationStatus } from '@/modules/auth/types/auth.types'
 import { useAuth } from '@/shared/context/AuthContext'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const DoctorDashboard = () => {
-    const { user } = useAuth()
+    const { user, setAuth } = useAuth()
     const [documents, setDocuments] = useState<DoctorDocuments>()
-    const [specializations, setSpecializations] = useState<Specializations[]>([{ name: '', documentImage: null }])
+    const [specializations, setSpecializations] = useState<Specialization[]>([{ name: '', documentImage: null }])
     const [rejectReason, setRejectReason] = useState<string>()
 
     const baseUrl = env.AWS_BASE_URL
     useEffect(() => {
-        if (user?.verificationStatus === 'rejected') {
-            const getProfile = async () => {
-                const profile = await getDoctorProfile()
-
-                setDocuments({
-                    govId: `${baseUrl}${profile.govIdImage}`,
-                    profileImage: `${baseUrl}${profile.profileImage}`,
-                    medicalCertificate: {
-                        number: profile.medicalCertificateNumber,
-                        document: `${baseUrl}${profile.medicalCertificateImage}`,
-                    },
-                    councilRegistration: {
-                        number: profile.medicalCouncilRegistrationNumber,
-                        document: `${baseUrl}${profile.medicalCouncilImage}`,
-                    },
-                })
-                setSpecializations(
-                    profile.specialization.map((spec) => ({
-                        name: spec.name,
-                        documentImage: `${baseUrl}${spec.documentImage}`,
-                    })),
-                )
-                if (profile.rejectReason) setRejectReason(profile.rejectReason)
-            }
-
-            getProfile()
+        if (!user) {
+            return
         }
-    }, [user])
+
+        const loadDashboardState = async () => {
+            try {
+                const currentUser = await getCurrentUser()
+                const nextUser = {
+                    ...user,
+                    verificationStatus: currentUser.data.verificationStatus ?? user.verificationStatus,
+                    profileImage: currentUser.data.profileImage ?? user.profileImage,
+                    professionalTitle: currentUser.data.professionalTitle ?? user.professionalTitle,
+                }
+
+                const hasAuthChanged =
+                    nextUser.verificationStatus !== user.verificationStatus ||
+                    nextUser.profileImage !== user.profileImage ||
+                    nextUser.professionalTitle !== user.professionalTitle
+
+                if (hasAuthChanged) {
+                    setAuth(nextUser)
+                }
+
+                if (nextUser.verificationStatus === VerificationStatus.REJECTED) {
+                    const profile = await getDoctorProfile()
+
+                    setDocuments({
+                        govId: `${baseUrl}${profile.govIdImage}`,
+                        profileImage: `${baseUrl}${profile.profileImage}`,
+                        medicalCertificate: {
+                            number: profile.medicalCertificateNumber,
+                            document: `${baseUrl}${profile.medicalCertificateImage}`,
+                        },
+                        councilRegistration: {
+                            number: profile.medicalCouncilRegistrationNumber,
+                            document: `${baseUrl}${profile.medicalCouncilImage}`,
+                        },
+                    })
+                    setSpecializations(
+                        profile.specialization.map((spec) => ({
+                            name: spec.name,
+                            documentImage: `${baseUrl}${spec.documentImage}`,
+                        })),
+                    )
+                    setRejectReason(profile.rejectReason || '')
+                    return
+                }
+
+                setRejectReason(undefined)
+            } catch (error) {
+                toast.error(getErrorMessage(error))
+            }
+        }
+
+        loadDashboardState()
+    }, [baseUrl, setAuth, user])
 
     return (
         <DoctorLayout>
