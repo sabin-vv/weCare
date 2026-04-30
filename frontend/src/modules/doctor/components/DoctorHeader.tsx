@@ -1,4 +1,5 @@
-import Header, { type NavLink } from './Header'
+import Header from '../../../shared/components/Header/Header'
+import type { NavLink } from '../../../shared/components/Header/Header.types'
 
 import { useAuth } from '@/shared/context/AuthContext'
 
