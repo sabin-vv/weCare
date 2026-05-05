@@ -6,6 +6,7 @@ import type {
     DoctorAvailabilityUpdateResponse,
     DoctorAvailabilityUpdateResult,
     UpdateDoctorProfileData,
+    ListPatientsResponse,
 } from '../types/doctor.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
@@ -40,5 +41,23 @@ export const getDoctorAvailability = async (): Promise<DoctorAvailability> => {
 
 export const updateDoctorAvailability = async (data: DoctorAvailability): Promise<DoctorAvailabilityUpdateResult> => {
     const res = await api.put<DoctorAvailabilityUpdateResponse>('/doctors/availability', data)
+    return res.data.data
+}
+
+export const listPatients = async (
+    search: string,
+    filter: string,
+    page: number,
+    limit: number,
+): Promise<ListPatientsResponse> => {
+    const res = await api.get('/patients/', {
+        params: {
+            search,
+            filter,
+            page,
+            limit,
+        },
+    })
+
     return res.data.data
 }
