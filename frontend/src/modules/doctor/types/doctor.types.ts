@@ -188,3 +188,23 @@ export interface DoctorAvailabilityUpdateResult {
 export interface DoctorAvailabilityUpdateResponse extends ApiInterface {
     data: DoctorAvailabilityUpdateResult
 }
+
+export interface Patients {
+    patientId: string
+    name: string
+    profileImage?: string
+    conditions: string[]
+    riskLevel: string
+    caregiver: string
+    status: string
+}
+export interface Pagination {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+}
+export interface ListPatientsResponse {
+    patients: Patients[]
+    pagination: Pagination
+}
