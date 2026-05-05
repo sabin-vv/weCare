@@ -1,0 +1,161 @@
+.filterSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.filterList {
+    display: flex;
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.filterItem {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.filterItem:hover {
+    background-color: #e0e0e0;
+}
+
+.patientCell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profileImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatarFallback {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e8f0fe;
+    color: #2557a7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.patientInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.patientName {
+    font-weight: 600;
+    color: #333;
+}
+
+.patientId {
+    font-size: 12px;
+    color: #666;
+}
+
+.condition {
+    color: #333;
+}
+
+.riskLevel {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.riskLevel.mild {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.riskLevel.moderate {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.riskLevel.severe {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.riskLevel.high_risk {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.caregiver {
+    color: #333;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status.active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status.pending_consultation {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status.in_consultation {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status.completed {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.status.hospitalized {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.status.suspended {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status.archived {
+    background-color: #e2e3e5;
+    color: #383d41;
+}
+
+.actionBtn {
+    padding: 6px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.actionBtn:hover {
+    background-color: #0056b3;
+}
