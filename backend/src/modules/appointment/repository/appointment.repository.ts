@@ -97,4 +97,37 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .populate('paymentId', 'status totalAmount')
             .sort({ appointmentDate: 1, slotStart: 1 })
     }
+
+    async findPendingPatientIdsByDoctor(doctorId: string): Promise<string[]> {
+        const appointments = await AppointmentModel.find({
+            doctorId,
+            status: 'pending_payment',
+            expiredAt: { $gt: new Date() },
+        })
+            .select('patientId')
+            .lean()
+
+        return [...new Set(appointments.map((appointment) => appointment.patientId.toString()))]
+    }
+
+    async findCurrentAppointmentsByDoctorAndPatientIds(
+        doctorId: string,
+        patientIds: string[],
+    ): Promise<AppointmentDocument[]> {
+        return await AppointmentModel.find({
+            doctorId,
+            patientId: { $in: patientIds },
+            $or: [
+                {
+                    status: 'pending_payment',
+                    expiredAt: { $gt: new Date() },
+                },
+                {
+                    status: { $in: ['confirmed', 'in_consultation', 'completed'] },
+                },
+            ],
+        })
+            .sort({ updatedAt: -1, appointmentDate: -1, slotStart: -1 })
+            .lean()
+    }
 }
