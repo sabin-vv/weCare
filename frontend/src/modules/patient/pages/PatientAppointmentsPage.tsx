@@ -7,7 +7,7 @@ import { type Appointment } from '../types/patient.types'
 
 import styles from './PatientAppointmentsPage.module.css'
 
-import AuthLayout from '@/layout/AuthLayout'
+import PatientLayout from '@/layout/PatientLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
@@ -58,11 +58,11 @@ const PatientAppointmentsPage = () => {
 
     if (isLoading) {
         return (
-            <AuthLayout>
+            <PatientLayout>
                 <div className={styles.loadingContainer}>
                     <div className={styles.spinner}></div>
                 </div>
-            </AuthLayout>
+            </PatientLayout>
         )
     }
 
@@ -122,41 +122,39 @@ const PatientAppointmentsPage = () => {
     )
 
     return (
-        <AuthLayout>
+        <PatientLayout>
             <MainWrapper>
                 <h1 className={styles.title}>My Appointments</h1>
 
-                <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        <Clock size={24} /> Current Appointments
-                    </h2>
-                    {currentAppointments.length > 0 ? (
+                {currentAppointments.length > 0 ? (
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>
+                            <Clock size={24} /> Current Appointments
+                        </h2>
                         <div className={styles.grid}>
                             {currentAppointments.map((app) => (
                                 <AppointmentCard key={app._id} appointment={app} />
                             ))}
                         </div>
-                    ) : (
-                        <div className={styles.emptyState}>No upcoming appointments</div>
-                    )}
-                </section>
+                    </section>
+                ) : (
+                    <div className={styles.emptyState}>No upcoming appointments</div>
+                )}
 
-                <section className={styles.section}>
-                    <h2 className={styles.sectionTitle}>
-                        <AlertCircle size={24} /> Recent & Past Appointments
-                    </h2>
-                    {recentAppointments.length > 0 ? (
+                {recentAppointments.length > 0 && (
+                    <section className={styles.section}>
+                        <h2 className={styles.sectionTitle}>
+                            <AlertCircle size={24} /> Recent & Past Appointments
+                        </h2>
                         <div className={styles.grid}>
                             {recentAppointments.map((app) => (
                                 <AppointmentCard key={app._id} appointment={app} />
                             ))}
                         </div>
-                    ) : (
-                        <div className={styles.emptyState}>No past appointments found</div>
-                    )}
-                </section>
+                    </section>
+                )}
             </MainWrapper>
-        </AuthLayout>
+        </PatientLayout>
     )
 }
 
