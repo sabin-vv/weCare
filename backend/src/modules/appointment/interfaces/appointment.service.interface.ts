@@ -24,5 +24,8 @@ export interface IAppointmentService {
 
     getDoctorAppointments(doctorId: string): Promise<AppointmentResponseDTO[]>
 
-    cancelAppointment(id: string, reason: string): Promise<AppointmentDocument | null>
+    cancelAppointment(
+        id: string,
+        reason: string,
+    ): Promise<{ appointment: AppointmentDocument | null; refundAmount: number }>
 }
