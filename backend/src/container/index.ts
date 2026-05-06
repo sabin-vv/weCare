@@ -36,6 +36,10 @@ import { IPaymentRepository } from '../modules/payment/interfaces/payment.reposi
 import { IPaymentService } from '../modules/payment/interfaces/payment.service.interface'
 import { PaymentRepository } from '../modules/payment/repository/payment.repository'
 import { PaymentService } from '../modules/payment/services/payment.service'
+import { IWalletRepository } from '../modules/wallet/interfaces/wallet.repository.interface'
+import { IWalletService } from '../modules/wallet/interfaces/wallet.service.interface'
+import { WalletRepository } from '../modules/wallet/repository/wallet.repository'
+import { WalletService } from '../modules/wallet/services/wallet.service'
 import { TOKENS } from './tokens'
 
 container.register<IUserRepository>(TOKENS.IUserRepository, { useClass: UserRepository })
@@ -59,3 +63,6 @@ container.register<IAppointmentService>(TOKENS.IAppointmentService, { useClass: 
 container.register<IAppointmentRepository>(TOKENS.IAppointmentRepository, { useClass: AppointmentRepository })
 container.register<IPaymentRepository>(TOKENS.IPaymentRepository, { useClass: PaymentRepository })
 container.register<IPaymentService>(TOKENS.IPaymentService, { useClass: PaymentService })
+
+container.register<IWalletRepository>(TOKENS.IWalletRepository, { useClass: WalletRepository })
+container.register<IWalletService>(TOKENS.IWalletService, { useClass: WalletService })
