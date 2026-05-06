@@ -8,7 +8,7 @@ import type { Specialist } from '../types/patient.types'
 import styles from './DoctorBookingPage.module.css'
 
 import { env } from '@/config/env'
-import AuthLayout from '@/layout/AuthLayout'
+import PatientLayout from '@/layout/PatientLayout'
 import Button from '@/shared/components/Button/Button'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
@@ -75,7 +75,7 @@ const DoctorBookingPage = () => {
     const hasFilters = query || selectedSpecialty
 
     return (
-        <AuthLayout>
+        <PatientLayout>
             <section className={styles.panel}>
                 <div className={styles.sectionTop}>
                     <div>
@@ -164,7 +164,7 @@ const DoctorBookingPage = () => {
                     </div>
                 )}
             </section>
-        </AuthLayout>
+        </PatientLayout>
     )
 }
 
