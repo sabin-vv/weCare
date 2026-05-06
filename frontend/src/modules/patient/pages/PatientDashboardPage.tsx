@@ -7,7 +7,7 @@ import { type Appointment } from '../types/patient.types'
 
 import styles from './PatientDashboardPage.module.css'
 
-import AuthLayout from '@/layout/AuthLayout'
+import PatientLayout from '@/layout/PatientLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
@@ -42,18 +42,18 @@ const PatientDashboardPage = () => {
 
     if (isLoading) {
         return (
-            <AuthLayout>
+            <PatientLayout>
                 <div className={styles.loadingContainer}>
                     <div className={styles.spinner}></div>
                 </div>
-            </AuthLayout>
+            </PatientLayout>
         )
     }
 
     const activeAppointments = appointments.filter((a) => a.status !== 'cancelled')
 
     return (
-        <AuthLayout>
+        <PatientLayout>
             <MainWrapper>
                 {activeAppointments.length === 0 ? (
                     <div className={styles.noAppointments}>
@@ -73,7 +73,7 @@ const PatientDashboardPage = () => {
                     ))
                 )}
             </MainWrapper>
-        </AuthLayout>
+        </PatientLayout>
     )
 }
 
