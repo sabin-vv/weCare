@@ -11,6 +11,7 @@ import { IAdminRepository } from '../../admin/interfaces/admin.repository.interf
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
+import { IWalletService } from '../../wallet/interfaces/wallet.service.interface'
 import { IAppointmentService } from '../interfaces/appointment.service.interface'
 import { RazorpayOrder } from '../interfaces/appointment.service.interface'
 import { AppointmentResponseDTO, toAppointmentListResponseDTO } from '../mapper/appointment.mapper'
@@ -28,6 +29,7 @@ export class AppointmentService implements IAppointmentService {
         @inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository,
         @inject(TOKENS.IPaymentRepository) private _paymentRepo: IPaymentRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IWalletService) private _walletService: IWalletService,
     ) {
         this.razorpay = new Razorpay({
             key_id: env.RAZORPAY_KEY_ID,
@@ -124,19 +126,41 @@ export class AppointmentService implements IAppointmentService {
         const appointments = await this._appointmentRepo.findByDoctorId(doctorId)
         return toAppointmentListResponseDTO(appointments)
     }
-    async cancelAppointment(id: string, _reason: string): Promise<AppointmentDocument | null> {
+    async cancelAppointment(
+        id: string,
+        reason: string,
+    ): Promise<{ appointment: AppointmentDocument | null; refundAmount: number }> {
         const appointment = await this._appointmentRepo.findById(id)
 
         if (!appointment) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
         }
 
-        const date = new Date()
+        const appointmentDate = new Date(appointment.appointmentDate)
+        const now = new Date()
+        const hoursBeforeCancellation = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60)
 
-        if (appointment.appointmentDate <= date) {
+        if (hoursBeforeCancellation <= 0) {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Cannot cancel this appointment')
         }
 
-        return await this._appointmentRepo.cancelAppointment(id)
+        let refundAmount = 0
+
+        if (hoursBeforeCancellation > 24) {
+            refundAmount = appointment.consultationFee
+        } else if (hoursBeforeCancellation >= 2) {
+            refundAmount = Math.floor(appointment.consultationFee * 0.5)
+        }
+
+        if (refundAmount > 0 && appointment.paymentId) {
+            const payment = await this._paymentRepo.findById(appointment.paymentId.toString())
+            if (payment && payment.status === 'success') {
+                await this._walletService.credit(appointment.patientId.toString(), refundAmount, reason, id)
+                await this._paymentRepo.updateById(payment._id.toString(), { status: 'refunded' })
+            }
+        }
+
+        const cancelled = await this._appointmentRepo.cancelAppointment(id)
+        return { appointment: cancelled, refundAmount }
     }
 }
