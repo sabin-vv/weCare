@@ -9,11 +9,13 @@ export const startAppointmentCron = () => {
             await AppointmentModel.updateMany(
                 {
                     appointmentDate: { $lt: now },
-                    status: 'confirmed',
+                    status: {
+                        $in: ['confirmed', 'pending_payment'],
+                    },
                 },
                 {
                     $set: {
-                        status: 'cancelled',
+                        status: 'missed',
                     },
                 },
             )
