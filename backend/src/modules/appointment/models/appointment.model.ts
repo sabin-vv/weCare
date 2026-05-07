@@ -36,7 +36,7 @@ const appointmentSchema = new Schema<AppointmentDocument>(
         },
         status: {
             type: String,
-            enum: ['pending_payment', 'confirmed', 'cancelled', 'in_consultation', 'completed'],
+            enum: ['pending_payment', 'confirmed', 'cancelled', 'missed', 'in_consultation', 'completed'],
             default: 'pending_payment',
         },
         expiredAt: {
