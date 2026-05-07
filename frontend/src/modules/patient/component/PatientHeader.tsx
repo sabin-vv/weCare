@@ -4,6 +4,7 @@ const caregiverNavLinks = [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Find Dotors', path: '/doctors' },
     { label: 'Appointments', path: '/appointments' },
+    { label: 'Wallet', path: '/wallet' },
 ]
 const PatientHeader = () => {
     return <Header navLinks={caregiverNavLinks} />
