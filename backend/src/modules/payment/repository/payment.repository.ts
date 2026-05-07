@@ -4,6 +4,9 @@ import { PaymentModel } from '../models/payment.model'
 import { PaymentDocument } from '../types/payment.types'
 
 export class PaymentRepository extends BaseRepository<PaymentDocument> implements IPaymentRepository {
+    constructor() {
+        super(PaymentModel)
+    }
     async create(data: Partial<PaymentDocument>) {
         return await PaymentModel.create(data)
     }
