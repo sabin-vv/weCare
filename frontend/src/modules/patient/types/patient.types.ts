@@ -68,6 +68,12 @@ export interface VerifyPaymentRequest {
     razorpaySignature: string
 }
 
+interface Specialization {
+    name: string
+    verified: boolean
+    documentImage: string
+}
+
 export interface Appointment {
     _id: string
     doctorId: {
@@ -76,6 +82,7 @@ export interface Appointment {
             name: string
             email: string
         }
+        specializations: Specialization[]
     }
     appointmentDate: string
     slotStart: string
@@ -131,4 +138,11 @@ export interface GetWallet {
 
 export interface GetWalletResponse extends ApiInterface {
     data: GetWallet
+}
+
+export interface CancelModalContentProps {
+    cancellationReason: string
+    setCancellationReason: (reason: string) => void
+    customReason: string
+    setCustomReason: (reason: string) => void
 }

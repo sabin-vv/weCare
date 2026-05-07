@@ -12,6 +12,7 @@ import type {
     GetWalletResponse,
 } from '../types/patient.types'
 
+import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
 
 export type GetDoctorsResponse = {
@@ -67,5 +68,10 @@ export const getPatientAppointments = async (): Promise<Appointment[]> => {
 
 export const getWallet = async (): Promise<GetWalletResponse> => {
     const response = await api.get('/wallet')
-    return response.data.data
+    return response.data
+}
+
+export const cancelAppointment = async (id: string, reason: string): Promise<ApiInterface> => {
+    const response = await api.patch(`/appointments/${id}/cancel`, { reason })
+    return response.data
 }
