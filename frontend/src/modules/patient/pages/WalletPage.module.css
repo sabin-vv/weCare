@@ -1,0 +1,144 @@
+.walletPage {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.walletCard {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 24px;
+    padding: 28px;
+    color: white;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+}
+
+.walletTop {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.walletLabel {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-bottom: 8px;
+}
+
+.balanceTitle {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.walletIcon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.walletBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.balanceAmount {
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.addMoneyBtn {
+    background: white !important;
+    color: #1d4ed8 !important;
+    border: none !important;
+    padding: 12px 18px !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.addMoneyBtn:hover {
+    transform: translateY(-2px);
+}
+
+.transactionSection {
+    background: white;
+    border-radius: 24px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.transactionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.transactionHeader h4 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.viewAllBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.transactionList {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.transactionCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px;
+    border-radius: 16px;
+    background: #f9fafb;
+    border: 1px solid #f1f5f9;
+}
+
+.transactionType {
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-bottom: 4px;
+}
+
+.transactionDate {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.credit {
+    color: #16a34a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.debit {
+    color: #dc2626;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.emptyState {
+    padding: 40px 0;
+    text-align: center;
+    color: #6b7280;
+}
