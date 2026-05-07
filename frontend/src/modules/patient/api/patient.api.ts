@@ -9,6 +9,7 @@ import type {
     UpdatePatientProfileData,
     VerifyPaymentRequest,
     CreateAppointmentResponse,
+    GetWalletResponse,
 } from '../types/patient.types'
 
 import { api } from '@/services/api'
@@ -61,5 +62,10 @@ export const verifyPayment = async (data: VerifyPaymentRequest): Promise<Appoint
 
 export const getPatientAppointments = async (): Promise<Appointment[]> => {
     const response = await api.get<{ data: Appointment[] }>('/appointments/patient')
+    return response.data.data
+}
+
+export const getWallet = async (): Promise<GetWalletResponse> => {
+    const response = await api.get('/wallet')
     return response.data.data
 }
