@@ -7,6 +7,8 @@ export interface IAppointmentRepository {
 
     update(id: string, data: Partial<AppointmentDocument>): Promise<AppointmentDocument | null>
 
+    delete(id: string): Promise<AppointmentDocument | null>
+
     findByPatientId(patientId: string): Promise<AppointmentDocument[]>
 
     findByDoctorId(doctorId: string): Promise<AppointmentDocument[]>
