@@ -8,6 +8,7 @@ export interface PaymentDocument extends Document {
     subscriptionId?: Types.ObjectId
 
     paymentType: 'consultation' | 'subscription'
+    paymentMethod: 'razorpay' | 'wallet'
 
     consultationFee?: number
     platformFee?: number

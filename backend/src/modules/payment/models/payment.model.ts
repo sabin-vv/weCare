@@ -26,6 +26,11 @@ const paymentSchema = new Schema<PaymentDocument>(
             enum: ['consultation', 'subscription'],
             required: true,
         },
+        paymentMethod: {
+            type: String,
+            enum: ['razorpay', 'wallet'],
+            required: true,
+        },
         consultationFee: {
             type: Number,
         },
