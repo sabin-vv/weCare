@@ -10,4 +10,6 @@ export interface IPaymentRepository {
     updateById(id: string, data: Partial<PaymentDocument>): Promise<PaymentDocument | null>
 
     updateByOrderId(id: string, data: Partial<PaymentDocument>): Promise<PaymentDocument | null>
+
+    delete(id: string): Promise<PaymentDocument | null>
 }
