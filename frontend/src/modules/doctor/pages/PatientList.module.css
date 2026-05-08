@@ -3,26 +3,70 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
+    gap: 20px;
+}
+
+.searchWrapper {
+    flex: 0 0 300px;
+    max-width: 300px;
 }
 
 .filterList {
     display: flex;
-    gap: 16px;
+    gap: 10px;
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
 .filterItem {
-    padding: 8px 16px;
-    border-radius: 20px;
-    background-color: #f5f5f5;
+    padding: 10px 18px;
+    border-radius: 24px;
+    background-color: #f1f5f9;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
 }
 
 .filterItem:hover {
-    background-color: #e0e0e0;
+    background-color: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.filterItem[aria-current="true"] {
+    background-color: #2563eb;
+    color: white;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.filterItem[aria-current="true"]:hover {
+    background-color: #1d4ed8;
+}
+
+@media (max-width: 768px) {
+    .filterSection {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .searchWrapper {
+        flex: 1;
+        max-width: 100%;
+    }
+
+    .filterList {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .filterItem {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
 }
 
 .patientCell {
