@@ -1,6 +1,8 @@
 import type {
     Appointment,
+    AppointmentCheckoutResponse,
     CreateAppointmentRequest,
+    GetWalletResponse,
     DoctorSlotsResponse,
     GetDoctorsParams,
     PatientProfileData,
@@ -8,8 +10,6 @@ import type {
     Specialist,
     UpdatePatientProfileData,
     VerifyPaymentRequest,
-    CreateAppointmentResponse,
-    GetWalletResponse,
 } from '../types/patient.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
@@ -51,8 +51,8 @@ export const getDoctorSlots = async (doctorId: string, date: string): Promise<Do
     return response.data.data
 }
 
-export const createAppointment = async (data: CreateAppointmentRequest): Promise<CreateAppointmentResponse> => {
-    const response = await api.post<{ data: CreateAppointmentResponse }>('/appointments', data)
+export const createAppointment = async (data: CreateAppointmentRequest): Promise<AppointmentCheckoutResponse> => {
+    const response = await api.post<{ data: AppointmentCheckoutResponse }>('/appointments', data)
     return response.data.data
 }
 
