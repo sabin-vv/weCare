@@ -53,6 +53,7 @@
 }
 
 .addMoneyBtn {
+    width: auto;
     background: white !important;
     color: #1d4ed8 !important;
     border: none !important;
