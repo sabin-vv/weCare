@@ -1,11 +1,19 @@
 .sidebar {
-    width: 350px;
+    width: 100%;
+    height: 100%;
     background: #fbfcfe;
     padding: 22px 16px;
-    margin-bottom: 20px;
-    border-radius: 12px;
     border-right: 1px solid #e8edf3;
     max-height: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1200px) {
+    .sidebar {
+        width: 350px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
 }
 
 .title {
