@@ -10,6 +10,7 @@ export interface HeaderProps {
     subtitle?: string
     navLinks?: NavLink[]
     children?: ReactNode
+    leading?: ReactNode
 }
 
 export interface navLinkRight {

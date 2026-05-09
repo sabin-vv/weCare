@@ -11,6 +11,7 @@ import styles from './DoctorDashboard.module.css'
 import { env } from '@/config/env'
 import DoctorLayout from '@/layout/DoctorLayout'
 import { VerificationStatus } from '@/modules/auth/types/auth.types'
+import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
@@ -81,7 +82,7 @@ const DoctorDashboard = () => {
 
     return (
         <DoctorLayout>
-            <main className={styles.content}>
+            <MainWrapper title="Dashboard">
                 {!user?.isProfileComplete || user.verificationStatus === 'rejected' ? (
                     <>
                         {user && user.verificationStatus === 'rejected' && (
@@ -124,7 +125,7 @@ const DoctorDashboard = () => {
                         </div>
                     </section>
                 )}
-            </main>
+            </MainWrapper>
         </DoctorLayout>
     )
 }

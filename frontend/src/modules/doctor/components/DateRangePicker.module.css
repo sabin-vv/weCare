@@ -26,6 +26,8 @@
     background-color: #ffffff;
     color: #111827;
     transition: all 0.2s ease;
+    min-width: 100px;
+    flex: 1 1 auto;
 }
 
 .input:hover {

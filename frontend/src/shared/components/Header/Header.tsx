@@ -1,4 +1,5 @@
-import { BellRing, Settings } from 'lucide-react'
+import { BellRing, Settings, Calendar } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Button from '../Button/Button'
@@ -11,11 +12,13 @@ import LogoutButton from '@/shared/components/LogoutButton/LogoutButton'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 
-const Header = ({ titlePrefix = '', subtitle, navLinks = [], children }: HeaderProps) => {
+const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }: HeaderProps) => {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { settings } = usePlatform()
     const baseUrl = env.AWS_BASE_URL
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const menuRef = useRef<HTMLDivElement>(null)
 
     const isAuthenticated = !!user
 
@@ -47,9 +50,25 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children }: HeaderP
 
     const currentRoutes = user ? roleRoutes[user.role] : null
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => document.removeEventListener('mousedown', handleClickOutside)
+    }, [])
+
+    const handleLinkClick = (path: string) => {
+        navigate(path)
+        setIsMenuOpen(false)
+    }
+
     return (
         <header className={styles.navbar}>
             <div className={styles.left}>
+                {leading}
                 <img
                     src={`${baseUrl}${settings?.platformLogo}`}
                     alt="logo"
@@ -87,23 +106,53 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children }: HeaderP
 
                         <LogoutButton />
 
-                        <div className={styles.profile}>
-                            <div className={styles.profileText}>
-                                <h4>
-                                    {titlePrefix}
-                                    {user?.name}
-                                </h4>
-                                {subtitle && <p>{subtitle}</p>}
+                        <div className={styles.profile} ref={menuRef}>
+                            <div className={styles.profileMain} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                                <div className={styles.profileText}>
+                                    <h4>
+                                        {titlePrefix}
+                                        {user?.name}
+                                    </h4>
+                                    {subtitle && <p>{subtitle}</p>}
+                                </div>
+                                {user?.profileImage ? (
+                                    <img
+                                        src={`${baseUrl}${user?.profileImage}`}
+                                        alt="/profile"
+                                        className={styles.profileImg}
+                                    />
+                                ) : (
+                                    <div className={styles.avatarFallback}>
+                                        <h1>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</h1>
+                                    </div>
+                                )}
                             </div>
-                            {user?.profileImage ? (
-                                <img
-                                    src={`${baseUrl}${user?.profileImage}`}
-                                    alt="/profile"
-                                    className={styles.profileImg}
-                                />
-                            ) : (
-                                <div className={styles.avatarFallback}>
-                                    <h1>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</h1>
+                            {isMenuOpen && (
+                                <div className={styles.mobileMenu}>
+                                    {links.map((link) => (
+                                        <button
+                                            key={link.path}
+                                            className={styles.menuItem}
+                                            onClick={() => handleLinkClick(link.path)}
+                                        >
+                                            {link.label}
+                                        </button>
+                                    ))}
+                                    <button
+                                        className={styles.menuItem}
+                                        onClick={() => handleLinkClick(currentRoutes?.settings || '/')}
+                                    >
+                                        <Settings size={18} />
+                                        Settings
+                                    </button>
+
+                                    <button
+                                        className={styles.menuItem}
+                                        onClick={() => handleLinkClick('/appointments')}
+                                    >
+                                        <Calendar size={18} />
+                                        My Appointments
+                                    </button>
                                 </div>
                             )}
                         </div>

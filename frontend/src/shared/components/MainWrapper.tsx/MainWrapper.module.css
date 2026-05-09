@@ -1,8 +1,8 @@
 .wrapper {
     width: 100%;
     min-height: 90vh;
-    background: #f9fafb;
-    padding: 20px;
+
+    padding: 0 20px 20px 20px;
     border-radius: 12px;
 }
 
@@ -22,7 +22,7 @@
 }
 
 .title {
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 600;
     color: #111827;
 }

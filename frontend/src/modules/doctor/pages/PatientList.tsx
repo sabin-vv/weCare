@@ -160,7 +160,9 @@ const PatientList = () => {
         <DoctorLayout>
             <MainWrapper title="Patient Directory" subtitle="Monitoring all patients">
                 <div className={styles.filterSection}>
-                    <SearchField value={search} onSearch={setSearch} />
+                    <div className={styles.searchWrapper}>
+                        <SearchField value={search} onSearch={setSearch} />
+                    </div>
                     <ul className={styles.filterList}>
                         {FILTER_OPTIONS.map((option) => (
                             <li

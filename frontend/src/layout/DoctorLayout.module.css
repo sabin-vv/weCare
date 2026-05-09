@@ -8,9 +8,107 @@
     display: flex;
     gap: 20px;
     padding: 20px 20px 20px 0;
+    position: relative;
+}
+
+.sidebarWrapper {
+    width: 350px;
+    flex-shrink: 0;
+}
+
+.sidebarOpen {
+    transform: translateX(0);
+}
+
+.backdrop {
+    display: none;
+    position: fixed;
+    top: 65px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.backdropVisible {
+    display: block;
 }
 
 .main {
     flex: 1;
     overflow-y: auto;
+}
+
+.toggleBtn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.toggleBtn:hover {
+    background: #f5f5f5;
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+    .body {
+        padding: 20px;
+    }
+
+    .sidebarWrapper {
+        position: fixed;
+        top: 65px;
+        left: 0;
+        bottom: 0;
+        width: 350px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        background: #fbfcfe;
+    }
+
+    .sidebarOpen {
+        transform: translateX(0);
+    }
+
+    .toggleBtn {
+        display: flex;
+    }
+
+    .backdropVisible {
+        top: 65px;
+    }
+}
+
+@media (max-width: 768px) {
+    .body {
+        padding: 16px;
+    }
+
+    .sidebarWrapper {
+        position: fixed;
+        top: 65px;
+        left: 0;
+        bottom: 0;
+        width: 300px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+        background: #fbfcfe;
+    }
+
+    .sidebarOpen {
+        transform: translateX(0);
+    }
+
+    .toggleBtn {
+        display: flex;
+    }
+
+    .backdropVisible {
+        top: 65px;
+    }
 }

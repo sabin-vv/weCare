@@ -10,7 +10,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    min-width: 160px;
+    min-width: 140px;
     padding-top: 6px;
 }
 
@@ -64,6 +64,16 @@
     color: #cbd5e1;
     cursor: not-allowed;
     transform: none;
+}
+
+@media (min-width: 769px) and (max-width: 990px) {
+    .container {
+        gap: 12px;
+    }
+
+    .left {
+        min-width: 120px;
+    }
 }
 
 @media (max-width: 768px) {
