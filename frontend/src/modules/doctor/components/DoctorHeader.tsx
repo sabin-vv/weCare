@@ -3,6 +3,8 @@ import { Menu } from 'lucide-react'
 import Header from '../../../shared/components/Header/Header'
 import type { NavLink } from '../../../shared/components/Header/Header.types'
 
+import styles from './DoctorHeader.module.css'
+
 import { useAuth } from '@/shared/context/AuthContext'
 
 const doctorNavLinks: NavLink[] = [
@@ -19,21 +21,7 @@ const DoctorHeader = ({ onMenuClick }: DoctorHeaderProps) => {
     const { user } = useAuth()
 
     const hamburgerButton = onMenuClick ? (
-        <button
-            onClick={onMenuClick}
-            className="sidebar-toggle-btn"
-            style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '8px',
-            }}
-            aria-label="Toggle sidebar"
-        >
+        <button onClick={onMenuClick} className={styles.sidebarToggleBtn} aria-label="Toggle sidebar">
             <Menu size={24} />
         </button>
     ) : null

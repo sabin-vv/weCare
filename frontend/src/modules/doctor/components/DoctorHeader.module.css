@@ -1,0 +1,20 @@
+.sidebarToggleBtn {
+    display: none;
+
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    padding: 8px;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+    .sidebarToggleBtn {
+        display: flex;
+    }
+}
