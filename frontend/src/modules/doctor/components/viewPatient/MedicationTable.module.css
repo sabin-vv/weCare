@@ -1,0 +1,381 @@
+.modalContent {
+    padding: 32px;
+}
+
+.headerSection {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.headerIcon {
+    width: 32px;
+    height: 32px;
+    background: #c5d86d;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.headerTitle {
+    font-size: 24px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+}
+
+.searchSection {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.searchField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.searchLabel {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.searchInput {
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #64748b;
+    background: #f8fafc;
+    font-family: inherit;
+}
+
+.searchInput::placeholder {
+    color: #cbd5e1;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #ffffff;
+}
+
+.dosageField {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dosageLabel {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.dosageSelect {
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #f8fafc;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.dosageSelect:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #ffffff;
+}
+
+.selectedMedicationsSection {
+    margin-bottom: 32px;
+}
+
+.selectedMedicationsTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.medicationCard {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    background: #f8fafc;
+}
+
+.medicationHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.medicationName {
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+}
+
+.medicationRemoveBtn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.medicationRemoveBtn:hover {
+    color: #e11d48;
+}
+
+.medicationSubtitle {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 0 0 16px 0;
+}
+
+.medicationGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.medicationGridFull {
+    grid-column: 1 / -1;
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fieldLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fieldLabel.required::after {
+    content: ' *';
+    color: #e11d48;
+}
+
+.fieldSelect {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #ffffff;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.fieldSelect:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.fieldInput {
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #ffffff;
+    font-family: inherit;
+    width: 100%;
+}
+
+.fieldInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+.durationContainer {
+    display: flex;
+    gap: 8px;
+}
+
+.durationInput {
+    flex: 1;
+}
+
+.durationUnit {
+    flex: 0.8;
+}
+
+.scheduleTimesSection {
+    margin-bottom: 16px;
+}
+
+.scheduleTimesLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.scheduleTimesList {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.scheduleTimeItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #ffffff;
+    font-size: 14px;
+    color: #0f172a;
+}
+
+.addTimeBtn {
+    width: 32px;
+    height: 32px;
+    border: 2px dashed #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.addTimeBtn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+}
+
+.instructionsSection {
+    margin-bottom: 24px;
+}
+
+.instructionsLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.instructionsInput {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0f172a;
+    background: #f8fafc;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.instructionsInput::placeholder {
+    color: #cbd5e1;
+}
+
+.instructionsInput:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background: #ffffff;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.cancelBtn {
+    padding: 12px 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.addPrescriptionBtn {
+    padding: 12px 32px;
+    border: none;
+    border-radius: 8px;
+    background: #3b82f6;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.addPrescriptionBtn:hover:not(:disabled) {
+    background: #2563eb;
+}
+
+.addPrescriptionBtn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+.removeTimeBtn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.removeTimeBtn:hover {
+    color: #e11d48;
+}
