@@ -71,4 +71,22 @@ export class PatientController {
             message: 'Patient list fetched succesfully',
         })
     }
+
+    getPatientById = async (req: Request, res: Response) => {
+        const doctorId = req.user?.userId
+
+        if (!doctorId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
+        }
+
+        const { patientId } = req.params
+
+        const result = await this._patientService.getPatientById(doctorId, patientId as string)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: result,
+            message: 'Patient details fetched successfully',
+        })
+    }
 }
