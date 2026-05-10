@@ -16,6 +16,10 @@ export const TOKENS = {
     IAppointmentService: Symbol('IAppointmentService'),
     IPaymentRepository: Symbol('IPaymentRepository'),
     IPaymentService: Symbol('IPaymentService'),
+    IPrescriptionRepository: Symbol('IPrescriptionRepository'),
+    IPrescriptionService: Symbol('IPrescriptionService'),
+    IVitalRepository: Symbol('IVitalRepository'),
+    IVitalService: Symbol('IVitalService'),
     IWalletRepository: Symbol('IWalletRepository'),
     IWalletService: Symbol('IWalletService'),
 }
