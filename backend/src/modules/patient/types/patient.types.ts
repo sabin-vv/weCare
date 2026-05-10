@@ -72,7 +72,7 @@ export interface PatientDetailsDTO {
     gender: string
     profileImage?: string
     conditions: string[]
-    riskLevel: string
+    riskLevel?: string
     caregiver: string
     status: string
     clinicalStatus: string
