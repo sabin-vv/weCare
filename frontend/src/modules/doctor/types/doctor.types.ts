@@ -190,6 +190,7 @@ export interface DoctorAvailabilityUpdateResponse extends ApiInterface {
 }
 
 export interface Patients {
+    _id: string
     patientId: string
     name: string
     profileImage?: string
