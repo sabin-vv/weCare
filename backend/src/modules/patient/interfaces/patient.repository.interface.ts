@@ -11,6 +11,7 @@ export interface ListPatientParams {
 }
 
 export interface IPatientRepository {
+    findById(id: string): Promise<PatientDocument | null>
     findByUserId(userId: Types.ObjectId): Promise<PatientDocument | null>
     updateByUserId(userId: Types.ObjectId, data: Partial<PatientDocument>): Promise<PatientDocument | null>
     create(data: Partial<PatientDocument>): Promise<PatientDocument>
