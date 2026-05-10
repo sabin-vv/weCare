@@ -42,4 +42,6 @@ export interface IAppointmentService {
         id: string,
         reason: string,
     ): Promise<{ appointment: AppointmentDocument | null; refundAmount: number }>
+
+    startConsultation(doctorId: string, patientId: string): Promise<void>
 }
