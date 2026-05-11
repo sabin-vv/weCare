@@ -379,3 +379,19 @@
 .removeTimeBtn:hover {
     color: #e11d48;
 }
+
+.timeInput {
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #0f172a;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    width: 90px;
+}
+
+.timeInput::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    filter: invert(0.5);
+}

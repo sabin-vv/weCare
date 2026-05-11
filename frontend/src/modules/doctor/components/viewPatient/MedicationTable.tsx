@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
 
-import { getMedicineNames } from '../../api/medicine.api'
+import { addPrescription } from '../../api/doctor.api'
+import { getMedicineNames, getMedicineStrengths } from '../../api/medicine.api'
 import type { PatientPrescription } from '../../types/doctor.types'
 
 import styles from './MedicationTable.module.css'
@@ -9,6 +11,7 @@ import Button from '@/shared/components/Button/Button'
 import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { Section } from '@/shared/components/Section/Section'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 interface ScheduleTime {
     id: string
@@ -18,6 +21,7 @@ interface ScheduleTime {
 interface SelectedMedication {
     id: string
     name: string
+    dosage: string
     type: string
     frequency: string
     duration: number
@@ -28,12 +32,14 @@ interface SelectedMedication {
 }
 
 interface MedicationProps {
+    patientId: string
     clinicalStatus: string
     prescriptions: PatientPrescription[]
     hasConditions: boolean
+    onSuccess: () => void
 }
 
-const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
+const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }: MedicationProps) => {
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
 
     const activePrescriptions = prescriptions.filter((prescription) =>
@@ -41,11 +47,14 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
     )
 
     const [medicationSearch, setMedicationSearch] = useState('')
-    const [dosage, setDosage] = useState('500mg')
+    const [dosage, setDosage] = useState('')
+    const [availableStrengths, setAvailableStrengths] = useState<string[]>([])
     const [selectedMedications, setSelectedMedications] = useState<SelectedMedication[]>([])
     const [instructions, setInstructions] = useState('')
     const [medicineSuggestions, setMedicineSuggestions] = useState<string[]>([])
     const [isSearchingMedicines, setIsSearchingMedicines] = useState(false)
+    const [selectedMedicineName, setSelectedMedicineName] = useState('')
+    const [isSaving, setIsSaving] = useState(false)
 
     const handleRemoveMedication = (id: string) => {
         setSelectedMedications(selectedMedications.filter((med) => med.id !== id))
@@ -57,7 +66,23 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
                 if (med.id === medicationId) {
                     return {
                         ...med,
-                        scheduleTimes: [...med.scheduleTimes, { id: Date.now().toString(), time: '12:00 PM' }],
+                        scheduleTimes: [...med.scheduleTimes, { id: Date.now().toString(), time: '' }],
+                    }
+                }
+                return med
+            }),
+        )
+    }
+
+    const handleUpdateScheduleTime = (medicationId: string, timeId: string, newTime: string) => {
+        setSelectedMedications(
+            selectedMedications.map((med) => {
+                if (med.id === medicationId) {
+                    return {
+                        ...med,
+                        scheduleTimes: med.scheduleTimes.map((time) =>
+                            time.id === timeId ? { ...time, time: newTime } : time,
+                        ),
                     }
                 }
                 return med
@@ -98,22 +123,47 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
         }
     }, [])
 
-    const handleMedicineSelect = (medicineName: string) => {
+    const handleMedicineSelect = async (medicineName: string) => {
+        setSelectedMedicineName(medicineName)
+        setMedicationSearch(medicineName)
+        setMedicineSuggestions([])
+
+        try {
+            setIsSearchingMedicines(true)
+            const strengths = await getMedicineStrengths(medicineName)
+            setAvailableStrengths(strengths)
+            if (strengths.length > 0) {
+                setDosage(strengths[0])
+            }
+        } catch (error) {
+            console.error('Error fetching strengths:', error)
+            setAvailableStrengths([])
+        } finally {
+            setIsSearchingMedicines(false)
+        }
+    }
+
+    const handleAddMedicationToList = () => {
+        if (!selectedMedicineName) return
+
         const newMedication: SelectedMedication = {
             id: Date.now().toString(),
-            name: medicineName,
-            type: 'Antibiotic • Capsule',
+            name: selectedMedicineName,
+            dosage: dosage,
+            type: 'Oral Pill',
             frequency: 'Once daily',
             duration: 7,
             durationUnit: 'Days',
-            priority: 'Critical',
+            priority: 'Medium',
             route: 'Oral',
             scheduleTimes: [{ id: '1', time: '08:00 AM' }],
         }
 
         setSelectedMedications([...selectedMedications, newMedication])
+        setSelectedMedicineName('')
         setMedicationSearch('')
-        setMedicineSuggestions([])
+        setDosage('')
+        setAvailableStrengths([])
     }
 
     const handleUpdateMedicationField = (
@@ -131,14 +181,43 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
         )
     }
 
-    const handleAddPrescription = () => {
-        handleClosePrescriptionModal()
+    const handleAddPrescription = async () => {
+        if (!patientId || selectedMedications.length === 0) return
+
+        setIsSaving(true)
+        try {
+            await addPrescription(patientId, {
+                medications: selectedMedications.map((med) => ({
+                    name: med.name,
+                    dosage: med.dosage,
+                    route:
+                        med.route === 'Intravenous'
+                            ? 'IV'
+                            : med.route === 'Intramuscular'
+                              ? 'injection'
+                              : med.route.toLowerCase(),
+                    frequency: med.frequency,
+                    scheduleTimes: med.scheduleTimes.map((t) => t.time).filter(Boolean),
+                    isCritical: med.priority === 'Critical',
+                })),
+                note: instructions,
+            })
+            toast.success('Prescription added successfully')
+            onSuccess()
+            handleClosePrescriptionModal()
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsSaving(false)
+        }
     }
 
     const handleClosePrescriptionModal = () => {
         setShowPrescriptionModal(false)
         setMedicationSearch('')
-        setDosage('500mg')
+        setDosage('')
+        setAvailableStrengths([])
+        setSelectedMedicineName('')
         setSelectedMedications([])
         setInstructions('')
         setMedicineSuggestions([])
@@ -152,10 +231,10 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
             <button
                 className={styles.addPrescriptionBtn}
                 onClick={handleAddPrescription}
-                disabled={selectedMedications.length === 0}
+                disabled={selectedMedications.length === 0 || isSaving}
                 type="button"
             >
-                Add Prescription
+                {isSaving ? 'Saving...' : 'Add Prescription'}
             </button>
         </div>
     )
@@ -290,16 +369,30 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
                         </div>
                         <div className={styles.dosageField}>
                             <label className={styles.dosageLabel}>Dosage</label>
-                            <select
-                                className={styles.dosageSelect}
-                                value={dosage}
-                                onChange={(e) => setDosage(e.target.value)}
-                            >
-                                <option>250mg</option>
-                                <option>500mg</option>
-                                <option>1000mg</option>
-                                <option>1500mg</option>
-                            </select>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                                <select
+                                    className={styles.dosageSelect}
+                                    value={dosage}
+                                    onChange={(e) => setDosage(e.target.value)}
+                                    disabled={availableStrengths.length === 0}
+                                >
+                                    <option value="" disabled>
+                                        Select dosage
+                                    </option>
+                                    {availableStrengths.map((strength, index) => (
+                                        <option key={index} value={strength}>
+                                            {strength}
+                                        </option>
+                                    ))}
+                                </select>
+                                <Button
+                                    onClick={handleAddMedicationToList}
+                                    disabled={!selectedMedicineName || !dosage}
+                                    style={{ padding: '8px 16px' }}
+                                >
+                                    Add
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
@@ -313,7 +406,9 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
                                 <div key={medication.id} className={styles.medicationCard}>
                                     <div className={styles.medicationHeader}>
                                         <div>
-                                            <h4 className={styles.medicationName}>{medication.name}</h4>
+                                            <h4 className={styles.medicationName}>
+                                                {medication.name} ({medication.dosage})
+                                            </h4>
                                             <p className={styles.medicationSubtitle}>{medication.type}</p>
                                         </div>
                                         <button
@@ -410,11 +505,10 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
                                                     handleUpdateMedicationField(medication.id, 'route', e.target.value)
                                                 }
                                             >
-                                                <option>Oral</option>
-                                                <option>Intravenous</option>
-                                                <option>Intramuscular</option>
-                                                <option>Topical</option>
-                                                <option>Inhalation</option>
+                                                <option value="Oral">Oral</option>
+                                                <option value="Intravenous">Intravenous (IV)</option>
+                                                <option value="Intramuscular">Injection</option>
+                                                <option value="Inhalation">Inhalation</option>
                                             </select>
                                         </div>
                                     </div>
@@ -424,7 +518,18 @@ const MedicationTable = ({ prescriptions, hasConditions }: MedicationProps) => {
                                         <div className={styles.scheduleTimesList}>
                                             {medication.scheduleTimes.map((time) => (
                                                 <div key={time.id} className={styles.scheduleTimeItem}>
-                                                    <span>{time.time}</span>
+                                                    <input
+                                                        type="time"
+                                                        className={styles.timeInput}
+                                                        value={time.time}
+                                                        onChange={(e) =>
+                                                            handleUpdateScheduleTime(
+                                                                medication.id,
+                                                                time.id,
+                                                                e.target.value,
+                                                            )
+                                                        }
+                                                    />
                                                     <button
                                                         className={styles.removeTimeBtn}
                                                         onClick={() => handleRemoveScheduleTime(medication.id, time.id)}
