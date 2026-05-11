@@ -16,21 +16,24 @@ import type {
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
+import { DOCTORS_API, PATIENTS_API, PRESCRIPTIONS_API } from '@/shared/constants/api.constants'
 
 export const updateProfile = async (data: FormData, hasExistingProfile = false): Promise<ApiInterface> => {
-    const res = hasExistingProfile ? await api.put('/doctors/me', data) : await api.post('/doctors/profile', data)
+    const res = hasExistingProfile
+        ? await api.put(`${DOCTORS_API}/me`, data)
+        : await api.post(`${DOCTORS_API}/profile`, data)
 
     return res.data
 }
 
 export const getDoctorProfile = async (): Promise<DoctorProfile> => {
-    const res = await api.get<DoctorProfileResponse>('/doctors/me')
+    const res = await api.get<DoctorProfileResponse>(`${DOCTORS_API}/me`)
 
     return res.data.data
 }
 
 export const updateDoctorProfile = async (data: UpdateDoctorProfileData): Promise<DoctorProfile> => {
-    const res = await api.put<DoctorProfileResponse>('/doctors/me', data)
+    const res = await api.put<DoctorProfileResponse>(`${DOCTORS_API}/me`, data)
 
     return res.data.data
 }
@@ -40,12 +43,12 @@ const unwrapDoctorAvailability = (payload: DoctorAvailability | DoctorAvailabili
 }
 
 export const getDoctorAvailability = async (): Promise<DoctorAvailability> => {
-    const res = await api.get<DoctorAvailability | DoctorAvailabilityResponse>('/doctors/availability')
+    const res = await api.get<DoctorAvailability | DoctorAvailabilityResponse>(`${DOCTORS_API}/availability`)
     return unwrapDoctorAvailability(res.data)
 }
 
 export const updateDoctorAvailability = async (data: DoctorAvailability): Promise<DoctorAvailabilityUpdateResult> => {
-    const res = await api.put<DoctorAvailabilityUpdateResponse>('/doctors/availability', data)
+    const res = await api.put<DoctorAvailabilityUpdateResponse>(`${DOCTORS_API}/availability`, data)
     return res.data.data
 }
 
@@ -55,7 +58,7 @@ export const listPatients = async (
     page: number,
     limit: number,
 ): Promise<ListPatientsResponse> => {
-    const res = await api.get('/patients/', {
+    const res = await api.get(`${PATIENTS_API}/`, {
         params: {
             search,
             filter,
@@ -68,13 +71,13 @@ export const listPatients = async (
 }
 
 export const getPatientById = async (patientId: string): Promise<PatientDetails> => {
-    const res = await api.get<PatientDetailsResponse>(`/patients/${patientId}`)
+    const res = await api.get<PatientDetailsResponse>(`${PATIENTS_API}/${patientId}`)
 
     return res.data.data
 }
 
 export const startConsultation = async (patientId: string): Promise<ApiInterface> => {
-    const res = await api.put(`/doctors/patients/${patientId}/start-consultation`)
+    const res = await api.put(`${DOCTORS_API}${PATIENTS_API}/${patientId}/start-consultation`)
 
     return res.data
 }
@@ -83,13 +86,16 @@ export const updatePatientCondition = async (
     patientId: string,
     data: UpdatePatientConditionPayload,
 ): Promise<PatientDetails> => {
-    const res = await api.patch<PatientDetailsResponse>(`/patients/${patientId}/condition`, data)
+    const res = await api.patch<PatientDetailsResponse>(`${PATIENTS_API}/${patientId}/condition`, data)
 
     return res.data.data
 }
 
-export const addPrescription = async (patientId: string, data: AddPrescriptionPayload): Promise<PatientPrescription> => {
-    const res = await api.post('/prescriptions', {
+export const addPrescription = async (
+    patientId: string,
+    data: AddPrescriptionPayload,
+): Promise<PatientPrescription> => {
+    const res = await api.post(`${PRESCRIPTIONS_API}`, {
         ...data,
         patientId,
     })
