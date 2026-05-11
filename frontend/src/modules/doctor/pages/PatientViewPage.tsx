@@ -12,7 +12,7 @@ import type { PatientDetails, PatientSeverityLevel } from '../types/doctor.types
 import styles from './PatientViewPage.module.css'
 
 import DoctorLayout from '@/layout/DoctorLayout'
-import { type ConditionResult, searchConditions } from '@/services/conditionsApi'
+import { type ConditionResult, searchConditions } from '@/modules/doctor/api/conditionsApi'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
@@ -43,31 +43,29 @@ const PatientViewPage = () => {
     const [isSearchingConditions, setIsSearchingConditions] = useState(false)
     const [isApplyingCondition, setIsApplyingCondition] = useState(false)
 
-    useEffect(() => {
+    const fetchPatient = useCallback(async () => {
         if (!patientId) return
-
-        const fetchPatient = async () => {
-            setIsLoading(true)
-            try {
-                const data = await getPatientById(patientId)
-                setPatient(data)
-            } catch (error) {
-                toast.error(getErrorMessage(error))
-            } finally {
-                setIsLoading(false)
-            }
+        setIsLoading(true)
+        try {
+            const data = await getPatientById(patientId)
+            setPatient(data)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsLoading(false)
         }
-
-        fetchPatient()
     }, [patientId])
+
+    useEffect(() => {
+        fetchPatient()
+    }, [fetchPatient])
 
     const handleStartConsultation = async () => {
         if (!patientId) return
         try {
             await startConsultation(patientId)
             toast.success('Consultation started')
-            const data = await getPatientById(patientId)
-            setPatient(data)
+            fetchPatient()
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
@@ -240,9 +238,11 @@ const PatientViewPage = () => {
                     />
                 </div>
                 <MedicationTable
+                    patientId={patient._id}
                     clinicalStatus={patient.clinicalStatus}
                     prescriptions={patient.prescriptions}
                     hasConditions={(patient.conditions?.length ?? 0) > 0}
+                    onSuccess={fetchPatient}
                 />
 
                 <Modal
