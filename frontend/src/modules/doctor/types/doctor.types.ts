@@ -272,3 +272,17 @@ export interface UpdatePatientConditionPayload {
     conditions: string[]
     riskLevel: PatientSeverityLevel
 }
+
+export interface AddPrescriptionMedication {
+    name: string
+    dosage: string
+    route: string
+    frequency: string
+    scheduleTimes: string[]
+    isCritical: boolean
+}
+
+export interface AddPrescriptionPayload {
+    medications: AddPrescriptionMedication[]
+    note?: string
+}

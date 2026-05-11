@@ -1,24 +1,21 @@
-const MEDICINE_API_BASE = 'https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search'
+import { env } from '@/config/env'
+
+const MEDICINE_API_BASE = env.MEDICINE_API_URL || 'https://clinicaltables.nlm.nih.gov/api/rxterms/v3/search'
 
 export interface MedicineSearchResult {
     name: string
-    strength: string
-    form: string
+    strengths: string[]
 }
 
-export interface MedicineApiResponse {
-    results: Array<{
-        id: number
-        name: string
-        strengths_and_forms: string[]
-    }>
-}
+type MedicineApiResponse = [
+    number,
+    string[],
+    {
+        STRENGTHS_AND_FORMS?: string[][]
+    },
+    string[][]?,
+]
 
-/**
- * Search for medicines by name
- * @param searchTerm - The medicine name to search for
- * @returns Array of medicine search results
- */
 export const searchMedicines = async (searchTerm: string): Promise<MedicineSearchResult[]> => {
     if (!searchTerm.trim()) {
         return []
@@ -39,22 +36,13 @@ export const searchMedicines = async (searchTerm: string): Promise<MedicineSearc
 
         const data: MedicineApiResponse = await response.json()
 
-        // Transform API response to our format
-        const results: MedicineSearchResult[] = []
+        const names = data[1] || []
+        const strengthsList = data[2]?.STRENGTHS_AND_FORMS || []
 
-        if (data.results && Array.isArray(data.results)) {
-            data.results.forEach((medicine) => {
-                if (medicine.strengths_and_forms && Array.isArray(medicine.strengths_and_forms)) {
-                    medicine.strengths_and_forms.forEach((strengthForm) => {
-                        results.push({
-                            name: medicine.name,
-                            strength: strengthForm.split(' • ')[0] || strengthForm,
-                            form: strengthForm.split(' • ')[1] || '',
-                        })
-                    })
-                }
-            })
-        }
+        const results: MedicineSearchResult[] = names.map((name, index) => ({
+            name,
+            strengths: strengthsList[index] || [],
+        }))
 
         return results
     } catch (error) {
@@ -63,33 +51,14 @@ export const searchMedicines = async (searchTerm: string): Promise<MedicineSearc
     }
 }
 
-/**
- * Get unique medicine names from search results
- * @param searchTerm - The medicine name to search for
- * @returns Array of unique medicine names
- */
 export const getMedicineNames = async (searchTerm: string): Promise<string[]> => {
     const results = await searchMedicines(searchTerm)
-    const uniqueNames = Array.from(new Set(results.map((r) => r.name)))
-    return uniqueNames
+    return results.map((r) => r.name)
 }
 
-/**
- * Get strengths and forms for a specific medicine
- * @param medicineName - The medicine name
- * @returns Array of strength and form combinations
- */
-export const getMedicineStrengthsAndForms = async (medicineName: string): Promise<string[]> => {
+export const getMedicineStrengths = async (medicineName: string): Promise<string[]> => {
     const results = await searchMedicines(medicineName)
-    const uniqueStrengthForms = Array.from(
-        new Set(
-            results.map((r) => {
-                if (r.form) {
-                    return `${r.strength} • ${r.form}`
-                }
-                return r.strength
-            }),
-        ),
-    )
-    return uniqueStrengthForms
+
+    const match = results.find((r) => r.name === medicineName) || results[0]
+    return match ? match.strengths : []
 }
