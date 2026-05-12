@@ -28,15 +28,6 @@ export class DoctorRepository extends BaseRepository<DoctorDocument> implements 
 
         return doctor
     }
-    async createOrUpdateByUserId(userId: Types.ObjectId, data: Partial<DoctorDocument>): Promise<DoctorDocument> {
-        const doctor = await this.model.findOneAndUpdate({ userId }, data, { upsert: true, returnDocument: 'after' })
-
-        if (!doctor) {
-            throw new Error('Doctor profile could not be created or updated')
-        }
-
-        return doctor
-    }
     async search(filter: DoctorSearchFilter, options: { page: number; limit: number }) {
         const skip = (options.page - 1) * options.limit
 
