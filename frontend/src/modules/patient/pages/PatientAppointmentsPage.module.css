@@ -98,6 +98,16 @@
     color: #fa5252;
 }
 
+.inConsultation {
+    background: #e7f5ff;
+    color: #1c7ed6;
+}
+
+.completed {
+    background: #f1f3f5;
+    color: #495057;
+}
+
 .appointmentDetails {
     display: flex;
     flex-direction: column;
@@ -224,7 +234,9 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition:
+        background 0.2s,
+        border-color 0.2s;
 }
 
 .reasonOption:hover {
@@ -273,7 +285,9 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.2s, border-color 0.2s;
+    transition:
+        background 0.2s,
+        border-color 0.2s;
 }
 
 .modalCancelBtn:hover {
@@ -290,7 +304,9 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition:
+        background 0.2s,
+        transform 0.1s;
 }
 
 .modalConfirmBtn:hover {
