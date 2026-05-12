@@ -21,7 +21,7 @@ import {
 } from '../interfaces/appointment.service.interface'
 import { AppointmentResponseDTO, toAppointmentListResponseDTO } from '../mapper/appointment.mapper'
 import { AppointmentDocument } from '../types/appointment.types'
-import { CreateAppointmentDTO } from '../validator/appointment.schema'
+import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 
 @injectable()
 export class AppointmentService implements IAppointmentService {
@@ -328,5 +328,63 @@ export class AppointmentService implements IAppointmentService {
         }
 
         await this._appointmentRepo.update(appointment._id.toString(), { status: 'in_consultation' })
+    }
+
+    async retryPayment(appointmentId: string, dto: RetryPaymentDTO & { patientId: string }): Promise<CreateAppointmentResult> {
+        const appointment = await this._appointmentRepo.findById(appointmentId)
+
+        if (!appointment) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+        }
+
+        if (appointment.status !== 'pending_payment') {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not pending payment')
+        }
+
+        if (appointment.patientId.toString() !== dto.patientId) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to retry payment for this appointment')
+        }
+
+        const settings = await this._adminRepo.getPlatformSettings()
+        const totalAmount = appointment.consultationFee + (settings.platformFee ?? 0)
+
+        if (dto.paymentMethod === 'wallet') {
+            const wallet = await this._walletService.debit(
+                dto.patientId,
+                totalAmount,
+                `Consultation payment for appointment ${appointmentId}`,
+                appointmentId,
+            )
+
+            await this._appointmentRepo.update(appointmentId, { status: 'confirmed' })
+
+            if (appointment.paymentId) {
+                await this._paymentRepo.updateById(appointment.paymentId.toString(), { status: 'success', paidAt: new Date() })
+            }
+
+            return {
+                paymentMethod: 'wallet',
+                paymentId: appointment.paymentId?.toString() ?? '',
+                appointmentId,
+                walletBalance: wallet.balance,
+                appointmentConfirmed: true,
+            }
+        }
+
+        const razorpayOrder = await this.razorpay.orders.create({
+            amount: totalAmount * 100,
+            currency: 'INR',
+            receipt: `receipt_${Date.now()}`,
+        })
+
+        if (appointment.paymentId) {
+            await this._paymentRepo.updateById(appointment.paymentId.toString(), { razorpayOrderId: razorpayOrder.id })
+        }
+
+        return {
+            paymentMethod: 'razorpay',
+            order: razorpayOrder,
+            paymentId: appointment.paymentId?.toString() ?? '',
+        }
     }
 }
