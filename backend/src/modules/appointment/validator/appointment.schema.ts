@@ -14,4 +14,9 @@ export const createAppointmentSchema = z.object({
         .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format '),
 })
 
+export const retryPaymentSchema = z.object({
+    paymentMethod: z.enum(['razorpay', 'wallet']),
+})
+
 export type CreateAppointmentDTO = z.infer<typeof createAppointmentSchema>
+export type RetryPaymentDTO = z.infer<typeof retryPaymentSchema>
