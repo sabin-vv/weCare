@@ -39,6 +39,25 @@ const appointmentSchema = new Schema<AppointmentDocument>(
             enum: ['pending_payment', 'confirmed', 'cancelled', 'missed', 'in_consultation', 'completed'],
             default: 'pending_payment',
         },
+        confirmedAt: {
+            type: Date,
+        },
+        completedAt: {
+            type: Date,
+        },
+        missedAt: {
+            type: Date,
+        },
+        cancelledAt: {
+            type: Date,
+        },
+        cancelledBy: {
+            type: Types.ObjectId,
+            ref: 'User',
+        },
+        cancellationReason: {
+            type: String,
+        },
         expiredAt: {
             type: Date,
         },

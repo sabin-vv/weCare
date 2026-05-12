@@ -27,6 +27,12 @@ export interface AppointmentDocument extends Document {
     consultationFee: number
     paymentId?: Types.ObjectId | PopulatedAppointmentPayment
     status: 'pending_payment' | 'confirmed' | 'cancelled' | 'missed' | 'in_consultation' | 'completed'
+    confirmedAt?: Date
+    completedAt?: Date
+    missedAt?: Date
+    cancelledAt?: Date
+    cancelledBy?: Types.ObjectId
+    cancellationReason?: string
     expiredAt?: Date
     createdAt: Date
     updatedAt: Date
