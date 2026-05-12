@@ -21,6 +21,7 @@ import SelectField from '@/shared/components/SelectField/SelectField'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const genderOptions = [
+    { value: '', label: 'Select' },
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
     { value: 'other', label: 'Other' },
