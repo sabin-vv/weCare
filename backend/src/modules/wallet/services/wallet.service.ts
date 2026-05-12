@@ -88,12 +88,15 @@ export class WalletService implements IWalletService {
 
         return {
             balance: wallet.balance,
-            transactions: wallet.transactions.map((t) => ({
-                type: t.type,
-                amount: t.amount,
-                description: t.description,
-                createdAt: t.createdAt,
-            })),
+            transactions: wallet.transactions
+                .slice()
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .map((t) => ({
+                    type: t.type,
+                    amount: t.amount,
+                    description: t.description,
+                    createdAt: t.createdAt,
+                })),
         }
     }
 }
