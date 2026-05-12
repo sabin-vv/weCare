@@ -43,7 +43,7 @@ export class PaymentService implements IPaymentService {
             paidAt: new Date(),
         })
         if (payment.appointmentId) {
-            await this._appointmentRepo.update(payment.appointmentId.toString(), { status: 'confirmed' })
+            await this._appointmentRepo.update(payment.appointmentId.toString(), { status: 'confirmed', confirmedAt: new Date() })
         }
 
         if (!updatedPayment) {
