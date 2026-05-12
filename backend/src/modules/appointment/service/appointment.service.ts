@@ -6,7 +6,6 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
-import { logger } from '../../../core/logger/logger'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
@@ -220,6 +219,10 @@ export class AppointmentService implements IAppointmentService {
                 throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to confirm wallet appointment')
             }
 
+            await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
+                primaryDoctorId: new Types.ObjectId(dto.doctorId),
+            })
+
             return {
                 paymentMethod: 'wallet',
                 paymentId: payment._id.toString(),
@@ -251,8 +254,6 @@ export class AppointmentService implements IAppointmentService {
     async createAppointment(dto: CreateAppointmentDTO & { patientId: string }): Promise<CreateAppointmentResult> {
         const { doctor, settings, totalAmount } = await this.validateAppointmentRequest(dto)
 
-        await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), { primaryDoctorId: doctor._id })
-
         if (dto.paymentMethod === 'wallet') {
             return await this.createWalletAppointment(dto, doctor.consultationFee, settings.platformFee, totalAmount)
         }
@@ -262,7 +263,6 @@ export class AppointmentService implements IAppointmentService {
 
     async getPatientAppointments(patientId: string): Promise<AppointmentResponseDTO[]> {
         const appointments = await this._appointmentRepo.findByPatientId(patientId)
-        logger.info({ Appointment: appointments })
         return toAppointmentListResponseDTO(appointments)
     }
 
@@ -319,7 +319,7 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
-        const appointment = await this._appointmentRepo.findCurrentAppointment(
+        const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
             doctor._id.toString(),
             patient.userId.toString(),
         )
@@ -365,6 +365,9 @@ export class AppointmentService implements IAppointmentService {
             )
 
             await this._appointmentRepo.update(appointmentId, { status: 'confirmed', confirmedAt: new Date() })
+            await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
+                primaryDoctorId: appointment.doctorId as Types.ObjectId,
+            })
 
             if (appointment.paymentId) {
                 await this._paymentRepo.updateById(appointment.paymentId.toString(), {
