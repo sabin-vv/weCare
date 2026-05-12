@@ -56,4 +56,24 @@ export class AppointmentController {
             data: { refundAmount: result.refundAmount },
         })
     }
+
+    retryPayment = async (req: Request, res: Response) => {
+        const patientId = req.user?.userId
+        if (!patientId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const { appointmentId } = req.params as { appointmentId: string }
+        const { paymentMethod } = req.body
+
+        const result = await this._appointmentService.retryPayment(appointmentId, {
+            paymentMethod,
+            patientId,
+        })
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: result,
+        })
+    }
 }
