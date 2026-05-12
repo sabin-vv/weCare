@@ -19,11 +19,11 @@ export interface IAppointmentRepository {
 
     findFutureCancellableAppointments(doctorId: string, fromDate: Date): Promise<AppointmentDocument[]>
 
-    findPendingPatientIdsByDoctor(doctorId: string): Promise<string[]>
+    findPatientIdsByStatus(doctorId: string, status: string | string[]): Promise<string[]>
 
-    findCurrentAppointmentsByDoctorAndPatientIds(doctorId: string, patientIds: string[]): Promise<AppointmentDocument[]>
+    findDoctorVisibleAppointmentsByDoctorAndPatientIds(doctorId: string, patientIds: string[]): Promise<AppointmentDocument[]>
 
-    findCurrentAppointment(doctorId: string, patientUserId: string): Promise<AppointmentDocument | null>
+    findDoctorVisibleCurrentAppointment(doctorId: string, patientUserId: string): Promise<AppointmentDocument | null>
 
     cancelAppointment(id: string, reason: string, cancelledBy: string): Promise<AppointmentDocument | null>
 }
