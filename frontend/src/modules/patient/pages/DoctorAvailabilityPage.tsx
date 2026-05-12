@@ -11,6 +11,7 @@ import { env } from '@/config/env'
 import PatientLayout from '@/layout/PatientLayout'
 import { api } from '@/services/api'
 import Button from '@/shared/components/Button/Button'
+import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
@@ -263,162 +264,191 @@ const DoctorAvailabilityPage = () => {
 
     return (
         <PatientLayout>
-            <main className={styles.main}>
-                <div className={styles.leftSection}>
-                    <h2 className={styles.sectionTitle}>Select Appointment Date & Time</h2>
+            <MainWrapper
+                title="Select Slot and Payment"
+                subtitle="Choose a date, reserve a time that works for you, and complete checkout when you're ready."
+            >
+                <main className={styles.main}>
+                    <div className={styles.leftSection}>
+                        <h2 className={styles.sectionTitle}>Select Appointment Date & Time</h2>
 
-                    <div className={styles.miniDoctorCard}>
-                        {doctor?.profileImage ? (
-                            <img
-                                src={
-                                    doctor.profileImage.startsWith('http')
-                                        ? doctor.profileImage
-                                        : `${env.AWS_BASE_URL}${doctor.profileImage}`
-                                }
-                                alt={doctor.name}
-                                className={styles.miniDoctorImage}
-                            />
-                        ) : (
-                            <div className={styles.avatarPlaceholder}>{doctorInitials}</div>
-                        )}
+                        <div className={styles.miniDoctorCard}>
+                            {doctor?.profileImage ? (
+                                <img
+                                    src={
+                                        doctor.profileImage.startsWith('http')
+                                            ? doctor.profileImage
+                                            : `${env.AWS_BASE_URL}${doctor.profileImage}`
+                                    }
+                                    alt={doctor.name}
+                                    className={styles.miniDoctorImage}
+                                />
+                            ) : (
+                                <div className={styles.avatarPlaceholder}>{doctorInitials}</div>
+                            )}
 
-                        <div>
-                            <h4>{doctor?.name}</h4>
-                            <p className={styles.doctorSpeciality}>{doctor?.professionalTitle}</p>
-                        </div>
-                    </div>
-
-                    <div className={styles.dateRow}>
-                        {[...Array(7)].map((_, i) => {
-                            const date = new Date()
-                            date.setDate(date.getDate() + i)
-
-                            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
-
-                            return (
-                                <button
-                                    key={i}
-                                    className={`${styles.dateCard} ${isSelected ? styles.activeDate : ''}`}
-                                    onClick={() => setSelectedDate(date)}
-                                >
-                                    <span>{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
-                                    <strong>{date.getDate()}</strong>
-                                    <small>{date.toLocaleDateString('en-US', { month: 'short' })}</small>
-                                </button>
-                            )
-                        })}
-                    </div>
-
-                    {slots.length === 0 ? (
-                        <div className={styles.noSlots}>No slots available for this date</div>
-                    ) : (
-                        Object.entries(groupedSlots).map(([label, slots]) => {
-                            if (!slots || slots.length === 0) return null
-
-                            return (
-                                <div key={label} className={styles.slotSection}>
-                                    <p className={styles.timeSlotCategory}>{label}</p>
-
-                                    <div className={styles.timeSlotsGrid}>
-                                        {slots.map((slot) => (
-                                            <button
-                                                key={slot.start}
-                                                disabled={!slot.available}
-                                                type="button"
-                                                onClick={() =>
-                                                    setSelectedTimeSlot({ start: slot.start, end: slot.end })
-                                                }
-                                                className={[
-                                                    styles.timeSlot,
-                                                    selectedTimeSlot.start === slot.start ? styles.selected : '',
-                                                    !slot.available ? styles.unavailable : '',
-                                                ]
-                                                    .filter(Boolean)
-                                                    .join(' ')}
-                                            >
-                                                {slot.start}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )
-                        })
-                    )}
-                </div>
-
-                <div className={styles.rightSection}>
-                    <div className={styles.bookingSummary}>
-                        <h2 className={styles.sectionTitle}>Booking Summary</h2>
-
-                        <div className={styles.doctorInfo}>
                             <div>
-                                <h3 className={styles.doctorName}>{doctor?.name}</h3>
+                                <h4>{doctor?.name}</h4>
                                 <p className={styles.doctorSpeciality}>{doctor?.professionalTitle}</p>
                             </div>
                         </div>
 
-                        <hr className={styles.divider} />
+                        <div className={styles.dateRow}>
+                            {[...Array(7)].map((_, i) => {
+                                const date = new Date()
+                                date.setDate(date.getDate() + i)
 
-                        <div className={styles.infoRow}>
-                            <span className={styles.infoLabel}>Date</span>
-                            <span className={styles.infoValue}>
-                                {selectedDate?.toLocaleDateString('en-US', {
-                                    weekday: 'short',
-                                    month: 'short',
-                                    day: 'numeric',
-                                })}
-                            </span>
+                                const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString()
+
+                                return (
+                                    <button
+                                        key={i}
+                                        className={`${styles.dateCard} ${isSelected ? styles.activeDate : ''}`}
+                                        onClick={() => setSelectedDate(date)}
+                                    >
+                                        <span>{date.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+                                        <strong>{date.getDate()}</strong>
+                                        <small>{date.toLocaleDateString('en-US', { month: 'short' })}</small>
+                                    </button>
+                                )
+                            })}
                         </div>
 
-                        <hr className={styles.divider} />
+                        {slots.length === 0 ? (
+                            <div className={styles.noSlots}>No slots available for this date</div>
+                        ) : (
+                            Object.entries(groupedSlots).map(([label, slots]) => {
+                                if (!slots || slots.length === 0) return null
 
-                        <div className={styles.infoRow}>
-                            <span className={styles.infoLabel}>Time Slot</span>
-                            <span className={styles.infoValue}>{selectedTimeSlot.start || 'Not selected'}</span>
-                        </div>
+                                return (
+                                    <div key={label} className={styles.slotSection}>
+                                        <p className={styles.timeSlotCategory}>{label}</p>
 
-                        <hr className={styles.divider} />
+                                        <div className={styles.timeSlotsGrid}>
+                                            {slots.map((slot) => (
+                                                <button
+                                                    key={slot.start}
+                                                    disabled={!slot.available}
+                                                    type="button"
+                                                    onClick={() =>
+                                                        setSelectedTimeSlot({ start: slot.start, end: slot.end })
+                                                    }
+                                                    className={[
+                                                        styles.timeSlot,
+                                                        selectedTimeSlot.start === slot.start ? styles.selected : '',
+                                                        !slot.available ? styles.unavailable : '',
+                                                    ]
+                                                        .filter(Boolean)
+                                                        .join(' ')}
+                                                >
+                                                    {slot.start}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        )}
+                    </div>
 
-                        <div className={styles.feeRow}>
-                            <span>Consultation Fee</span>
-                            <span>₹{doctor?.consultationFee}</span>
-                        </div>
+                    <div className={styles.rightSection}>
+                        <div className={styles.bookingSummary}>
+                            <h2 className={styles.sectionTitle}>Booking Summary</h2>
 
-                        <div className={styles.feeRow}>
-                            <span>Platform Fee</span>
-                            <span>₹{settings?.platformFee}</span>
-                        </div>
+                            <div className={styles.doctorInfo}>
+                                <div>
+                                    <h3 className={styles.doctorName}>{doctor?.name}</h3>
+                                    <p className={styles.doctorSpeciality}>{doctor?.professionalTitle}</p>
+                                </div>
+                            </div>
 
-                        <hr className={styles.divider} />
+                            <hr className={styles.divider} />
 
-                        <div className={styles.totalRow}>
-                            <span>Total</span>
-                            <span>₹{totalFee}</span>
-                        </div>
+                            <div className={styles.infoRow}>
+                                <span className={styles.infoLabel}>Date</span>
+                                <span className={styles.infoValue}>
+                                    {selectedDate?.toLocaleDateString('en-US', {
+                                        weekday: 'short',
+                                        month: 'short',
+                                        day: 'numeric',
+                                    })}
+                                </span>
+                            </div>
 
-                        <div className={styles.paymentMethods}>
-                            <Button
-                                onClick={handleRazorpayAppointment}
-                                disabled={!canCheckout}
-                                isLoading={isProcessingPayment}
-                            >
-                                Pay with Razorpay
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                disabled={!canCheckout || hasInsufficientWalletBalance}
-                                className={styles.walletButton}
-                                onClick={handleWalletAppointment}
-                            >
-                                Wallet (₹{walletbalance})
-                            </Button>
-                            {hasInsufficientWalletBalance ? (
-                                <p className={styles.paymentHint}>Add money to your wallet to complete this booking.</p>
-                            ) : null}
+                            <hr className={styles.divider} />
+
+                            <div className={styles.infoRow}>
+                                <span className={styles.infoLabel}>Time Slot</span>
+                                <span className={styles.infoValue}>{selectedTimeSlot.start || 'Not selected'}</span>
+                            </div>
+
+                            <hr className={styles.divider} />
+
+                            <div className={styles.feeRow}>
+                                <span>Consultation Fee</span>
+                                <span>₹{doctor?.consultationFee.toLocaleString()}</span>
+                            </div>
+
+                            <div className={styles.feeRow}>
+                                <span>Platform Fee</span>
+                                <span>₹{settings?.platformFee}</span>
+                            </div>
+
+                            <hr className={styles.divider} />
+
+                            <div className={styles.totalRow}>
+                                <span>Total</span>
+                                <span>₹{totalFee.toLocaleString()}</span>
+                            </div>
+
+                            <div className={styles.canellationPolicyWarning}>
+                                <p>Please review the cancellation policy carefully before proceeding with payment.</p>
+                            </div>
+
+                            <div className={styles.paymentMethods}>
+                                <Button
+                                    onClick={handleRazorpayAppointment}
+                                    disabled={!canCheckout}
+                                    isLoading={isProcessingPayment}
+                                >
+                                    Pay with Razorpay
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    disabled={!canCheckout || hasInsufficientWalletBalance}
+                                    className={styles.walletButton}
+                                    onClick={handleWalletAppointment}
+                                >
+                                    Wallet (₹{walletbalance.toLocaleString()})
+                                </Button>
+                                {hasInsufficientWalletBalance ? (
+                                    <p className={styles.paymentHint}>
+                                        Add money to your wallet to complete this booking.
+                                    </p>
+                                ) : null}
+                            </div>
                         </div>
                     </div>
+                </main>
+                <div className={styles.cancellationPolicy}>
+                    <h4 className={styles.cancellationPolicyTitle}>Cancellation Policy</h4>
+                    <ul className={styles.cancellationPolicyList}>
+                        <li>
+                            Appointments cancelled more than 24 hours before the scheduled consultation time are
+                            eligible for a full refund of the consultation fee.
+                        </li>
+                        <li>
+                            Appointments cancelled between 2 and 24 hours before the scheduled consultation time are
+                            eligible for a 50% refund of the consultation fee.
+                        </li>
+                        <li>
+                            Appointments cancelled within 2 hours of the scheduled consultation time are non-refundable.
+                        </li>
+                        <li>Platform fees are non-refundable under all circumstances.</li>
+                        <li>Eligible refunds will be credited to your wallet after the cancellation is processed.</li>
+                    </ul>
                 </div>
-            </main>
+            </MainWrapper>
         </PatientLayout>
     )
 }
