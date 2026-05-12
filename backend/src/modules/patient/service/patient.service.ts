@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { logger } from '../../../core/logger/logger'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { toUserEntity } from '../../auth/mapper/auth.mapper'
@@ -69,7 +70,10 @@ export class PatientService implements IPatientService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
         }
 
-        const appointment = await this._appointmentRepo.findCurrentAppointment(doctorId, patient.userId.toString())
+        const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
+            doctorId,
+            patient.userId.toString(),
+        )
 
         let caregiver: import('../../auth/types/auth.types').UserDocument | null = null
         if (patient.caregiverId) {
@@ -159,12 +163,24 @@ export class PatientService implements IPatientService {
         const page = Math.max(1, params.page || 1)
         const limit = Math.max(1, params.limit || 8)
         const normalizedFilter = params.filter || 'all'
-        const pendingPatientIds =
-            normalizedFilter === 'pending_consultation'
-                ? await this._appointmentRepo.findPendingPatientIdsByDoctor(doctor._id.toString())
-                : null
 
-        if (normalizedFilter === 'pending_consultation' && pendingPatientIds && pendingPatientIds.length === 0) {
+        const appointmentStatuses = ['confirmed', 'in_consultation', 'completed']
+        let filteredUserIds: Types.ObjectId[] | undefined
+
+        if (normalizedFilter === 'all') {
+            const patientIds = await this._appointmentRepo.findPatientIdsByStatus(
+                doctor._id.toString(),
+                appointmentStatuses,
+            )
+            filteredUserIds = patientIds.map((id) => new Types.ObjectId(id))
+        } else if (appointmentStatuses.includes(normalizedFilter)) {
+            const patientIds = await this._appointmentRepo.findPatientIdsByStatus(doctor._id.toString(), [
+                normalizedFilter,
+            ])
+            filteredUserIds = patientIds.map((id) => new Types.ObjectId(id))
+        }
+
+        if (filteredUserIds && filteredUserIds.length === 0) {
             return {
                 patients: [],
                 pagination: {
@@ -176,14 +192,13 @@ export class PatientService implements IPatientService {
             }
         }
 
-        const pendingUserIds = pendingPatientIds?.map((patientId) => new Types.ObjectId(patientId)) ?? undefined
-
-        const { data: patients, total } = await this._patientRepo.listPatientsByDoctor(doctor._id as Types.ObjectId, {
+        const { data: patients, total } = await this._patientRepo.listPatientsByDoctor({
             ...params,
-            filter: normalizedFilter === 'pending_consultation' ? 'all' : normalizedFilter,
+            filter:
+                normalizedFilter === 'all' || appointmentStatuses.includes(normalizedFilter) ? 'all' : normalizedFilter,
             page,
             limit,
-            userIds: pendingUserIds,
+            userIds: filteredUserIds,
         })
 
         const userIds = patients.map((patient) => patient.userId)
@@ -191,7 +206,7 @@ export class PatientService implements IPatientService {
             _id: { $in: userIds },
         })
 
-        const appointments = await this._appointmentRepo.findCurrentAppointmentsByDoctorAndPatientIds(
+        const appointments = await this._appointmentRepo.findDoctorVisibleAppointmentsByDoctorAndPatientIds(
             doctor._id.toString(),
             userIds.map((userId) => userId.toString()),
         )
@@ -206,6 +221,7 @@ export class PatientService implements IPatientService {
             }
         }
 
+        logger.info({ patients: patients })
         const mappedPatients = patients
             .map((patient) => {
                 const user = usersMap.get(patient.userId.toString())
