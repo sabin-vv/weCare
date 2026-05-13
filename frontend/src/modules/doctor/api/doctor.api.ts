@@ -11,12 +11,13 @@ import type {
     PatientDetailsResponse,
     UpdatePatientConditionPayload,
     AddPrescriptionPayload,
+    AddVitalPlanPayload,
     PatientPrescription,
 } from '../types/doctor.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
-import { DOCTORS_API, PATIENTS_API, PRESCRIPTIONS_API } from '@/shared/constants/api.constants'
+import { DOCTORS_API, PATIENTS_API, PRESCRIPTIONS_API, VITALS_API } from '@/shared/constants/api.constants'
 
 export const updateProfile = async (data: FormData, hasExistingProfile = false): Promise<ApiInterface> => {
     const res = hasExistingProfile
@@ -111,4 +112,11 @@ export const addPrescription = async (
 
 export const updatePrescriptionStatus = async (prescriptionId: string, status: string): Promise<void> => {
     await api.patch(`${PRESCRIPTIONS_API}/${prescriptionId}/status`, { status })
+}
+
+export const createVitalPlan = async (patientId: string, data: AddVitalPlanPayload): Promise<void> => {
+    await api.post(`${VITALS_API}/plans`, {
+        ...data,
+        patientId,
+    })
 }
