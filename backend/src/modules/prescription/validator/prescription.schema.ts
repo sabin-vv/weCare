@@ -8,7 +8,7 @@ export const medicationItemSchema = z.object({
     scheduleTimes: z.array(z.string().min(1, 'Schedule time is required')).default([]),
     priority: z.enum(['Critical', 'High', 'Medium', 'Low']).default('Medium'),
     duration: z.number().min(1, 'Duration is required'),
-    durationUnit: z.enum(['Days', 'Weeks', 'Months'], { errorMap: () => ({ message: 'Duration unit must be Days, Weeks, or Months' }) }),
+    durationUnit: z.enum(['Days', 'Weeks', 'Months']).default('Days'),
     endDate: z.string().datetime().optional(),
     instructions: z.string().optional(),
 })

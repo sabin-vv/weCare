@@ -6,7 +6,7 @@ export interface IPrescriptionRepository {
     findByPatientId(patientId: string): Promise<PrescriptionDocument[]>
     updateStatus(
         id: string,
-        data: Partial<Pick<PrescriptionDocument, 'status' | 'discontinuedAt' | 'discontinuedBy'>>,
+        data: Partial<Pick<PrescriptionDocument, 'status' | 'discontinuedAt' | 'discontinuedBy' | 'endDate'>>,
     ): Promise<PrescriptionDocument | null>
     findByPatientIdAndStatus(patientId: string, status: PrescriptionStatus): Promise<PrescriptionDocument[]>
 }

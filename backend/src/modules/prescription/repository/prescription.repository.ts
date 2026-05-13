@@ -20,7 +20,7 @@ export class PrescriptionRepository
 
     async updateStatus(
         id: string,
-        data: Partial<Pick<PrescriptionDocument, 'status' | 'discontinuedAt' | 'discontinuedBy'>>,
+        data: Partial<Pick<PrescriptionDocument, 'status' | 'discontinuedAt' | 'discontinuedBy' | 'endDate'>>,
     ): Promise<PrescriptionDocument | null> {
         return await this.model.findByIdAndUpdate(id, data, { returnDocument: 'after' })
     }
