@@ -30,13 +30,39 @@ export class PrescriptionService implements IPrescriptionService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
+        const prescribedAt = new Date()
+
+        const calculateEndDate = (duration: number, unit: 'Days' | 'Weeks' | 'Months'): Date => {
+            const date = new Date(prescribedAt)
+            switch (unit) {
+                case 'Days':
+                    date.setDate(date.getDate() + duration)
+                    break
+                case 'Weeks':
+                    date.setDate(date.getDate() + duration * 7)
+                    break
+                case 'Months':
+                    date.setMonth(date.getMonth() + duration)
+                    break
+            }
+            return date
+        }
+
+        const medications = dto.medications.map((med) => ({
+            ...med,
+            endDate: calculateEndDate(med.duration, med.durationUnit as 'Days' | 'Weeks' | 'Months'),
+        }))
+
+        const prescriptionEndDate = new Date(Math.max(...medications.map((m) => m.endDate!.getTime())))
+
         return await this._prescriptionRepo.create({
             patientId: patient._id,
             prescribedBy: doctor._id,
-            medications: dto.medications,
+            medications,
             note: dto.note,
             status: dto.status ?? 'active',
-            prescribedAt: new Date(),
+            prescribedAt,
+            endDate: prescriptionEndDate,
         })
     }
 
@@ -72,6 +98,7 @@ export class PrescriptionService implements IPrescriptionService {
             status: dto.status,
             discontinuedAt: dto.status === 'discontinued' ? new Date() : undefined,
             discontinuedBy: dto.status === 'discontinued' ? (doctor._id as Types.ObjectId) : undefined,
+            endDate: dto.status === 'completed' ? new Date() : undefined,
         })
 
         if (!updated) {
