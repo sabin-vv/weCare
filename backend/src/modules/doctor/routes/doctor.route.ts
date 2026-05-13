@@ -30,6 +30,7 @@ export const createDoctorRoutes = () => {
     router.get('/:doctorId/slots', doctorController.getDoctorSlots)
 
     router.put('/patients/:patientId/start-consultation', requireAuth, doctorController.startConsultation)
+    router.put('/patients/:patientId/complete-consultation', requireAuth, doctorController.completeConsultation)
 
     return router
 }

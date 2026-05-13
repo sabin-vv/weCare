@@ -1,6 +1,6 @@
 import { AppointmentResponseDTO } from '../mapper/appointment.mapper'
 import { AppointmentDocument } from '../types/appointment.types'
-import { CreateAppointmentDTO } from '../validator/appointment.schema'
+import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 
 export interface RazorpayOrder {
     id: string
@@ -44,4 +44,8 @@ export interface IAppointmentService {
     ): Promise<{ appointment: AppointmentDocument | null; refundAmount: number }>
 
     startConsultation(doctorId: string, patientId: string): Promise<void>
+
+    completeConsultation(doctorId: string, patientId: string): Promise<void>
+
+    retryPayment(appointmentId: string, dto: RetryPaymentDTO & { patientId: string }): Promise<CreateAppointmentResult>
 }

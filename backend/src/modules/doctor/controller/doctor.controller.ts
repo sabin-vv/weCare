@@ -136,4 +136,23 @@ export class DoctorController {
             message: 'Consultation started successfully',
         })
     }
+
+    completeConsultation = async (req: Request, res: Response) => {
+        const doctorId = req.user?.userId
+        if (!doctorId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const { patientId } = req.params
+        if (!patientId) {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Patient ID is required')
+        }
+
+        await this._appointmentService.completeConsultation(doctorId, patientId as string)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: 'Consultation completed successfully',
+        })
+    }
 }

@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 
 import { addPrescription } from '../../api/doctor.api'
 import { getMedicineNames, getMedicineStrengths } from '../../api/medicine.api'
-import type { PatientPrescription } from '../../types/doctor.types'
+import type { MedicationProps, SelectedMedication } from '../../types/doctor.types'
 
 import styles from './MedicationTable.module.css'
 
@@ -12,32 +12,6 @@ import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-
-interface ScheduleTime {
-    id: string
-    time: string
-}
-
-interface SelectedMedication {
-    id: string
-    name: string
-    dosage: string
-    type: string
-    frequency: string
-    duration: number
-    durationUnit: string
-    priority: string
-    route: string
-    scheduleTimes: ScheduleTime[]
-}
-
-interface MedicationProps {
-    patientId: string
-    clinicalStatus: string
-    prescriptions: PatientPrescription[]
-    hasConditions: boolean
-    onSuccess: () => void
-}
 
 const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }: MedicationProps) => {
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
@@ -150,13 +124,12 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
             id: Date.now().toString(),
             name: selectedMedicineName,
             dosage: dosage,
-            type: 'Oral Pill',
             frequency: 'Once daily',
             duration: 7,
             durationUnit: 'Days',
             priority: 'Medium',
             route: 'Oral',
-            scheduleTimes: [{ id: '1', time: '08:00 AM' }],
+            scheduleTimes: [],
         }
 
         setSelectedMedications([...selectedMedications, newMedication])
@@ -223,6 +196,10 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
         setMedicineSuggestions([])
     }
 
+    const hasValidScheduleTimes = selectedMedications.every(
+        (med) => med.scheduleTimes.length > 0 && med.scheduleTimes.every((t) => t.time && t.time.trim() !== ''),
+    )
+
     const footerContent = (
         <div className={styles.modalFooter}>
             <button className={styles.cancelBtn} onClick={handleClosePrescriptionModal} type="button">
@@ -231,7 +208,7 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
             <button
                 className={styles.addPrescriptionBtn}
                 onClick={handleAddPrescription}
-                disabled={selectedMedications.length === 0 || isSaving}
+                disabled={selectedMedications.length === 0 || isSaving || !hasValidScheduleTimes}
                 type="button"
             >
                 {isSaving ? 'Saving...' : 'Add Prescription'}
@@ -296,40 +273,38 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
                                     <strong style={{ color: '#0f172a' }}>
                                         {prescription.status.replace('_', ' ')}
                                     </strong>
-                                    <span style={{ color: '#64748b', fontSize: '14px' }}>
+                                    <span className={styles.prescriptionDate}>
                                         Prescribed {new Date(prescription.prescribedAt).toLocaleDateString()}
                                     </span>
                                 </div>
 
-                                <div style={{ display: 'grid', gap: '10px' }}>
+                                <div className={styles.medicationsList}>
                                     {prescription.medications.map((medication, index) => (
                                         <div
                                             key={`${prescription._id}-${medication.name}-${index}`}
-                                            style={{
-                                                padding: '12px',
-                                                borderRadius: '12px',
-                                                background: medication.isCritical ? '#fff7ed' : '#f8fafc',
-                                                border: `1px solid ${medication.isCritical ? '#fdba74' : '#e2e8f0'}`,
-                                            }}
+                                            className={`${styles.medicationItem} ${
+                                                medication.isCritical
+                                                    ? styles.medicationItemCritical
+                                                    : styles.medicationItemNormal
+                                            }`}
                                         >
-                                            <div
-                                                style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'space-between',
-                                                    gap: '12px',
-                                                    flexWrap: 'wrap',
-                                                }}
-                                            >
+                                            <div className={styles.medicationItemHeader}>
                                                 <strong>{medication.name}</strong>
-                                                <span style={{ color: medication.isCritical ? '#c2410c' : '#475569' }}>
+                                                <span
+                                                    className={
+                                                        medication.isCritical
+                                                            ? styles.medicationRouteCritical
+                                                            : styles.medicationRoute
+                                                    }
+                                                >
                                                     {medication.isCritical ? 'Critical' : medication.route}
                                                 </span>
                                             </div>
-                                            <p style={{ margin: '8px 0 0', color: '#475569' }}>
+                                            <p className={styles.medicationDosage}>
                                                 {medication.dosage} • {medication.frequency}
                                             </p>
                                             {medication.scheduleTimes.length > 0 && (
-                                                <p style={{ margin: '6px 0 0', color: '#64748b', fontSize: '14px' }}>
+                                                <p className={styles.medicationTimes}>
                                                     Times: {medication.scheduleTimes.join(', ')}
                                                 </p>
                                             )}
@@ -338,7 +313,7 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
                                 </div>
 
                                 {prescription.note && (
-                                    <p style={{ margin: '12px 0 0', color: '#475569' }}>Note: {prescription.note}</p>
+                                    <p className={styles.prescriptionNote}>Note: {prescription.note}</p>
                                 )}
                             </div>
                         ))}
@@ -409,7 +384,6 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
                                             <h4 className={styles.medicationName}>
                                                 {medication.name} ({medication.dosage})
                                             </h4>
-                                            <p className={styles.medicationSubtitle}>{medication.type}</p>
                                         </div>
                                         <button
                                             className={styles.medicationRemoveBtn}
@@ -554,7 +528,7 @@ const MedicationTable = ({ patientId, prescriptions, hasConditions, onSuccess }:
                     )}
 
                     <div className={styles.instructionsSection}>
-                        <label className={styles.instructionsLabel}>Instructions for Pharmacist / Patient</label>
+                        <label className={styles.instructionsLabel}>Instructions about Medication</label>
                         <textarea
                             className={styles.instructionsInput}
                             placeholder="e.g. Take with food, finish the entire course"

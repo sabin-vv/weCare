@@ -1,3 +1,4 @@
+import { Types } from 'mongoose'
 import { singleton } from 'tsyringe'
 
 import { BaseRepository } from '../../../core/base/base.repository'
@@ -98,11 +99,11 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .sort({ appointmentDate: 1, slotStart: 1 })
     }
 
-    async findPendingPatientIdsByDoctor(doctorId: string): Promise<string[]> {
+
+    async findPatientIdsByStatus(doctorId: string, statuses: string[]): Promise<string[]> {
         const appointments = await AppointmentModel.find({
             doctorId,
-            status: 'pending_payment',
-            expiredAt: { $gt: new Date() },
+            status: { $in: statuses },
         })
             .select('patientId')
             .lean()
@@ -110,7 +111,7 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
         return [...new Set(appointments.map((appointment) => appointment.patientId.toString()))]
     }
 
-    async findCurrentAppointmentsByDoctorAndPatientIds(
+    async findDoctorVisibleAppointmentsByDoctorAndPatientIds(
         doctorId: string,
         patientIds: string[],
     ): Promise<AppointmentDocument[]> {
@@ -119,11 +120,7 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             patientId: { $in: patientIds },
             $or: [
                 {
-                    status: 'pending_payment',
-                    expiredAt: { $gt: new Date() },
-                },
-                {
-                    status: { $in: ['confirmed', 'in_consultation', 'completed'] },
+                    status: { $in: ['confirmed', 'in_consultation'] },
                 },
             ],
         })
@@ -131,13 +128,16 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .lean()
     }
 
-    async findCurrentAppointment(doctorId: string, patientUserId: string): Promise<AppointmentDocument | null> {
+    async findDoctorVisibleCurrentAppointment(
+        doctorId: string,
+        patientUserId: string,
+    ): Promise<AppointmentDocument | null> {
         return await AppointmentModel.findOne({
             doctorId,
             patientId: patientUserId,
             $or: [
                 {
-                    status: { $in: ['confirmed', 'in_consultation', 'pending_payment'] },
+                    status: { $in: ['confirmed', 'in_consultation'] },
                 },
             ],
         })
@@ -145,11 +145,14 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .lean()
     }
 
-    async cancelAppointment(id: string): Promise<AppointmentDocument | null> {
+    async cancelAppointment(id: string, reason: string, cancelledBy: string): Promise<AppointmentDocument | null> {
         return await AppointmentModel.findByIdAndUpdate(
             id,
             {
                 status: 'cancelled',
+                cancelledAt: new Date(),
+                cancelledBy: new Types.ObjectId(cancelledBy),
+                cancellationReason: reason,
             },
             { new: true },
         )

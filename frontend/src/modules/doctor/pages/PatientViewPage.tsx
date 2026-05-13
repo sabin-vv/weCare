@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 
-import { getPatientById, startConsultation, updatePatientCondition } from '../api/doctor.api'
+import { getPatientById, startConsultation, completeConsultation, updatePatientCondition } from '../api/doctor.api'
 import MedicationTable from '../components/viewPatient/MedicationTable'
 import ProfileCard from '../components/viewPatient/ProfileCard'
 import VitalCard from '../components/viewPatient/VitalCard'
@@ -65,6 +65,17 @@ const PatientViewPage = () => {
         try {
             await startConsultation(patientId)
             toast.success('Consultation started')
+            fetchPatient()
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        }
+    }
+
+    const handleCompleteConsultation = async () => {
+        if (!patientId) return
+        try {
+            await completeConsultation(patientId)
+            toast.success('Consultation completed')
             fetchPatient()
         } catch (error) {
             toast.error(getErrorMessage(error))
@@ -193,8 +204,11 @@ const PatientViewPage = () => {
                     profileImage={patient.profileImage}
                     appointmentStatus={patient.appointmentStatus}
                     onStartConsultation={handleStartConsultation}
-                    onAddCondition={() => setShowConditionModal(true)}
-                    isConditionEditable={false}
+                    onCompleteConsultation={handleCompleteConsultation}
+                    onAddCondition={() => {
+                        resetConditionModal()
+                        setShowConditionModal(true)
+                    }}
                 />
                 <div
                     style={{

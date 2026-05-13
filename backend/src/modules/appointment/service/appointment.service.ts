@@ -6,7 +6,6 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
-import { logger } from '../../../core/logger/logger'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
@@ -21,7 +20,7 @@ import {
 } from '../interfaces/appointment.service.interface'
 import { AppointmentResponseDTO, toAppointmentListResponseDTO } from '../mapper/appointment.mapper'
 import { AppointmentDocument } from '../types/appointment.types'
-import { CreateAppointmentDTO } from '../validator/appointment.schema'
+import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 
 @injectable()
 export class AppointmentService implements IAppointmentService {
@@ -60,14 +59,10 @@ export class AppointmentService implements IAppointmentService {
             dto.appointmentDate,
         )
 
-        const now = new Date()
-
         const isAlreadyBooked = activeAppointments.some((app) => {
             if (app.slotStart !== dto.slotStart) return false
             if (app.status === 'confirmed') return true
-            if (app.status === 'pending_payment') {
-                return app.expiredAt && new Date(app.expiredAt) > now
-            }
+            if (app.status === 'pending_payment') return true
             return false
         })
 
@@ -170,6 +165,7 @@ export class AppointmentService implements IAppointmentService {
         let appointment: AppointmentDocument | null = null
         let paymentId: string | null = null
         let walletDebited = false
+        let doctorName = 'Doctor'
 
         try {
             appointment = await this.createBaseAppointment(dto, consultationFee, 'pending_payment')
@@ -190,10 +186,13 @@ export class AppointmentService implements IAppointmentService {
                 throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to attach payment to appointment')
             }
 
+            const doctor = await this._doctorRepo.findByIdWithUser(dto.doctorId)
+            doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+
             const wallet = await this._walletService.debit(
                 dto.patientId,
                 totalAmount,
-                `Consultation payment for appointment ${appointment._id.toString()}`,
+                `Consultation payment for Dr. ${doctorName}`,
                 appointment._id.toString(),
             )
             walletDebited = true
@@ -209,11 +208,16 @@ export class AppointmentService implements IAppointmentService {
             const confirmedAppointment = await this._appointmentRepo.update(appointment._id.toString(), {
                 paymentId: payment._id,
                 status: 'confirmed',
+                confirmedAt: new Date(),
                 expiredAt: undefined,
             })
             if (!confirmedAppointment) {
                 throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to confirm wallet appointment')
             }
+
+            await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
+                primaryDoctorId: new Types.ObjectId(dto.doctorId),
+            })
 
             return {
                 paymentMethod: 'wallet',
@@ -228,7 +232,7 @@ export class AppointmentService implements IAppointmentService {
                     .credit(
                         dto.patientId,
                         totalAmount,
-                        `Wallet payment reversal for appointment ${appointment._id.toString()}`,
+                        `Wallet payment reversal for Dr. ${doctorName}`,
                         appointment._id.toString(),
                     )
                     .catch(() => null)
@@ -246,8 +250,6 @@ export class AppointmentService implements IAppointmentService {
     async createAppointment(dto: CreateAppointmentDTO & { patientId: string }): Promise<CreateAppointmentResult> {
         const { doctor, settings, totalAmount } = await this.validateAppointmentRequest(dto)
 
-        await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), { primaryDoctorId: doctor._id })
-
         if (dto.paymentMethod === 'wallet') {
             return await this.createWalletAppointment(dto, doctor.consultationFee, settings.platformFee, totalAmount)
         }
@@ -257,7 +259,6 @@ export class AppointmentService implements IAppointmentService {
 
     async getPatientAppointments(patientId: string): Promise<AppointmentResponseDTO[]> {
         const appointments = await this._appointmentRepo.findByPatientId(patientId)
-        logger.info({ Appointment: appointments })
         return toAppointmentListResponseDTO(appointments)
     }
 
@@ -299,7 +300,7 @@ export class AppointmentService implements IAppointmentService {
             }
         }
 
-        const cancelled = await this._appointmentRepo.cancelAppointment(id)
+        const cancelled = await this._appointmentRepo.cancelAppointment(id, reason, appointment.patientId.toString())
         return { appointment: cancelled, refundAmount }
     }
 
@@ -314,7 +315,7 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
-        const appointment = await this._appointmentRepo.findCurrentAppointment(
+        const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
             doctor._id.toString(),
             patient.userId.toString(),
         )
@@ -328,5 +329,99 @@ export class AppointmentService implements IAppointmentService {
         }
 
         await this._appointmentRepo.update(appointment._id.toString(), { status: 'in_consultation' })
+    }
+
+    async completeConsultation(doctorId: string, patientId: string): Promise<void> {
+        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
+        if (!doctor) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+        }
+
+        const patient = await this._patientRepo.findById(patientId)
+        if (!patient) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+        }
+
+        const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
+            doctor._id.toString(),
+            patient.userId.toString(),
+        )
+
+        if (!appointment) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'No active appointment found')
+        }
+
+        if (appointment.status !== 'in_consultation') {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not in consultation')
+        }
+
+        await this._appointmentRepo.update(appointment._id.toString(), { status: 'completed' })
+    }
+
+    async retryPayment(
+        appointmentId: string,
+        dto: RetryPaymentDTO & { patientId: string },
+    ): Promise<CreateAppointmentResult> {
+        const appointment = await this._appointmentRepo.findById(appointmentId)
+
+        if (!appointment) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+        }
+
+        if (appointment.status !== 'pending_payment') {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not pending payment')
+        }
+
+        if (appointment.patientId.toString() !== dto.patientId) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to retry payment for this appointment')
+        }
+
+        const settings = await this._adminRepo.getPlatformSettings()
+        const totalAmount = appointment.consultationFee + (settings.platformFee ?? 0)
+
+        if (dto.paymentMethod === 'wallet') {
+            const wallet = await this._walletService.debit(
+                dto.patientId,
+                totalAmount,
+                `Consultation payment for appointment ${appointmentId}`,
+                appointmentId,
+            )
+
+            await this._appointmentRepo.update(appointmentId, { status: 'confirmed', confirmedAt: new Date() })
+            await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
+                primaryDoctorId: appointment.doctorId as Types.ObjectId,
+            })
+
+            if (appointment.paymentId) {
+                await this._paymentRepo.updateById(appointment.paymentId.toString(), {
+                    status: 'success',
+                    paidAt: new Date(),
+                })
+            }
+
+            return {
+                paymentMethod: 'wallet',
+                paymentId: appointment.paymentId?.toString() ?? '',
+                appointmentId,
+                walletBalance: wallet.balance,
+                appointmentConfirmed: true,
+            }
+        }
+
+        const razorpayOrder = await this.razorpay.orders.create({
+            amount: totalAmount * 100,
+            currency: 'INR',
+            receipt: `receipt_${Date.now()}`,
+        })
+
+        if (appointment.paymentId) {
+            await this._paymentRepo.updateById(appointment.paymentId.toString(), { razorpayOrderId: razorpayOrder.id })
+        }
+
+        return {
+            paymentMethod: 'razorpay',
+            order: razorpayOrder,
+            paymentId: appointment.paymentId?.toString() ?? '',
+        }
     }
 }

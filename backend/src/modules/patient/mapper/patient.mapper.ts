@@ -70,10 +70,7 @@ export const toListPatientsMapper = (
     appointment: AppointmentDocument | null,
     caregiver: UserDocument | null,
 ): ListPatientMapper => {
-    const status =
-        appointment?.status === 'pending_payment' || appointment?.status === 'confirmed'
-            ? 'pending_consultation'
-            : appointment?.status || patient.clinicalStatus || patient.accountStatus || 'active'
+    const status = appointment?.status || patient.clinicalStatus || patient.accountStatus || 'active'
 
     return {
         _id: patient._id.toString(),
@@ -95,10 +92,7 @@ export const toPatientDetailsDTO = (
     vitals: VitalDocument[],
     prescriptions: PrescriptionDocument[],
 ): PatientDetailsDTO => {
-    const status =
-        appointment?.status === 'pending_payment' || appointment?.status === 'confirmed'
-            ? 'pending_consultation'
-            : appointment?.status || patient.clinicalStatus || patient.accountStatus || 'active'
+    const status = appointment?.status || patient.clinicalStatus || patient.accountStatus || 'active'
 
     const age = new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()
     const mappedVitals: PatientVitalDTO[] = vitals.map((vital) => ({

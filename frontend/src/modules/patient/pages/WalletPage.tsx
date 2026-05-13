@@ -39,7 +39,7 @@ const WalletPage = () => {
                         </div>
 
                         <div className={styles.walletBottom}>
-                            <h1 className={styles.balanceAmount}>₹{balance}</h1>
+                            <h1 className={styles.balanceAmount}>₹ {balance.toLocaleString()}</h1>
 
                             <Button className={styles.addMoneyBtn}>+ Add Money</Button>
                         </div>
@@ -58,17 +58,29 @@ const WalletPage = () => {
                             {transactions.length > 0 ? (
                                 transactions.map((transaction, index) => (
                                     <div key={index} className={styles.transactionCard}>
-                                        <div>
-                                            <p className={styles.transactionType}>{transaction.type}</p>
-
-                                            <span className={styles.transactionDate}>
-                                                {new Date(transaction.createdAt).toLocaleDateString()}
+                                        <div className={styles.transactionLeft}>
+                                            <span className={`${styles.typeBadge} ${transaction.type === 'credit' ? styles.creditBadge : styles.debitBadge}`}>
+                                                {transaction.type === 'credit' ? (
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                                                ) : (
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                                                )}
+                                                {transaction.type}
                                             </span>
+
+                                            <div className={styles.transactionMeta}>
+                                                {transaction.description ? (
+                                                    <span className={styles.transactionDesc}>{transaction.description}</span>
+                                                ) : null}
+                                                <span className={styles.transactionDate}>
+                                                    {new Date(transaction.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                </span>
+                                            </div>
                                         </div>
 
-                                        <h4 className={transaction.type === 'credit' ? styles.credit : styles.debit}>
-                                            {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount}
-                                        </h4>
+                                        <span className={transaction.type === 'credit' ? styles.credit : styles.debit}>
+                                            {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount.toLocaleString()}
+                                        </span>
                                     </div>
                                 ))
                             ) : (

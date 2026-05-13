@@ -158,3 +158,26 @@ export interface CancelModalContentProps {
     customReason: string
     setCustomReason: (reason: string) => void
 }
+
+export interface PaymentMethodModalProps {
+    isOpen: boolean
+    onClose: () => void
+    amount: number
+    onSelectRazorpay: () => void
+    onSelectWallet: () => void
+    walletBalance?: number
+}
+
+export type RetryPaymentResponse =
+    | {
+          paymentMethod: 'razorpay'
+          order: { id: string; amount: number; currency: string }
+          paymentId: string
+      }
+    | {
+          paymentMethod: 'wallet'
+          paymentId: string
+          appointmentId: string
+          walletBalance: number
+          appointmentConfirmed: true
+      }

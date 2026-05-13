@@ -10,6 +10,7 @@ import type {
     Specialist,
     UpdatePatientProfileData,
     VerifyPaymentRequest,
+    RetryPaymentResponse,
 } from '../types/patient.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
@@ -68,11 +69,18 @@ export const getPatientAppointments = async (): Promise<Appointment[]> => {
 }
 
 export const getWallet = async (): Promise<GetWalletResponse> => {
-    const response = await api.get(`${WALLET_API}}`)
+    const response = await api.get(`${WALLET_API}`)
     return response.data
 }
 
 export const cancelAppointment = async (id: string, reason: string): Promise<ApiInterface> => {
     const response = await api.patch(`${APPOINTMENT_API}/${id}/cancel`, { reason })
     return response.data
+}
+
+export const retryPayment = async (id: string, paymentMethod: 'razorpay' | 'wallet'): Promise<RetryPaymentResponse> => {
+    const response = await api.post<{ data: RetryPaymentResponse }>(`${APPOINTMENT_API}/${id}/retry-payment`, {
+        paymentMethod,
+    })
+    return response.data.data
 }

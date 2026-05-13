@@ -17,9 +17,10 @@ import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
 
 const FILTER_OPTIONS = [
-    { label: 'All Patients', value: 'all' },
-    { label: 'High Risk', value: 'high_risk' },
-    { label: 'Pending Consultation', value: 'pending_consultation' },
+    { label: 'All', value: 'all' },
+    { label: 'Pending Consultation', value: 'confirmed' },
+    { label: 'In Consultation', value: 'in_consultation' },
+    { label: 'Completed', value: 'completed' },
 ] as const
 
 const getInitials = (name: string) => {
@@ -95,7 +96,8 @@ const PatientList = () => {
         if (!status) return 'N/A'
         if (status === 'pending_consultation') return 'Pending Consultation'
         if (status === 'in_consultation') return 'In Consultation'
-        if (status === 'pending_payment') return 'Pending Payment'
+        if (status === 'confirmed') return 'Pending Consultation'
+        if (status === 'completed') return 'Completed'
 
         return status
             .split('_')

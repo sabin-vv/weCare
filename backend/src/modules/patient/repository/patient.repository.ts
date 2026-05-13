@@ -35,21 +35,16 @@ export class PatientRepository extends BaseRepository<PatientDocument> implement
         return lastPatient?.patientId || null
     }
 
-    async listPatientsByDoctor(
-        doctorId: Types.ObjectId,
-        params: ListPatientParams,
-    ): Promise<{ data: PatientDocument[]; total: number }> {
-        const { search, filter, page, limit, userIds } = params
+    async listPatientsByDoctor(params: ListPatientParams): Promise<{ data: PatientDocument[]; total: number }> {
+        const { search, filter, page, limit, userIds, excludeUserIds } = params
         const pageSafe = Math.max(1, page || 1)
         const limitSafe = Math.max(1, limit || 8)
-        const query: Record<string, unknown> = { primaryDoctorId: doctorId }
+        const query: Record<string, unknown> = {}
 
         if (filter === 'high_risk') {
             query.riskLevel = 'high_risk'
         } else if (filter === 'hospitalized') {
             query.clinicalStatus = 'hospitalized'
-        } else if (filter === 'pending_consultation') {
-            query.primaryDoctorId = doctorId
         }
 
         const skip = (pageSafe - 1) * limitSafe
@@ -60,6 +55,12 @@ export class PatientRepository extends BaseRepository<PatientDocument> implement
 
         if (userIds && userIds.length > 0) {
             query.userId = { $in: userIds }
+        }
+
+        if (excludeUserIds && excludeUserIds.length > 0) {
+            query.userId = query.userId
+                ? { ...(query.userId as Record<string, unknown>), $nin: excludeUserIds }
+                : { $nin: excludeUserIds }
         }
 
         const [data, total] = await Promise.all([

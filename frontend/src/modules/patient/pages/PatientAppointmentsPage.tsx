@@ -2,15 +2,18 @@ import { Calendar, Clock, User, CreditCard, AlertCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 
-import { cancelAppointment, getPatientAppointments } from '../api/patient.api'
+import { cancelAppointment, getPatientAppointments, getWallet, retryPayment, verifyPayment } from '../api/patient.api'
+import PaymentMethodModal from '../component/PaymentMethodModal'
 import { type Appointment, type CancelModalContentProps } from '../types/patient.types'
 
 import styles from './PatientAppointmentsPage.module.css'
 
+import { env } from '@/config/env'
 import PatientLayout from '@/layout/PatientLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { loadRazorpayScript } from '@/utils/loadRazorpay'
 
 const CANCELLATION_REASONS = ['Schedule conflict', 'Feeling better', 'Emergency', 'Financial reasons', 'Other']
 
@@ -61,6 +64,10 @@ const PatientAppointmentsPage = () => {
     const [customReason, setCustomReason] = useState('')
     const [isCancelling, setIsCancelling] = useState(false)
 
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
+    const [selectedRetryAppointment, setSelectedRetryAppointment] = useState<Appointment | null>(null)
+    const [walletBalance, setWalletBalance] = useState<number>(0)
+
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
@@ -76,6 +83,97 @@ const PatientAppointmentsPage = () => {
 
         fetchAppointments()
     }, [])
+
+    useEffect(() => {
+        if (isPaymentModalOpen) {
+            getWallet()
+                .then((data) => setWalletBalance(data.data.balance))
+                .catch(() => setWalletBalance(0))
+        }
+    }, [isPaymentModalOpen])
+
+    const handleRetryPayment = (appointment: Appointment) => {
+        setSelectedRetryAppointment(appointment)
+        setIsPaymentModalOpen(true)
+    }
+
+    const handleRazorpayPayment = async () => {
+        if (!selectedRetryAppointment) return
+
+        try {
+            setIsPaymentModalOpen(false)
+
+            await loadRazorpayScript()
+
+            const response = await retryPayment(selectedRetryAppointment._id, 'razorpay')
+
+            if (response.paymentMethod !== 'razorpay') {
+                throw new Error('Unexpected response')
+            }
+
+            const { order, paymentId } = response
+
+            const options = {
+                key: env.RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: 'WeCare',
+                description: `Appointment payment`,
+                order_id: order.id,
+                handler: async (razorpayResponse: {
+                    razorpay_order_id: string
+                    razorpay_payment_id: string
+                    razorpay_signature: string
+                }) => {
+                    try {
+                        await verifyPayment({
+                            paymentId,
+                            razorpayOrderId: razorpayResponse.razorpay_order_id,
+                            razorpayPaymentId: razorpayResponse.razorpay_payment_id,
+                            razorpaySignature: razorpayResponse.razorpay_signature,
+                        })
+                        toast.success('Payment successful!')
+                        const data = await getPatientAppointments()
+                        setAppointments(data)
+                    } catch (err) {
+                        toast.error(getErrorMessage(err))
+                    }
+                },
+                prefill: {},
+                theme: { color: '#007bff' },
+            }
+
+            const rzp = new window.Razorpay(options)
+            rzp.open()
+        } catch (err) {
+            toast.error(getErrorMessage(err))
+        }
+    }
+
+    const handleWalletPayment = async () => {
+        if (!selectedRetryAppointment) return
+
+        try {
+            setIsPaymentModalOpen(false)
+
+            const response = await retryPayment(selectedRetryAppointment._id, 'wallet')
+
+            if (response.paymentMethod !== 'wallet') {
+                throw new Error('Unexpected response')
+            }
+
+            toast.success('Payment successful!')
+            const data = await getPatientAppointments()
+            setAppointments(data)
+        } catch (err) {
+            toast.error(getErrorMessage(err))
+        }
+    }
+
+    const closePaymentModal = () => {
+        setIsPaymentModalOpen(false)
+        setSelectedRetryAppointment(null)
+    }
 
     const handleAppointmentCancel = (id: string) => {
         setSelectedAppointmentId(id)
@@ -122,6 +220,10 @@ const PatientAppointmentsPage = () => {
                 return styles.statusPending
             case 'cancelled':
                 return styles.statusCancelled
+            case 'in_consultation':
+                return styles.inConsultation
+            case 'completed':
+                return styles.completed
             default:
                 return ''
         }
@@ -160,7 +262,8 @@ const PatientAppointmentsPage = () => {
 
         const diffInHours = (appointmentTime - currentTime) / (1000 * 60 * 60)
 
-        const canCancel = diffInHours > 2 && appointment.status !== 'cancelled' && appointment.status !== 'completed'
+        const canCancel = diffInHours > 2 && appointment.status === 'confirmed'
+        const canRetryPayment = appointment.status === 'pending_payment' && appointment.paymentStatus === 'pending'
 
         return (
             <div className={styles.appointmentCard}>
@@ -171,7 +274,7 @@ const PatientAppointmentsPage = () => {
                         </div>
                         <div>
                             <div className={styles.doctorName}>Dr.{appointment.doctorId.userId.name}</div>
-                            <div className={styles.doctorEmail}>
+                            <div className={styles.doctorSpecialize}>
                                 {appointment.doctorId.specializations.map((s) => s.name).join(',')}
                             </div>
                         </div>
@@ -199,7 +302,7 @@ const PatientAppointmentsPage = () => {
                     </div>
                     <div className={styles.detailRow}>
                         <CreditCard size={18} className={styles.icon} />
-                        <span>
+                        <span className={styles.paymentStatus}>
                             Payment: <strong>{appointment.paymentStatus}</strong>
                         </span>
                     </div>
@@ -210,13 +313,19 @@ const PatientAppointmentsPage = () => {
                         <div className={styles.amount}>₹{appointment.amount}</div>
                     </div>
 
-                    {canCancel && (
-                        <button
-                            className={styles.cancelButton}
-                            onClick={() => handleAppointmentCancel(appointment._id)}
-                        >
-                            Cancel
+                    {canRetryPayment ? (
+                        <button className={styles.cancelButton} onClick={() => handleRetryPayment(appointment)}>
+                            Retry Payment
                         </button>
+                    ) : (
+                        canCancel && (
+                            <button
+                                className={styles.cancelButton}
+                                onClick={() => handleAppointmentCancel(appointment._id)}
+                            >
+                                Cancel
+                            </button>
+                        )
                     )}
                 </div>
             </div>
@@ -270,6 +379,15 @@ const PatientAppointmentsPage = () => {
                     setCustomReason={setCustomReason}
                 />
             </Modal>
+
+            <PaymentMethodModal
+                isOpen={isPaymentModalOpen}
+                onClose={closePaymentModal}
+                amount={selectedRetryAppointment?.amount ?? 0}
+                onSelectRazorpay={handleRazorpayPayment}
+                onSelectWallet={handleWalletPayment}
+                walletBalance={walletBalance}
+            />
         </PatientLayout>
     )
 }
