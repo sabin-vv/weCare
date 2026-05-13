@@ -286,3 +286,42 @@ export interface AddPrescriptionPayload {
     medications: AddPrescriptionMedication[]
     note?: string
 }
+
+export interface ScheduleTime {
+    id: string
+    time: string
+}
+
+export interface SelectedMedication {
+    id: string
+    name: string
+    dosage: string
+    frequency: string
+    duration: number
+    durationUnit: string
+    priority: string
+    route: string
+    scheduleTimes: ScheduleTime[]
+}
+
+export interface MedicationProps {
+    patientId: string
+    clinicalStatus: string
+    prescriptions: PatientPrescription[]
+    hasConditions: boolean
+    onSuccess: () => void
+}
+
+export interface ProfileCardProps {
+    name: string
+    age: number
+    gender: string
+    patinetId: string
+    riskLevel?: string
+    conditions?: string[]
+    profileImage?: string
+    appointmentStatus: string
+    onStartConsultation?: () => void
+    onCompleteConsultation?: () => void
+    onAddCondition?: () => void
+}

@@ -82,6 +82,12 @@ export const startConsultation = async (patientId: string): Promise<ApiInterface
     return res.data
 }
 
+export const completeConsultation = async (patientId: string): Promise<ApiInterface> => {
+    const res = await api.put(`${DOCTORS_API}${PATIENTS_API}/${patientId}/complete-consultation`)
+
+    return res.data
+}
+
 export const updatePatientCondition = async (
     patientId: string,
     data: UpdatePatientConditionPayload,

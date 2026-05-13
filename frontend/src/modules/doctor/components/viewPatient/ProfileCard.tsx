@@ -1,20 +1,8 @@
+import type { ProfileCardProps } from '../../types/doctor.types'
+
 import styles from './ProfileCard.module.css'
 
 import { env } from '@/config/env'
-
-interface ProfileCardProps {
-    name: string
-    age: number
-    gender: string
-    patinetId: string
-    riskLevel?: string
-    conditions?: string[]
-    profileImage?: string
-    appointmentStatus: string
-    onStartConsultation?: () => void
-    onAddCondition?: () => void
-    isConditionEditable?: boolean
-}
 
 const ProfileCard = ({
     name,
@@ -26,8 +14,8 @@ const ProfileCard = ({
     profileImage,
     appointmentStatus,
     onStartConsultation,
+    onCompleteConsultation,
     onAddCondition,
-    isConditionEditable = false,
 }: ProfileCardProps) => {
     const baseUrl = env.AWS_BASE_URL
 
@@ -62,16 +50,25 @@ const ProfileCard = ({
 
                         <div className={styles.condition}>
                             {conditions && conditions.length > 0 ? (
-                                conditions.join(', ')
+                                conditions.join(',')
                             ) : (
-                                <button className={styles.addCondition} onClick={onAddCondition}>
+                                <button
+                                    className={
+                                        appointmentStatus === 'confirmed'
+                                            ? styles.disabledAddButton
+                                            : styles.addCondition
+                                    }
+                                    onClick={onAddCondition}
+                                >
                                     Add
                                 </button>
                             )}
                         </div>
 
-                        {conditions && conditions.length > 0 && isConditionEditable && (
-                            <button className={styles.editBtn}>✎</button>
+                        {conditions && conditions.length > 0 && (
+                            <button className={styles.editBtn} onClick={onAddCondition}>
+                                ✎
+                            </button>
                         )}
                     </div>
                 </div>
@@ -81,7 +78,12 @@ const ProfileCard = ({
                     Start Consultation
                 </button>
             ) : appointmentStatus === 'in_consultation' ? (
-                <button className={styles.inConsultationBtn}>In Consultation</button>
+                <div className={styles.consulatationStatus}>
+                    <span>In Consultation</span>
+                    <button className={styles.inConsultationBtn} onClick={onCompleteConsultation}>
+                        Complete Consultation
+                    </button>
+                </div>
             ) : (
                 <div className={styles.rightSection}>
                     <button className={styles.caregiverBtn}>Assign Caregiver ▼</button>

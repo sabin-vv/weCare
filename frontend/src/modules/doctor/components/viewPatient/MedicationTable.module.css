@@ -103,7 +103,7 @@
     font-size: 14px;
     font-weight: 600;
     color: #64748b;
-    margin-bottom: 16px;
+
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -113,6 +113,7 @@
     border-radius: 12px;
     padding: 20px;
     background: #f8fafc;
+    margin: 10px 0;
 }
 
 .medicationHeader {
@@ -126,7 +127,7 @@
     font-size: 16px;
     font-weight: 600;
     color: #0f172a;
-    margin: 0;
+    margin-bottom: 16px;
 }
 
 .medicationRemoveBtn {
@@ -394,4 +395,66 @@
 .timeInput::-webkit-calendar-picker-indicator {
     cursor: pointer;
     filter: invert(0.5);
+}
+
+.prescriptionDate {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.medicationsList {
+    display: grid;
+    gap: 10px;
+}
+
+.medicationItem {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid;
+}
+
+.medicationItemCritical {
+    background: #fff7ed;
+    border-color: #fdba74;
+}
+
+.medicationItemNormal {
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.medicationItemHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.medicationRoute {
+    color: #475569;
+}
+
+.medicationRouteCritical {
+    color: #c2410c;
+}
+
+.medicationDosage {
+    margin: 8px 0 0;
+    color: #475569;
+}
+
+.medicationTimes {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.prescriptionNote {
+    margin: 12px 0 0;
+    color: #475569;
+}
+
+.dosageRow {
+    display: flex;
+    gap: 8px;
 }
