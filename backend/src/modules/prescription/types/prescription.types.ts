@@ -9,7 +9,11 @@ export interface MedicationItem {
     route: MedicationRoute
     frequency: string
     scheduleTimes: string[]
-    isCritical: boolean
+    priority?: 'Critical' | 'High' | 'Medium' | 'Low'
+    duration: number
+    durationUnit: 'Days' | 'Weeks' | 'Months'
+    endDate?: Date
+    instructions?: string
 }
 
 export interface PrescriptionDocument extends Document {
@@ -21,6 +25,7 @@ export interface PrescriptionDocument extends Document {
     discontinuedAt?: Date
     discontinuedBy?: Types.ObjectId
     prescribedAt: Date
+    endDate?: Date
     createdAt: Date
     updatedAt: Date
 }
