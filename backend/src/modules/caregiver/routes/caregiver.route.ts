@@ -27,6 +27,7 @@ export const createCaregiverRoutes = () => {
         validate(UpdateCaregiverSettingsSchema),
         caregiverController.updateProfile,
     )
+    router.get('/', requireAuth, caregiverController.listCaregivers)
 
     return router
 }
