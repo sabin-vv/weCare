@@ -66,6 +66,7 @@
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 999px;
+    text-transform: capitalize;
 }
 
 .metaInfo {
@@ -110,6 +111,17 @@
 
 .addCondition:hover {
     opacity: 0.9;
+}
+
+.disabledAddButton {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .editBtn {
@@ -193,9 +205,24 @@
     opacity: 0.9;
 }
 
+.consulatationStatus {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.consulatationStatus span {
+    background: #10b9813f;
+    color: #059669;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
 .inConsultationBtn {
-    background: #6b7280;
-    color: white;
+    background: #10b981;
+    color: #fff;
     border: none;
     padding: 10px 16px;
     border-radius: 8px;
