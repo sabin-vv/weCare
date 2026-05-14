@@ -10,4 +10,6 @@ export interface IMedicationRepository {
         scheduleTime: Date,
     ): Promise<MedicationScheduleModel | null>
     findByPatientAndDate(patientId: Types.ObjectId, scheduleDate: Date): Promise<MedicationScheduleModel[]>
+
+    findByPatientId(patientId: Types.ObjectId): Promise<MedicationScheduleModel[]>
 }
