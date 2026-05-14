@@ -1,10 +1,10 @@
-import { Types } from 'mongoose'
+import { PipelineStage, Types } from 'mongoose'
 import { injectable } from 'tsyringe'
 
 import { BaseRepository } from '../../../core/base/base.repository'
 import { ICaregiverRepository } from '../interfaces/caregiver.repository.interface'
 import { CaregiverModel } from '../models/caregiver.model'
-import { CaregiverDocument } from '../types/caregiver.types'
+import { CaregiverDocument, CaregiverWithUser } from '../types/caregiver.types'
 
 @injectable()
 export class CaregiverRepository extends BaseRepository<CaregiverDocument> implements ICaregiverRepository {
@@ -21,15 +21,41 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
         return this.model.findById(id).lean()
     }
 
-    async findAllActive(search?: string): Promise<CaregiverDocument[]> {
-        const query: Record<string, unknown> = { isActive: true }
-        if (search) {
-            query.$or = [
-                { certificateNumber: { $regex: search, $options: 'i' } },
-                { licenseNumber: { $regex: search, $options: 'i' } },
-            ]
+    async findAllActive(search?: string): Promise<CaregiverWithUser[]> {
+        const pipeline: PipelineStage[] = [
+            {
+                $match: {
+                    isActive: true,
+                    verificationStatus: 'verified',
+                },
+            },
+
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                },
+            },
+
+            {
+                $unwind: '$user',
+            },
+        ]
+
+        if (search?.trim()) {
+            pipeline.push({
+                $match: {
+                    'user.name': {
+                        $regex: search,
+                        $options: 'i',
+                    },
+                },
+            })
         }
-        return this.model.find(query).lean()
+
+        return this.model.aggregate<CaregiverWithUser>(pipeline)
     }
 
     async updateByUserId(userId: Types.ObjectId, data: Partial<CaregiverDocument>): Promise<CaregiverDocument | null> {
