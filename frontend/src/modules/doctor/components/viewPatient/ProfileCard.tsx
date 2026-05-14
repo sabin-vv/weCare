@@ -16,6 +16,7 @@ const ProfileCard = ({
     onStartConsultation,
     onCompleteConsultation,
     onAddCondition,
+    onAssignCaregiver,
 }: ProfileCardProps) => {
     const baseUrl = env.AWS_BASE_URL
 
@@ -86,7 +87,9 @@ const ProfileCard = ({
                 </div>
             ) : (
                 <div className={styles.rightSection}>
-                    <button className={styles.caregiverBtn}>Assign Caregiver ▼</button>
+                    <button className={styles.caregiverBtn} onClick={onAssignCaregiver}>
+                        Assign Caregiver ▼
+                    </button>
 
                     <div className={styles.actions}>
                         <button className={styles.hospitalBtn}>Admit to Hospital</button>
