@@ -24,4 +24,6 @@ export const TOKENS = {
     IWalletService: Symbol('IWalletService'),
     IMedicationRepository: Symbol('IMedicationRepository'),
     IMedicationService: Symbol('IMedicationService'),
+    ISubscriptionRepository: Symbol('ISubscriptionRepository'),
+    ISubscriptionService: Symbol('ISubscriptionService'),
 }
