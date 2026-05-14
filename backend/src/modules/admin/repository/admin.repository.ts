@@ -455,6 +455,7 @@ export class AdminRepository implements IAdminRepository {
                 platformFee: 0,
                 platformLogo: '',
                 platformIcon: '',
+                subscriptionFee: 25000,
             })
         }
         return {
@@ -464,6 +465,7 @@ export class AdminRepository implements IAdminRepository {
             platformFee: settings.platformFee,
             platformLogo: settings.platformLogo,
             platformIcon: settings.platformIcon,
+            subscriptionFee: settings.subscriptionFee,
         }
     }
 
@@ -477,6 +479,7 @@ export class AdminRepository implements IAdminRepository {
                 platformFee: 0,
                 platformLogo: '',
                 platformIcon: '',
+                subscriptionFee: 25000,
             })
         }
 
@@ -497,6 +500,7 @@ export class AdminRepository implements IAdminRepository {
             platformFee: updated.platformFee,
             platformLogo: updated.platformLogo,
             platformIcon: updated.platformIcon,
+            subscriptionFee: updated.subscriptionFee,
         }
     }
 
