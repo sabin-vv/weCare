@@ -342,6 +342,7 @@ export interface ProfileCardProps {
     patinetId: string
     riskLevel?: string
     conditions?: string[]
+    caregiver?: string
     profileImage?: string
     appointmentStatus: string
     onStartConsultation?: () => void

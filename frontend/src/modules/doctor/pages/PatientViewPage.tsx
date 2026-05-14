@@ -271,6 +271,7 @@ const PatientViewPage = () => {
                     conditions={patient.conditions}
                     profileImage={patient.profileImage}
                     appointmentStatus={patient.appointmentStatus}
+                    caregiver={patient.caregiver}
                     onStartConsultation={handleStartConsultation}
                     onCompleteConsultation={handleCompleteConsultation}
                     onAddCondition={() => {
