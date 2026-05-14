@@ -6,7 +6,7 @@ import { IPatientRepository } from '../../patient/interfaces/patient.repository.
 import { PrescriptionModel } from '../../prescription/models/prescription.model'
 import { IMedicationRepository } from '../interfaces/medication.repository.interface'
 import { IMedicationService } from '../interfaces/medication.service.interface'
-import { MedicationScheduleInput } from '../types/medication.type'
+import { MedicationScheduleDTO, MedicationScheduleInput } from '../types/medication.type'
 
 @injectable()
 export class MedicationService implements IMedicationService {
@@ -84,5 +84,23 @@ export class MedicationService implements IMedicationService {
             created: schedulesToCreate.length,
             skipped,
         }
+    }
+
+    async getPatientMedications(userId: string): Promise<MedicationScheduleDTO[]> {
+        const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
+        if (!patient) return []
+
+        const schedules = await this._medicationRepo.findByPatientId(patient._id)
+
+        return schedules.map((schedule) => ({
+            _id: schedule._id.toString(),
+            medicineName: schedule.medicineName,
+            dosage: schedule.dosage,
+            route: schedule.route,
+            scheduleTime: schedule.scheduleTime.toISOString(),
+            priority: schedule.priority,
+            status: schedule.status,
+            administeredAt: schedule.administeredAt?.toISOString(),
+        }))
     }
 }
