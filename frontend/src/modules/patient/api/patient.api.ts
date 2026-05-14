@@ -5,6 +5,7 @@ import type {
     GetWalletResponse,
     DoctorSlotsResponse,
     GetDoctorsParams,
+    MedicationSchedule,
     PatientProfileData,
     PatientProfileResponse,
     Specialist,
@@ -12,6 +13,8 @@ import type {
     UpdatePatientProfileData,
     VerifyPaymentRequest,
     RetryPaymentResponse,
+    VitalSchedule,
+    CreateSubscriptionResponse,
 } from '../types/patient.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
@@ -19,9 +22,11 @@ import { api } from '@/services/api'
 import {
     APPOINTMENT_API,
     DOCTORS_API,
+    MEDICATIONS_API,
     PATIENTS_API,
     PAYMENTS_API,
     SUBSCRIPTIONS_API,
+    VITALS_API,
     WALLET_API,
 } from '@/shared/constants/api.constants'
 
@@ -100,24 +105,6 @@ export const getPatientSubscription = async (): Promise<SubscriptionData | null>
     return response.data.data
 }
 
-interface CreateSubscriptionResponse {
-    success: boolean
-    message: string
-    data: {
-        subscriptionId: string
-        paymentId: string
-        orderId: string
-        amount: number
-        currency: string
-        keyId: string
-    } | {
-        subscriptionId: string
-        paymentId: string
-        walletBalance: number
-        subscriptionConfirmed: true
-    }
-}
-
 export const createSubscription = async (
     billingCycle: 'monthly' | 'yearly',
     paymentMethod: 'razorpay' | 'wallet',
@@ -143,4 +130,18 @@ export const verifySubscriptionPayment = async (data: {
 
 export const cancelSubscription = async (subscriptionId: string): Promise<void> => {
     await api.post(`${SUBSCRIPTIONS_API}/${subscriptionId}/cancel`)
+}
+
+export const getPatientMedications = async (): Promise<MedicationSchedule[]> => {
+    const response = await api.get<{ success: boolean; message: string; data: MedicationSchedule[] }>(
+        `${MEDICATIONS_API}/me`,
+    )
+    return response.data.data
+}
+
+export const getPatientVitalSchedules = async (): Promise<VitalSchedule[]> => {
+    const response = await api.get<{ success: boolean; message: string; data: VitalSchedule[] }>(
+        `${VITALS_API}/schedules/me`,
+    )
+    return response.data.data
 }

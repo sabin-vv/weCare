@@ -219,6 +219,33 @@ export interface PatientData {
     billingCycle: 'monthly' | 'yearly'
 }
 
+export interface MedicationSchedule {
+    _id: string
+    medicineName: string
+    dosage: string
+    route: string
+    scheduleTime: string
+    priority: 'low' | 'medium' | 'high' | 'critical'
+    status: 'pending' | 'administered' | 'missed' | 'skipped' | 'cancelled'
+    administeredAt?: string
+}
+
+export interface VitalSchedule {
+    _id: string
+    vitalType: string
+    scheduleTime: string
+    endDate: string
+    priority: string
+    status: string
+    recordedValue?: {
+        systolic?: number
+        diastolic?: number
+        value?: number
+        unit?: string
+    }
+    recordedAt?: string
+}
+
 export interface CreateSubscriptionResponse {
     success: boolean
     message: string

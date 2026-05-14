@@ -81,16 +81,6 @@
     margin-bottom: 2rem;
 }
 
-.sectionTitle {
-    font-family: 'Outfit', sans-serif;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #333;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
 .appointmentList {
     display: flex;
     flex-direction: column;
@@ -226,14 +216,286 @@
     font-size: 1.1rem;
 }
 
-@media (max-width: 768px) {
-    .appointmentItem {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
+.subscriptionCard {
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    margin-bottom: 20px;
+}
 
-    .statusBadge {
-        align-self: flex-end;
-    }
+.subscriptionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.subscriptionLabel {
+    font-size: 12px;
+    color: #9ca3af;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.subscriptionStatus {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: capitalize;
+}
+
+.subscriptionStatus.active {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.subscriptionStatus.pending_payment {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.subscriptionStatus.expired {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.subscriptionStatus.cancelled {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.subscriptionInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.caregiverName {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2f2f2f;
+}
+
+.dot {
+    color: #d1d5db;
+    font-size: 12px;
+}
+
+.billingCycle {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.fee {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.subscriptionExpiry {
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.medicationSection {
+    margin-bottom: 20px;
+}
+
+.sectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+}
+
+.vitalSection {
+    margin-bottom: 20px;
+}
+
+.vitalScroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db transparent;
+}
+
+.vitalScroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.vitalScroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.vitalScroll::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.vitalCard {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    min-width: 130px;
+    text-align: center;
+}
+
+.vitalIcon {
+    color: #be185d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.vitalInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.vitalName {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7c3aed;
+    white-space: nowrap;
+}
+
+.vitalTime {
+    font-size: 11px;
+    color: #6b7280;
+}
+
+.vitalStatus {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: capitalize;
+}
+
+.vitalStatus.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.vitalStatus.recorded {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.vitalStatus.missed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.vitalStatus.skipped,
+.vitalStatus.cancelled {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+.showDate {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 12px;
+    color: #666;
+}
+
+.medicationList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.medicationCard {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.medicationDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.medicineName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.medicineDosage {
+    font-size: 12px;
+    color: #6b7280;
+    text-transform: capitalize;
+}
+
+.medicationRight {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.medicationTime {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.medicationStatus {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: capitalize;
+}
+
+.medicationStatus.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.medicationStatus.administered {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.medicationStatus.missed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.medicationStatus.skipped {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.medicationStatus.cancelled {
+    background: #f3f4f6;
+    color: #9ca3af;
+}
+
+.scheduleSection {
+    margin-bottom: 20px;
 }
