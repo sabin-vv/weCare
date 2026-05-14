@@ -39,3 +39,39 @@ export interface VitalPlanDocument extends Document {
     createdAt: Date
     updatedAt: Date
 }
+
+export interface VitalScheduleDocument extends Document {
+    vitalPlanId: Types.ObjectId
+    patientId: Types.ObjectId
+    caregiverId?: Types.ObjectId
+    vitalType: VitalPlanType
+    scheduleDate: Date
+    scheduleTime: Date
+    endDate: Date
+    priority: 'low' | 'medium' | 'high' | 'critical'
+    status: 'pending' | 'recorded' | 'missed' | 'skipped' | 'cancelled'
+    recordedValue?: {
+        systolic?: number
+        diastolic?: number
+        value?: number
+        unit?: string
+    }
+    recordedAt?: Date
+    recordedBy?: Types.ObjectId
+}
+
+export interface VitalScheduleDTO {
+    _id: string
+    vitalType: string
+    scheduleTime: string
+    endDate: string
+    priority: string
+    status: string
+    recordedValue?: {
+        systolic?: number
+        diastolic?: number
+        value?: number
+        unit?: string
+    }
+    recordedAt?: string
+}

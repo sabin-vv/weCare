@@ -1,10 +1,12 @@
+import { Types } from 'mongoose'
 import { injectable } from 'tsyringe'
 
 import { BaseRepository } from '../../../core/base/base.repository'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { VitalModel } from '../models/vital.model'
 import { vitalPlanModel } from '../models/vitalPlan.model'
-import { VitalDocument, VitalPlanDocument, VitalPlanStatus, VitalType } from '../types/vital.types'
+import { vitalScheduleModel } from '../models/vitalSchedule.model'
+import { VitalDocument, VitalPlanDocument, VitalPlanStatus, VitalScheduleDocument,VitalType } from '../types/vital.types'
 
 @injectable()
 export class VitalRepository extends BaseRepository<VitalDocument> implements IVitalRepository {
@@ -28,7 +30,47 @@ export class VitalRepository extends BaseRepository<VitalDocument> implements IV
         return await vitalPlanModel.find({ patientId }).sort({ createdAt: -1 })
     }
 
-    async findVitalPlansByPatientIdAndStatus(patientId: string, status: VitalPlanStatus): Promise<VitalPlanDocument[]> {
+async findVitalPlansByPatientIdAndStatus(patientId: string, status: VitalPlanStatus): Promise<VitalPlanDocument[]> {
         return await vitalPlanModel.find({ patientId, status }).sort({ createdAt: -1 })
+    }
+
+    async findActiveVitalPlans(): Promise<VitalPlanDocument[]> {
+        return await vitalPlanModel.find({ status: 'active' }).sort({ createdAt: -1 }).lean()
+    }
+
+    async createVitalSchedule(data: Partial<VitalScheduleDocument>): Promise<VitalScheduleDocument> {
+        return await vitalScheduleModel.create(data)
+    }
+
+    async createManyVitalSchedules(data: Partial<VitalScheduleDocument>[]): Promise<void> {
+        if (data.length === 0) return
+        await vitalScheduleModel.insertMany(data, { ordered: false })
+    }
+
+    async findVitalSchedulesByPatientId(patientId: Types.ObjectId): Promise<VitalScheduleDocument[]> {
+        const startOfDay = new Date()
+        startOfDay.setHours(0, 0, 0, 0)
+        const endOfDay = new Date(startOfDay)
+        endOfDay.setHours(23, 59, 59, 999)
+
+        return vitalScheduleModel
+            .find({
+                patientId,
+                scheduleDate: { $gte: startOfDay, $lte: endOfDay },
+            })
+            .sort({ scheduleTime: 1 })
+            .lean() as unknown as VitalScheduleDocument[]
+    }
+
+    async findByVitalPlanAndDate(
+        vitalPlanId: Types.ObjectId,
+        scheduleDate: Date,
+        scheduleTime: Date,
+    ): Promise<VitalScheduleDocument | null> {
+        return vitalScheduleModel.findOne({
+            vitalPlanId,
+            scheduleDate,
+            scheduleTime,
+        }).lean() as unknown as VitalScheduleDocument | null
     }
 }

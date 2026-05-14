@@ -17,5 +17,9 @@ export const createVitalRoutes = () => {
     router.post('/plans', validate(createVitalPlanSchema), vitalController.createVitalPlan)
     router.get('/plans/patient/:patientId', vitalController.getPatientVitalPlans)
 
+    router.get('/schedules/me', vitalController.getPatientVitalSchedules)
+
+    router.post('/schedules/generate', vitalController.generateVitalSchedules)
+
     return router
 }
