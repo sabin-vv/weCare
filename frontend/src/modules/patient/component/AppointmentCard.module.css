@@ -1,139 +1,136 @@
 .card {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #ececec;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .header {
+    font-size: 12px;
+    color: #9ca3af;
+    margin: 0 0 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mainRow {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.doctorName {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2f2f2f;
+}
+
+.dot {
+    color: #d1d5db;
+    font-size: 12px;
+}
+
+.meta {
+    font-size: 14px;
+    color: #6b7280;
 }
 
 .statusBadge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    text-transform: capitalize;
+}
+
+.pendingpayment {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.confirmed {
     background: #dcfce7;
     color: #16a34a;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 14px;
 }
 
-.infoRow {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    margin-bottom: 30px;
+.inconsultation {
+    background: #e0e7ff;
+    color: #4338ca;
 }
 
-.label {
-    font-size: 12px;
+.cancelled {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.completed {
+    background: #f3f4f6;
     color: #6b7280;
-}
-
-.value {
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.sub {
-    font-size: 12px;
-    color: #6b7280;
-}
-
-.stepper {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-}
-
-.progressBar {
-    position: absolute;
-    top: 16px;
-    left: 10px;
-    right: 30px;
-    height: 2px;
-    background: #e5e7eb;
-    z-index: 0;
-}
-
-.progressBar::after {
-    content: '';
-    position: absolute;
-    height: 2px;
-    background: #2563eb;
-    width: 50%;
-    left: 0;
-    top: 0;
-}
-
-.step {
-    position: relative;
-    display: flex;
-    gap: 6px;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1;
-    text-align: center;
-}
-
-.circle {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 2px solid #d1d5db;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.active {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
-}
-
-.activeText {
-    color: #2563eb;
 }
 
 .actions {
     display: flex;
-    justify-content: space-between;
-}
-.recent span {
-    font-weight: 600;
-    display: flex;
     align-items: center;
-    text-align: center;
-    color: #6366f1;
-}
-.recent :hover {
-    cursor: pointer;
-}
-.actionButton {
-    display: flex;
-    gap: 12px;
+    gap: 10px;
+    flex-shrink: 0;
 }
 
-.changeBtn {
-    background: #6366f1;
-    color: white;
+.viewBtn {
+    background: transparent;
     border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
+    color: #6366f1;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.viewBtn:hover {
+    background: #f0f0ff;
 }
 
 .cancelBtn {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
+    background: transparent;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 500;
     cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #fef2f2;
+    border-color: #dc2626;
+}
+
+@media (max-width: 640px) {
+    .mainRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .actions {
+        width: 100%;
+    }
+
+    .viewBtn,
+    .cancelBtn {
+        flex: 1;
+    }
 }
