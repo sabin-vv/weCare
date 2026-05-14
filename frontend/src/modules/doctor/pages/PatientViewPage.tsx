@@ -3,7 +3,14 @@ import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 
-import { getPatientById, startConsultation, completeConsultation, updatePatientCondition } from '../api/doctor.api'
+import {
+    getPatientById,
+    startConsultation,
+    completeConsultation,
+    updatePatientCondition,
+    assignCaregiver,
+    listCaregivers,
+} from '../api/doctor.api'
 import MedicationTable from '../components/viewPatient/MedicationTable'
 import ProfileCard from '../components/viewPatient/ProfileCard'
 import VitalCard from '../components/viewPatient/VitalCard'
@@ -17,6 +24,14 @@ import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+
+interface CaregiverOption {
+    id: string
+    fullName: string
+    email: string
+    phoneNumber: string
+    profileImage: string
+}
 
 const getLatestVital = (patient: PatientDetails, type: PatientDetails['vitals'][number]['type']) => {
     return patient.vitals
@@ -42,6 +57,12 @@ const PatientViewPage = () => {
     const [conditionSuggestions, setConditionSuggestions] = useState<ConditionResult[]>([])
     const [isSearchingConditions, setIsSearchingConditions] = useState(false)
     const [isApplyingCondition, setIsApplyingCondition] = useState(false)
+    const [showCaregiverModal, setShowCaregiverModal] = useState(false)
+    const [caregiverSearch, setCaregiverSearch] = useState('')
+    const [caregivers, setCaregivers] = useState<CaregiverOption[]>([])
+    const [selectedCaregiver, setSelectedCaregiver] = useState<CaregiverOption | null>(null)
+    const [isLoadingCaregivers, setIsLoadingCaregivers] = useState(false)
+    const [isAssigningCaregiver, setIsAssigningCaregiver] = useState(false)
 
     const fetchPatient = useCallback(async () => {
         if (!patientId) return
@@ -98,6 +119,53 @@ const PatientViewPage = () => {
     const handleConditionModalClose = () => {
         resetConditionModal()
         setShowConditionModal(false)
+    }
+
+    const handleCaregiverModalClose = () => {
+        setShowCaregiverModal(false)
+        setCaregiverSearch('')
+        setCaregivers([])
+        setSelectedCaregiver(null)
+    }
+
+    const handleCaregiverModalOpen = () => {
+        setShowCaregiverModal(true)
+        setCaregiverSearch('')
+        setCaregivers([])
+        setSelectedCaregiver(null)
+        fetchCaregivers('')
+    }
+
+    const fetchCaregivers = async (search: string) => {
+        setIsLoadingCaregivers(true)
+        try {
+            const data = await listCaregivers(search)
+            setCaregivers(data)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsLoadingCaregivers(false)
+        }
+    }
+
+    const handleCaregiverSearch = useCallback((search: string) => {
+        setCaregiverSearch(search)
+        fetchCaregivers(search)
+    }, [])
+
+    const handleAssignCaregiver = async () => {
+        if (!patient || !selectedCaregiver) return
+        setIsAssigningCaregiver(true)
+        try {
+            const updatedPatient = await assignCaregiver(patient._id, selectedCaregiver.id)
+            setPatient(updatedPatient)
+            toast.success('Caregiver assigned successfully')
+            handleCaregiverModalClose()
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        } finally {
+            setIsAssigningCaregiver(false)
+        }
     }
 
     const handleConditionSearch = useCallback(
@@ -209,6 +277,7 @@ const PatientViewPage = () => {
                         resetConditionModal()
                         setShowConditionModal(true)
                     }}
+                    onAssignCaregiver={handleCaregiverModalOpen}
                 />
                 <div
                     style={{
@@ -326,6 +395,57 @@ const PatientViewPage = () => {
                                 ))}
                             </div>
                         </div>
+                    </div>
+                </Modal>
+
+                <Modal
+                    isOpen={showCaregiverModal}
+                    onClose={handleCaregiverModalClose}
+                    title="Assign Caregiver"
+                    footer={
+                        <div className={styles.modalFooter}>
+                            <button type="button" className={styles.closeBtn} onClick={handleCaregiverModalClose}>
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.applyBtn}
+                                onClick={handleAssignCaregiver}
+                                disabled={!selectedCaregiver || isAssigningCaregiver}
+                            >
+                                {isAssigningCaregiver ? 'Assigning...' : 'Assign'}
+                            </button>
+                        </div>
+                    }
+                >
+                    <div className={styles.modalBody}>
+                        <div className={styles.searchWrapper}>
+                            <SearchField
+                                placeholder="Search caregiver..."
+                                value={caregiverSearch}
+                                onChange={setCaregiverSearch}
+                                onSearch={handleCaregiverSearch}
+                                suggestions={caregivers.map((cg) => cg.fullName)}
+                                isLoading={isLoadingCaregivers}
+                                onSelect={(name) => {
+                                    const caregiver = caregivers.find((cg) => cg.fullName === name)
+                                    setSelectedCaregiver(caregiver || null)
+                                }}
+                            />
+                        </div>
+                        {selectedCaregiver && (
+                            <div className={styles.selectedCaregiver}>
+                                <p>
+                                    <strong>Selected:</strong> {selectedCaregiver.fullName}
+                                </p>
+                                <p>
+                                    <strong>Email:</strong> {selectedCaregiver.email}
+                                </p>
+                                <p>
+                                    <strong>Phone:</strong> {selectedCaregiver.phoneNumber}
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </Modal>
             </MainWrapper>
