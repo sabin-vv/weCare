@@ -11,6 +11,7 @@ import { createDoctorRoutes } from './modules/doctor/routes/doctor.route'
 import { createPatientRoutes } from './modules/patient/routes/patient.route'
 import { createPaymentRoutes } from './modules/payment/routes/payment.routes'
 import { createPrescriptionRoutes } from './modules/prescription/routes/prescription.route'
+import { createSubscriptionRoutes } from './modules/subscription/routes/subscription.route'
 import { createUploadsRoutes } from './modules/uploads/routes/uploads.route'
 import { createVitalRoutes } from './modules/vital/routes/vital.route'
 import { createWalletRoutes } from './modules/wallet/routes/wallet.route'
@@ -40,6 +41,8 @@ app.use('/api/appointments', createAppointmentRoutes())
 app.use('/api/payments', createPaymentRoutes())
 
 app.use('/api/prescriptions', createPrescriptionRoutes())
+
+app.use('/api/subscriptions', createSubscriptionRoutes())
 
 app.use('/api/vitals', createVitalRoutes())
 
