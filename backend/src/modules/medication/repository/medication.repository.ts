@@ -30,4 +30,18 @@ export class MedicationRepository implements IMedicationRepository {
         if (schedules.length === 0) return
         await SystemGeneratedScheduleModel.insertMany(schedules, { ordered: false })
     }
+
+    async findByPatientId(patientId: Types.ObjectId): Promise<MedicationScheduleModel[]> {
+        const startOfDay = new Date()
+        startOfDay.setHours(0, 0, 0, 0)
+        const endOfDay = new Date()
+        endOfDay.setHours(23, 59, 59, 999)
+
+        return SystemGeneratedScheduleModel.find({
+            patientId,
+            scheduleDate: { $gte: startOfDay, $lte: endOfDay },
+        })
+            .sort({ scheduleTime: 1 })
+            .lean() as unknown as MedicationScheduleModel[]
+    }
 }
