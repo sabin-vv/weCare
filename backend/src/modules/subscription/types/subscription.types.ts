@@ -1,4 +1,4 @@
-import type { Types } from 'mongoose'
+import type { Document, Types } from 'mongoose'
 
 export type SubscriptionStatus = 'pending_payment' | 'active' | 'expired' | 'cancelled'
 
@@ -6,8 +6,7 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded'
 
 export type BillingCycle = 'monthly' | 'yearly'
 
-export interface SubscriptionDocument {
-    _id: Types.ObjectId
+export interface SubscriptionDocument extends Document {
     patientId: Types.ObjectId
     caregiverId: Types.ObjectId
     subscriptionFee: number
@@ -16,6 +15,20 @@ export interface SubscriptionDocument {
     status: SubscriptionStatus
     paymentStatus: PaymentStatus
     billingCycle: BillingCycle
-    createdAt: Date
-    updatedAt: Date
+    createdAt?: Date
+    updatedAt?: Date
+}
+
+export interface SubscriptionDTO {
+    subscriptionId: string
+    status: SubscriptionStatus
+    paymentStatus: PaymentStatus
+    billingCycle: BillingCycle
+    subscriptionFee: number
+    startDate: string
+    endDate: string
+    caregiver: {
+        id: string
+        name: string
+    } | null
 }
