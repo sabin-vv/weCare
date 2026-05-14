@@ -17,6 +17,10 @@ export class PatientRepository extends BaseRepository<PatientDocument> implement
         return this.model.findById(id).lean()
     }
 
+    async findByPatientId(patientId: string): Promise<PatientDocument | null> {
+        return this.model.findOne({ patientId }).lean()
+    }
+
     async findByUserId(userId: Types.ObjectId): Promise<PatientDocument | null> {
         return this.model.findOne({ userId })
     }

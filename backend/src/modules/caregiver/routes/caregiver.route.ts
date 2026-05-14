@@ -27,6 +27,9 @@ export const createCaregiverRoutes = () => {
         validate(UpdateCaregiverSettingsSchema),
         caregiverController.updateProfile,
     )
+    router.get('/patients/:patientId/medications', requireAuth, caregiverController.getPatientMedications)
+    router.get('/patients/:patientId/vital-plans', requireAuth, caregiverController.getPatientVitalPlans)
+    router.get('/patients', requireAuth, caregiverController.getMyPatients)
     router.get('/', requireAuth, caregiverController.listCaregivers)
 
     return router

@@ -1,14 +1,19 @@
 import { Request, Response } from 'express'
+import { Types } from 'mongoose'
 import { inject, injectable } from 'tsyringe'
 
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { ICaregiverRepository } from '../interfaces/caregiver.repository.interface'
 import { ICaregiverService } from '../interfaces/caregiver.service.interface'
 
 @injectable()
 export class CaregiverController {
-    constructor(@inject(TOKENS.ICaregiverService) private _caregiverService: ICaregiverService) {}
+    constructor(
+        @inject(TOKENS.ICaregiverService) private _caregiverService: ICaregiverService,
+        @inject(TOKENS.ICaregiverRepository) private _caregiverRepo: ICaregiverRepository,
+    ) {}
 
     createProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
@@ -64,6 +69,70 @@ export class CaregiverController {
             success: true,
             data: result,
             message: 'Caregivers list fetched',
+        })
+    }
+
+    getPatientMedications = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+        if (!caregiver) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+        }
+
+        const { patientId } = req.params as { patientId: string }
+
+        const medications = await this._caregiverService.getPatientMedications(caregiver._id, patientId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: medications,
+            message: 'Patient medications fetched',
+        })
+    }
+
+    getPatientVitalPlans = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+        if (!caregiver) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+        }
+
+        const { patientId } = req.params as { patientId: string }
+
+        const vitalPlans = await this._caregiverService.getPatientVitalPlans(caregiver._id, patientId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: vitalPlans,
+            message: 'Patient vital plans fetched',
+        })
+    }
+
+    getMyPatients = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+        if (!caregiver) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+        }
+
+        const patients = await this._caregiverService.getMyPatients(caregiver._id)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: patients,
+            message: 'Patients fetched',
         })
     }
 }
