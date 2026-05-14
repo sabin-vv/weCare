@@ -19,3 +19,5 @@ export const APPOINTMENT_API = '/appointments'
 export const PRESCRIPTIONS_API = '/prescriptions'
 
 export const VITALS_API = '/vitals'
+
+export const SUBSCRIPTIONS_API = '/subscriptions'
