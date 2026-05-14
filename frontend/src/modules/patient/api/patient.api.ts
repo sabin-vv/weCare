@@ -8,6 +8,7 @@ import type {
     PatientProfileData,
     PatientProfileResponse,
     Specialist,
+    SubscriptionData,
     UpdatePatientProfileData,
     VerifyPaymentRequest,
     RetryPaymentResponse,
@@ -15,7 +16,14 @@ import type {
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
-import { APPOINTMENT_API, DOCTORS_API, PATIENTS_API, PAYMENTS_API, WALLET_API } from '@/shared/constants/api.constants'
+import {
+    APPOINTMENT_API,
+    DOCTORS_API,
+    PATIENTS_API,
+    PAYMENTS_API,
+    SUBSCRIPTIONS_API,
+    WALLET_API,
+} from '@/shared/constants/api.constants'
 
 export type GetDoctorsResponse = {
     data: Specialist[]
@@ -83,4 +91,56 @@ export const retryPayment = async (id: string, paymentMethod: 'razorpay' | 'wall
         paymentMethod,
     })
     return response.data.data
+}
+
+export const getPatientSubscription = async (): Promise<SubscriptionData | null> => {
+    const response = await api.get<{ success: boolean; message: string; data: SubscriptionData | null }>(
+        `${SUBSCRIPTIONS_API}/me`,
+    )
+    return response.data.data
+}
+
+interface CreateSubscriptionResponse {
+    success: boolean
+    message: string
+    data: {
+        subscriptionId: string
+        paymentId: string
+        orderId: string
+        amount: number
+        currency: string
+        keyId: string
+    } | {
+        subscriptionId: string
+        paymentId: string
+        walletBalance: number
+        subscriptionConfirmed: true
+    }
+}
+
+export const createSubscription = async (
+    billingCycle: 'monthly' | 'yearly',
+    paymentMethod: 'razorpay' | 'wallet',
+): Promise<CreateSubscriptionResponse['data']> => {
+    const response = await api.post<CreateSubscriptionResponse>(`${SUBSCRIPTIONS_API}`, {
+        billingCycle,
+        paymentMethod,
+    })
+    return response.data.data
+}
+
+export const verifySubscriptionPayment = async (data: {
+    razorpayOrderId: string
+    razorpayPaymentId: string
+    razorpaySignature: string
+}): Promise<SubscriptionData> => {
+    const response = await api.post<{ success: boolean; message: string; data: SubscriptionData }>(
+        `${SUBSCRIPTIONS_API}/verify`,
+        data,
+    )
+    return response.data.data
+}
+
+export const cancelSubscription = async (subscriptionId: string): Promise<void> => {
+    await api.post(`${SUBSCRIPTIONS_API}/${subscriptionId}/cancel`)
 }
