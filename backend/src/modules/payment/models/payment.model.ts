@@ -17,10 +17,10 @@ const paymentSchema = new Schema<PaymentDocument>(
             type: Types.ObjectId,
             ref: 'Appointment',
         },
-        // subscriptionId: {
-        //     types: Types.ObjectId,
-        //     ref: 'Subscription',
-        // },
+        subscriptionId: {
+            type: Types.ObjectId,
+            ref: 'Subscription',
+        },
         paymentType: {
             type: String,
             enum: ['consultation', 'subscription'],
