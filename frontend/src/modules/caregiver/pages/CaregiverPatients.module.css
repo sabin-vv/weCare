@@ -1,0 +1,151 @@
+.page {
+    width: min(100%, 1160px);
+    align-self: center;
+    padding: 36px;
+    border: 1px solid #e6edf5;
+    border-radius: 24px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 249, 255, 0.98) 100%), #ffffff;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.06);
+}
+
+.patientCard {
+    width: 100%;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ececec;
+    gap: 20px;
+}
+
+.cardLeft {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.patientInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nameRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.patientName {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2f2f2f;
+    margin: 0;
+}
+
+.riskBadge {
+    background: #fff1f0;
+    color: #ff4d4f;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.metaRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8a8a8a;
+    font-size: 14px;
+}
+
+.metaDot {
+    color: #d0d0d0;
+}
+
+.conditionRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.conditionLabel {
+    color: #666;
+}
+
+.conditionTags {
+    display: flex;
+    gap: 6px;
+}
+
+.conditionTag {
+    background: #f0f0ff;
+    color: #5f55ff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+.cardRight {
+    flex-shrink: 0;
+}
+
+.viewBtn {
+    background: #5f55ff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.viewBtn:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .page {
+        padding: 24px;
+        border-radius: 18px;
+    }
+
+    .patientCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .cardRight {
+        width: 100%;
+    }
+
+    .viewBtn {
+        width: 100%;
+    }
+}
