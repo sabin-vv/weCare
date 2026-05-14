@@ -28,11 +28,14 @@ const AdminSettings = () => {
             contactEmail: '',
             address: '',
             platformFee: 0,
+            subscriptionFee: 0,
+            billingCycle: 'monthly',
         },
     })
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [feeInput, setFeeInput] = useState<string>('0')
+    const [subscriptionFeeInput, setSubscriptionFeeInput] = useState<string>('0')
     const [fullLogo, setFullLogo] = useState<string | null>(null)
     const [iconLogo, setIconLogo] = useState<string | null>(null)
     const [uploading, setUploading] = useState<'fullLogo' | 'iconLogo' | null>(null)
@@ -45,8 +48,11 @@ const AdminSettings = () => {
                 setValue('contactEmail', data.contactEmail)
                 setValue('address', data.address)
                 setValue('platformFee', data.platformFee)
+                setValue('subscriptionFee', data.subscriptionFee || 0)
+                setValue('billingCycle', data.billingCycle || 'monthly')
 
                 setFeeInput(data.platformFee.toString())
+                setSubscriptionFeeInput((data.subscriptionFee || 0).toString())
                 setFullLogo(data.platformLogo || null)
                 setIconLogo(data.platformIcon || null)
             } catch (error) {
@@ -65,6 +71,15 @@ const AdminSettings = () => {
         const formatted = Number(value).toLocaleString('en-IN')
         setFeeInput(formatted)
         setValue('platformFee', Number(value), { shouldValidate: true })
+    }
+
+    const handleSubscriptionFee = (e: ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/,/g, '')
+        if (!/^\d*$/.test(value)) return
+
+        const formatted = Number(value).toLocaleString('en-IN')
+        setSubscriptionFeeInput(formatted)
+        setValue('subscriptionFee', Number(value), { shouldValidate: true })
     }
 
     const handleLogoUpload = async (type: 'fullLogo' | 'iconLogo', file: File) => {
@@ -164,6 +179,32 @@ const AdminSettings = () => {
                             label="Platform Fee"
                             errors={errors.platformFee?.message}
                         />
+                    </div>
+                </PageCard>
+                <PageCard title="Subscription Settings">
+                    <div className={styles.infoWrapper}>
+                        <InputField
+                            icon={<IndianRupee />}
+                            value={subscriptionFeeInput}
+                            onChange={handleSubscriptionFee}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            label="Subscription Fee"
+                            errors={errors.subscriptionFee?.message}
+                        />
+                    </div>
+                    <div className={styles.billingCycleWrapper}>
+                        <span className={styles.billingCycleLabel}>Billing Cycle</span>
+                        <div className={styles.radioGroup}>
+                            <label className={styles.radioLabel}>
+                                <input type="radio" value="monthly" {...register('billingCycle')} />
+                                <span>Monthly</span>
+                            </label>
+                            <label className={styles.radioLabel}>
+                                <input type="radio" value="yearly" {...register('billingCycle')} />
+                                <span>Yearly</span>
+                            </label>
+                        </div>
                     </div>
                 </PageCard>
                 <PageCard title="Platform Branding">
