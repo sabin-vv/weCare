@@ -52,3 +52,14 @@ export interface CaregiverProfileResponse {
 }
 
 export type CaregiverProfileMapper = (user: UserDocument, caregiver: CaregiverDocument) => CaregiverProfileResponse
+
+export interface CaregiverWithUser extends Omit<CaregiverDocument, 'userId'> {
+    user: UserBasicInfo
+}
+
+export interface UserBasicInfo {
+    _id: Types.ObjectId
+    name: string
+    email: string
+    mobile: string
+}
