@@ -58,6 +58,10 @@ const vitalScheduleSchema = new Schema<VitalScheduleDocument>(
             type: Types.ObjectId,
             ref: 'User',
         },
+        recordedNotes: {
+            type: String,
+            trim: true,
+        },
     },
     { timestamps: true },
 )

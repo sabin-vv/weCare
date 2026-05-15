@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const createVitalSchema = z
     .object({
         patientId: z.string().min(1, 'Patient ID is required'),
-        type: z.enum(['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate']),
+        type: z.enum(['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate', 'temperature']),
         value: z.number().optional(),
         systolic: z.number().optional(),
         diastolic: z.number().optional(),

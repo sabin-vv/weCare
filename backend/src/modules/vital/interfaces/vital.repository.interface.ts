@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
 
-import { VitalDocument, VitalPlanDocument, VitalPlanStatus, VitalScheduleDocument,VitalType } from '../types/vital.types'
+import { VitalDocument, VitalPlanDocument, VitalPlanStatus, VitalPlanType, VitalScheduleDocument, VitalType } from '../types/vital.types'
 
 export interface IVitalRepository {
     create(data: Partial<VitalDocument>): Promise<VitalDocument>
@@ -18,5 +18,11 @@ export interface IVitalRepository {
         vitalPlanId: Types.ObjectId,
         scheduleDate: Date,
         scheduleTime: Date,
+    ): Promise<VitalScheduleDocument | null>
+    findVitalScheduleById(scheduleId: string): Promise<VitalScheduleDocument | null>
+    updateVitalSchedule(scheduleId: string, data: Partial<VitalScheduleDocument>): Promise<VitalScheduleDocument | null>
+    findLoggableVitalScheduleByPatientAndType(
+        patientId: Types.ObjectId,
+        vitalType: VitalPlanType,
     ): Promise<VitalScheduleDocument | null>
 }

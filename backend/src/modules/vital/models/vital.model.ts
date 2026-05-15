@@ -11,7 +11,7 @@ const vitalSchema = new Schema<VitalDocument>(
         },
         type: {
             type: String,
-            enum: ['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate'],
+            enum: ['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate', 'temperature'],
             required: true,
         },
         value: {

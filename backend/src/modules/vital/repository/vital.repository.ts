@@ -6,7 +6,14 @@ import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { VitalModel } from '../models/vital.model'
 import { vitalPlanModel } from '../models/vitalPlan.model'
 import { vitalScheduleModel } from '../models/vitalSchedule.model'
-import { VitalDocument, VitalPlanDocument, VitalPlanStatus, VitalScheduleDocument,VitalType } from '../types/vital.types'
+import {
+    VitalDocument,
+    VitalPlanDocument,
+    VitalPlanStatus,
+    VitalPlanType,
+    VitalScheduleDocument,
+    VitalType,
+} from '../types/vital.types'
 
 @injectable()
 export class VitalRepository extends BaseRepository<VitalDocument> implements IVitalRepository {
@@ -30,7 +37,7 @@ export class VitalRepository extends BaseRepository<VitalDocument> implements IV
         return await vitalPlanModel.find({ patientId }).sort({ createdAt: -1 })
     }
 
-async findVitalPlansByPatientIdAndStatus(patientId: string, status: VitalPlanStatus): Promise<VitalPlanDocument[]> {
+    async findVitalPlansByPatientIdAndStatus(patientId: string, status: VitalPlanStatus): Promise<VitalPlanDocument[]> {
         return await vitalPlanModel.find({ patientId, status }).sort({ createdAt: -1 })
     }
 
@@ -67,10 +74,47 @@ async findVitalPlansByPatientIdAndStatus(patientId: string, status: VitalPlanSta
         scheduleDate: Date,
         scheduleTime: Date,
     ): Promise<VitalScheduleDocument | null> {
-        return vitalScheduleModel.findOne({
-            vitalPlanId,
-            scheduleDate,
-            scheduleTime,
-        }).lean() as unknown as VitalScheduleDocument | null
+        return vitalScheduleModel
+            .findOne({
+                vitalPlanId,
+                scheduleDate,
+                scheduleTime,
+            })
+            .lean() as unknown as VitalScheduleDocument | null
+    }
+
+    async findVitalScheduleById(scheduleId: string): Promise<VitalScheduleDocument | null> {
+        return vitalScheduleModel.findById(scheduleId).lean() as unknown as VitalScheduleDocument | null
+    }
+
+    async updateVitalSchedule(
+        scheduleId: string,
+        data: Partial<VitalScheduleDocument>,
+    ): Promise<VitalScheduleDocument | null> {
+        return vitalScheduleModel
+            .findByIdAndUpdate(scheduleId, data, {
+                new: true,
+            })
+            .lean() as unknown as VitalScheduleDocument | null
+    }
+
+    async findLoggableVitalScheduleByPatientAndType(
+        patientId: Types.ObjectId,
+        vitalType: VitalPlanType,
+    ): Promise<VitalScheduleDocument | null> {
+        const startOfDay = new Date()
+        startOfDay.setHours(0, 0, 0, 0)
+        const endOfDay = new Date(startOfDay)
+        endOfDay.setHours(23, 59, 59, 999)
+
+        return vitalScheduleModel
+            .findOne({
+                patientId,
+                vitalType,
+                scheduleDate: { $gte: startOfDay, $lte: endOfDay },
+                status: { $in: ['pending', 'missed'] },
+            })
+            .sort({ scheduleTime: 1 })
+            .lean() as unknown as VitalScheduleDocument | null
     }
 }

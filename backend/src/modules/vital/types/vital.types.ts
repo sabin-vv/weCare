@@ -1,12 +1,7 @@
 import { Document, Types } from 'mongoose'
 
-export type VitalType = 'blood_sugar' | 'blood_pressure' | 'spo2' | 'heart_rate'
-export type VitalPlanType =
-    | 'blood_pressure'
-    | 'blood_sugar'
-    | 'heart_rate'
-    | 'temperature'
-    | 'oxygen_saturation'
+export type VitalType = 'blood_sugar' | 'blood_pressure' | 'spo2' | 'heart_rate' | 'temperature'
+export type VitalPlanType = 'blood_pressure' | 'blood_sugar' | 'heart_rate' | 'temperature' | 'oxygen_saturation'
 export type VitalPlanStatus = 'active' | 'completed' | 'cancelled'
 
 export interface VitalDocument extends Document {
@@ -58,6 +53,7 @@ export interface VitalScheduleDocument extends Document {
     }
     recordedAt?: Date
     recordedBy?: Types.ObjectId
+    recordedNotes?: string
 }
 
 export interface VitalScheduleDTO {
@@ -74,4 +70,5 @@ export interface VitalScheduleDTO {
         unit?: string
     }
     recordedAt?: string
+    recordedNotes?: string
 }
