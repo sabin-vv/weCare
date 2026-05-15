@@ -101,6 +101,7 @@ export class MedicationService implements IMedicationService {
             priority: schedule.priority,
             status: schedule.status,
             administeredAt: schedule.administeredAt?.toISOString(),
+            administrationNotes: schedule.administrationNotes,
         }))
     }
 }

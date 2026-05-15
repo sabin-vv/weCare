@@ -68,6 +68,10 @@ const systemGeneratedScheduleSchema = new Schema<MedicationScheduleModel>(
             type: Types.ObjectId,
             ref: 'User',
         },
+        administrationNotes: {
+            type: String,
+            trim: true,
+        },
     },
     { timestamps: true },
 )

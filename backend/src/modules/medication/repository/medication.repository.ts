@@ -51,12 +51,6 @@ export class MedicationRepository implements IMedicationRepository {
         const endOfDay = new Date()
         endOfDay.setHours(23, 59, 59, 999)
 
-        console.log('[MedicationRepo] findByPatientAndCaregiver:', {
-            patientId: patientId.toString(),
-            startOfDay: startOfDay.toISOString(),
-            endOfDay: endOfDay.toISOString(),
-        })
-
         const result = SystemGeneratedScheduleModel.find({
             patientId,
             scheduleDate: { $gte: startOfDay, $lte: endOfDay },
@@ -65,12 +59,20 @@ export class MedicationRepository implements IMedicationRepository {
             .lean() as unknown as MedicationScheduleModel[]
 
         const docs = await result
-        console.log('[MedicationRepo] query result count:', docs.length)
-        if (docs.length > 0) {
-            console.log('[MedicationRepo] first doc patientId:', docs[0].patientId?.toString())
-            console.log('[MedicationRepo] first doc scheduleDate:', docs[0].scheduleDate?.toISOString())
-        }
 
         return docs
+    }
+
+    async findScheduleById(scheduleId: string): Promise<MedicationScheduleModel | null> {
+        return SystemGeneratedScheduleModel.findById(scheduleId).lean() as unknown as MedicationScheduleModel | null
+    }
+
+    async updateSchedule(
+        scheduleId: string,
+        data: Partial<MedicationScheduleModel>,
+    ): Promise<MedicationScheduleModel | null> {
+        return SystemGeneratedScheduleModel.findByIdAndUpdate(scheduleId, data, {
+            new: true,
+        }).lean() as unknown as MedicationScheduleModel | null
     }
 }

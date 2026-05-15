@@ -19,6 +19,7 @@ export interface MedicationScheduleModel extends Document {
     missedReason?: string
     administeredAt?: Date
     administeredBy?: Types.ObjectId
+    administrationNotes?: string
     createdAt: Date
     updatedAt: Date
 }
@@ -45,4 +46,5 @@ export interface MedicationScheduleDTO {
     priority: 'low' | 'medium' | 'high' | 'critical'
     status: MedicationStatus
     administeredAt?: string
+    administrationNotes?: string
 }
