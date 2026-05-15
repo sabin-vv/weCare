@@ -62,6 +62,12 @@ const vitalScheduleSchema = new Schema<VitalScheduleDocument>(
             type: String,
             trim: true,
         },
+        missedReason: {
+            type: String,
+        },
+        missedAt: {
+            type: Date,
+        },
     },
     { timestamps: true },
 )

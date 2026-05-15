@@ -8,4 +8,5 @@ export interface IVitalService {
     getPatientVitalPlans(patientId: string, status?: string): Promise<VitalPlanDocument[]>
     generateDailyVitalSchedule(date: Date): Promise<{ created: number; skipped: number } | undefined>
     getPatientVitalSchedules(userId: string): Promise<VitalScheduleDTO[]>
+    markOverdueVitalsAsMissed(): Promise<{ updatedCount: number; criticalAlerts: number }>
 }

@@ -4,11 +4,13 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { AlertModel } from '../../alert'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { IVitalService } from '../interfaces/vital.service.interface'
-import { VitalDocument, VitalPlanDocument, VitalScheduleDocument,VitalScheduleDTO } from '../types/vital.types'
+import { vitalScheduleModel } from '../models/vitalSchedule.model'
+import { VitalDocument, VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
 import { CreateVitalDTO, CreateVitalPlanDTO } from '../validator/vital.schema'
 
 @injectable()
@@ -77,10 +79,13 @@ export class VitalService implements IVitalService {
         }
 
         if (status) {
-            return await this._vitalRepo.findVitalPlansByPatientIdAndStatus(patientId, status as VitalPlanDocument['status'])
+            return await this._vitalRepo.findVitalPlansByPatientIdAndStatus(
+                patientId,
+                status as VitalPlanDocument['status'],
+            )
         }
 
-return await this._vitalRepo.findVitalPlansByPatientId(patientId)
+        return await this._vitalRepo.findVitalPlansByPatientId(patientId)
     }
 
     async generateDailyVitalSchedule(date: Date): Promise<{ created: number; skipped: number } | undefined> {
@@ -203,5 +208,72 @@ return await this._vitalRepo.findVitalPlansByPatientId(patientId)
             default:
                 return value * 24 * 60 * 60 * 1000
         }
+    }
+
+    async markOverdueVitalsAsMissed(): Promise<{ updatedCount: number; criticalAlerts: number }> {
+        const now = new Date()
+        const graceMinutes = 60
+
+        const threshold = new Date(now.getTime() - graceMinutes * 60 * 1000)
+
+        const updateResult = await vitalScheduleModel.updateMany(
+            {
+                status: 'pending',
+                scheduleTime: {
+                    $lt: threshold,
+                },
+            },
+            {
+                $set: {
+                    status: 'missed',
+                    missedReason: 'Vital reading not recorded within allowed time window',
+                    missedAt: new Date(),
+                },
+            },
+        )
+
+        if (updateResult.modifiedCount === 0) {
+            return { updatedCount: 0, criticalAlerts: 0 }
+        }
+
+        const missedVitals = await vitalScheduleModel
+            .find({
+                status: 'missed',
+                missedAt: {
+                    $gte: new Date(now.getTime() - 10 * 60 * 1000),
+                },
+                priority: { $in: ['high', 'critical'] },
+            })
+            .lean()
+
+        const alertsCreated: Types.ObjectId[] = []
+
+        for (const schedule of missedVitals) {
+            const existingAlert = await AlertModel.findOne({
+                scheduleId: schedule._id,
+                type: 'missed_vital',
+                status: { $in: ['open', 'acknowledged'] },
+            })
+
+            if (existingAlert) {
+                continue
+            }
+
+            const alert = await AlertModel.create({
+                patientId: schedule.patientId,
+                caregiverId: schedule.caregiverId!,
+                scheduleId: schedule._id,
+                type: 'missed_vital',
+                severity: schedule.priority === 'critical' ? 'critical' : 'high',
+                triggerReason: `Missed ${schedule.priority} priority vital: ${schedule.vitalType} - Scheduled at ${schedule.scheduleTime}`,
+                status: 'open',
+                notificationSent: false,
+                triggeredAt: new Date(),
+            })
+
+            alertsCreated.push(alert._id)
+        }
+
+        return { updatedCount: updateResult.modifiedCount, criticalAlerts: alertsCreated.length }
     }
 }

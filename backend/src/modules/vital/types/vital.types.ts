@@ -54,6 +54,8 @@ export interface VitalScheduleDocument extends Document {
     recordedAt?: Date
     recordedBy?: Types.ObjectId
     recordedNotes?: string
+    missedReason?: string
+    missedAt?: Date
 }
 
 export interface VitalScheduleDTO {
