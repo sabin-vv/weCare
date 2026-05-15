@@ -54,3 +54,49 @@ export interface CaregiverProfileData {
 export interface CaregiverProfileResponse extends ApiInterface {
     data: CaregiverProfileData
 }
+
+export type MedicationLogStatus = 'on_time' | 'taken_late' | 'skipped'
+export type SymptomSeverity = 'mild' | 'moderate' | 'severe' | 'critical'
+export interface AlertCard {
+    id: string
+    title: string
+    medicine: string
+    scheduled: string
+    route: string
+    overdue: string
+    tone: 'critical' | 'warning'
+}
+
+export interface TimelineItem {
+    id: string
+    time: string
+    title: string
+    medicine: string
+    note: string
+    route: string
+    tone: 'critical' | 'warning' | 'success'
+    actionLabel: string
+}
+
+export interface MedicationLogFormState {
+    status: MedicationLogStatus
+    takenTime: string
+    route: string
+    observations: string
+}
+
+export interface VitalLogFormState {
+    vitalType: string
+    systolic: string
+    diastolic: string
+    value: string
+    recordedAt: string
+    notes: string
+}
+
+export interface SymptomLogFormState {
+    symptom: string
+    onsetTime: string
+    severity: SymptomSeverity
+    observations: string
+}

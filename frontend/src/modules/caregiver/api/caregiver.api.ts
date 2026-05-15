@@ -28,6 +28,7 @@ export interface MedicationSchedule {
     priority: string
     status: string
     administeredAt?: string
+    administrationNotes?: string
 }
 
 export interface VitalPlanItem {
@@ -70,5 +71,72 @@ export const getMyPatients = async (): Promise<PatientSummary[]> => {
     const res = await api.get<{ success: boolean; data: PatientSummary[]; message: string }>(
         `${CAREGIVERS_API}/patients`,
     )
+    return res.data.data
+}
+
+export const logMedicationAction = async (
+    patientId: string,
+    scheduleId: string,
+    data: {
+        status: 'on_time' | 'taken_late' | 'skipped'
+        takenTime: string
+        route: string
+        observations?: string
+    },
+): Promise<MedicationSchedule> => {
+    const res = await api.post<{ success: boolean; data: MedicationSchedule; message: string }>(
+        `${CAREGIVERS_API}/patients/${patientId}/medications/${scheduleId}/log`,
+        data,
+    )
+    return res.data.data
+}
+
+export const logVitalReading = async (
+    patientId: string,
+    data: {
+        vitalType: string
+        systolic?: number
+        diastolic?: number
+        value?: number
+        recordedAt: string
+        notes?: string
+    },
+): Promise<{ vitalId: string; vitalType: string; scheduleId?: string; recordedAt: string }> => {
+    const res = await api.post<{
+        success: boolean
+        data: { vitalId: string; vitalType: string; scheduleId?: string; recordedAt: string }
+        message: string
+    }>(`${CAREGIVERS_API}/patients/${patientId}/vitals/log`, data)
+    return res.data.data
+}
+
+export const logSymptom = async (
+    patientId: string,
+    data: {
+        symptom: string
+        onsetTime: string
+        severity: 'mild' | 'moderate' | 'severe' | 'critical'
+        observations?: string
+    },
+): Promise<{
+    _id: string
+    symptom: string
+    severity: 'mild' | 'moderate' | 'severe' | 'critical'
+    onsetTime: string
+    observations?: string
+    createdAt: string
+}> => {
+    const res = await api.post<{
+        success: boolean
+        data: {
+            _id: string
+            symptom: string
+            severity: 'mild' | 'moderate' | 'severe' | 'critical'
+            onsetTime: string
+            observations?: string
+            createdAt: string
+        }
+        message: string
+    }>(`${CAREGIVERS_API}/patients/${patientId}/symptoms/log`, data)
     return res.data.data
 }

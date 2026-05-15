@@ -17,6 +17,7 @@ export interface MedicationScheduleModel extends Document {
     cancelledReason?: string
     skippedReason?: string
     missedReason?: string
+    missedAt?: Date
     administeredAt?: Date
     administeredBy?: Types.ObjectId
     administrationNotes?: string

@@ -61,6 +61,9 @@ const systemGeneratedScheduleSchema = new Schema<MedicationScheduleModel>(
         missedReason: {
             type: String,
         },
+        missedAt: {
+            type: Date,
+        },
         administeredAt: {
             type: Date,
         },

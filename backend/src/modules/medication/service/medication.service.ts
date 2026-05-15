@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { PrescriptionModel } from '../../prescription/models/prescription.model'
+import { SystemGeneratedScheduleModel } from '../model/medicationSchedule.model'
 import { IMedicationRepository } from '../interfaces/medication.repository.interface'
 import { IMedicationService } from '../interfaces/medication.service.interface'
 import { MedicationScheduleDTO, MedicationScheduleInput } from '../types/medication.type'
@@ -103,5 +104,58 @@ export class MedicationService implements IMedicationService {
             administeredAt: schedule.administeredAt?.toISOString(),
             administrationNotes: schedule.administrationNotes,
         }))
+    }
+
+    async markOverdueMedicationsAsMissed(): Promise<{ updatedCount: number; criticalAlerts: number }> {
+        const now = new Date()
+        const graceMinutes = 60
+
+        const threshold = new Date(now.getTime() - graceMinutes * 60 * 1000)
+
+        console.log(`[MedicationMissedCron] Running at ${now.toISOString()}`)
+        console.log(`[MedicationMissedCron] Threshold: ${threshold.toISOString()}`)
+
+        const updateResult = await SystemGeneratedScheduleModel.updateMany(
+            {
+                status: 'pending',
+                scheduleTime: {
+                    $lt: threshold,
+                },
+            },
+            {
+                $set: {
+                    status: 'missed',
+                    missedReason: 'Medication not administered within allowed time window',
+                    missedAt: new Date(),
+                },
+            },
+        )
+
+        console.log(`[MedicationMissedCron] Updated ${updateResult.modifiedCount} schedules as missed`)
+
+        if (updateResult.modifiedCount === 0) {
+            return { updatedCount: 0, criticalAlerts: 0 }
+        }
+
+        const missedSchedules = await SystemGeneratedScheduleModel.find({
+            status: 'missed',
+            missedAt: {
+                $gte: new Date(now.getTime() - 10 * 60 * 1000),
+            },
+            priority: 'critical',
+        }).lean()
+
+        const criticalAlerts = missedSchedules.length
+
+        if (criticalAlerts > 0) {
+            console.log(`[MedicationMissedCron] Found ${criticalAlerts} critical missed medications`)
+            for (const schedule of missedSchedules) {
+                console.log(
+                    `[MedicationMissedCron] ALERT: Critical medication missed - Patient: ${schedule.patientId}, Medicine: ${schedule.medicineName}, Schedule: ${schedule.scheduleTime}`,
+                )
+            }
+        }
+
+        return { updatedCount: updateResult.modifiedCount, criticalAlerts }
     }
 }
