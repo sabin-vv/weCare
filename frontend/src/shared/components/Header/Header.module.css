@@ -74,6 +74,17 @@
     justify-content: flex-end;
 }
 
+.iconButton {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
 .icon {
     cursor: pointer;
     width: 26px;
@@ -84,6 +95,23 @@
 
 .icon:hover {
     color: #007bff;
+}
+
+.notificationBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    box-shadow: 0 0 0 2px #fff;
 }
 
 .profile {

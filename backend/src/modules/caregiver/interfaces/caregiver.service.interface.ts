@@ -1,10 +1,13 @@
 import { Types } from 'mongoose'
 
 import { MedicationScheduleDTO } from '../../medication/types/medication.type'
-import { VitalPlanItem } from '../../vital/types/vital.types'
 import { PatientSummary } from '../interfaces/caregiver.repository.interface'
-import { CaregiverProfileResponse } from '../types/caregiver.types'
-import { CaregiverVitalLogResponse, SymptomLogDTO } from '../types/caregiver.types'
+import {
+    CaregiverProfileResponse,
+    CaregiverVitalLogResponse,
+    CaregiverVitalPlanSummary,
+    SymptomLogDTO,
+} from '../types/caregiver.types'
 import { CreateCaregiverProfileDTO } from '../validator/caregiver.schema'
 import { LogMedicationDTO, LogSymptomDTO, LogVitalReadingDTO } from '../validator/caregiverLogging.schema'
 import { UpdateCaregiverSettingsDTO } from '../validator/updateCaregiverSettings.schema'
@@ -15,7 +18,7 @@ export interface ICaregiverService {
     updateProfile(userId: string, dto: UpdateCaregiverSettingsDTO): Promise<CaregiverProfileResponse>
     listCaregivers(search?: string): Promise<CaregiverProfileResponse[]>
     getPatientMedications(caregiverId: Types.ObjectId, patientId: string): Promise<MedicationScheduleDTO[]>
-    getPatientVitalPlans(caregiverId: Types.ObjectId, patientId: string): Promise<VitalPlanItem[]>
+    getPatientVitalPlans(caregiverId: Types.ObjectId, patientId: string): Promise<CaregiverVitalPlanSummary[]>
     getMyPatients(caregiverId: Types.ObjectId): Promise<PatientSummary[]>
     logMedication(
         caregiverId: Types.ObjectId,

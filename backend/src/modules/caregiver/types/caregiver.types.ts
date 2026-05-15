@@ -90,3 +90,18 @@ export interface CaregiverVitalLogResponse {
     scheduleId?: string
     recordedAt: string
 }
+
+export interface CaregiverVitalPlanSummary {
+    type: 'blood_pressure' | 'blood_sugar' | 'heart_rate' | 'temperature' | 'oxygen_saturation'
+    frequencyValue: number
+    frequencyUnit: 'hours' | 'days' | 'weeks'
+    durationValue: number
+    durationUnit: 'hours' | 'days' | 'weeks' | 'months'
+    latestReading?: {
+        value?: number
+        systolic?: number
+        diastolic?: number
+        unit?: string
+        recordedAt?: string
+    }
+}

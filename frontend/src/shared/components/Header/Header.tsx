@@ -10,11 +10,13 @@ import type { HeaderProps, NavLink, RoleRoute } from './Header.types'
 import { env } from '@/config/env'
 import LogoutButton from '@/shared/components/LogoutButton/LogoutButton'
 import { useAuth } from '@/shared/context/AuthContext'
+import { useNotificationCount } from '@/shared/context/NotificationCountContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 
 const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }: HeaderProps) => {
     const navigate = useNavigate()
     const { user } = useAuth()
+    const { count: notificationCount } = useNotificationCount()
     const { settings } = usePlatform()
     const baseUrl = env.AWS_BASE_URL
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -91,12 +93,17 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
             <div className={styles.right}>
                 {isAuthenticated ? (
                     <>
-                        <BellRing
-                            className={styles.icon}
+                        <button
+                            type="button"
+                            className={styles.iconButton}
                             onClick={() => {
                                 navigate(currentRoutes?.notification || '/')
                             }}
-                        />
+                            aria-label="Open notifications"
+                        >
+                            <BellRing className={styles.icon} />
+                            {notificationCount > 0 && <span className={styles.notificationBadge}>{notificationCount}</span>}
+                        </button>
                         <Settings
                             className={styles.icon}
                             onClick={() => {

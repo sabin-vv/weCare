@@ -68,6 +68,33 @@ const unitMap: Record<string, string> = {
     oxygen_saturation: '%',
 }
 
+const formatVitalValue = (vital: VitalPlanItem) => {
+    const latest = vital.latestReading
+    if (!latest) {
+        return { value: '—', unit: unitMap[vital.type] || '' }
+    }
+
+    if (vital.type === 'blood_pressure') {
+        if (latest.systolic !== undefined && latest.diastolic !== undefined) {
+            return {
+                value: `${latest.systolic}/${latest.diastolic}`,
+                unit: latest.unit || unitMap[vital.type] || '',
+            }
+        }
+
+        return { value: '—', unit: latest.unit || unitMap[vital.type] || '' }
+    }
+
+    if (latest.value !== undefined) {
+        return {
+            value: String(latest.value),
+            unit: latest.unit || unitMap[vital.type] || '',
+        }
+    }
+
+    return { value: '—', unit: latest.unit || unitMap[vital.type] || '' }
+}
+
 const toneMeta = {
     critical: {
         alertIcon: AlertCircle,
@@ -368,12 +395,7 @@ const CaregiverMedicationMonitorPage = () => {
             <section className={styles.page}>
                 <div className={styles.pageHeader}>
                     <h2 className={styles.pageTitle}>Patient Medication Monitor</h2>
-                    <button
-                        type="button"
-                        className={styles.refreshBtn}
-                        onClick={handleRefresh}
-                        disabled={isRefreshing}
-                    >
+                    <button type="button" className={styles.refreshBtn} onClick={handleRefresh} disabled={isRefreshing}>
                         <RefreshCw size={16} className={isRefreshing ? styles.spinningIcon : ''} />
                         {isRefreshing ? 'Refreshing...' : 'Refresh'}
                     </button>
@@ -469,13 +491,19 @@ const CaregiverMedicationMonitorPage = () => {
                             vitalPlans.map((vital) => {
                                 const Icon = iconMap[vital.type] || Activity
                                 const label = labelMap[vital.type] || vital.type
-                                const unit = unitMap[vital.type] || ''
+                                const { value, unit } = formatVitalValue(vital)
+                                const latestRecordedAt = vital.latestReading?.recordedAt
+                                    ? new Date(vital.latestReading.recordedAt).toLocaleTimeString('en-US', {
+                                          hour: '2-digit',
+                                          minute: '2-digit',
+                                          hour12: true,
+                                      })
+                                    : null
 
                                 return (
                                     <article
                                         key={vital.type}
                                         className={styles.vitalCard}
-                                        onClick={() => openVitalModal(vital.type)}
                                         role="button"
                                         tabIndex={0}
                                         onKeyDown={(e) => {
@@ -487,17 +515,23 @@ const CaregiverMedicationMonitorPage = () => {
                                     >
                                         <div className={styles.vitalTop}>
                                             <span className={styles.vitalLabel}>{label}</span>
-                                            <span className={styles.vitalStatus}>Awaiting first reading</span>
+                                            <span className={styles.vitalStatus}>
+                                                {latestRecordedAt
+                                                    ? 'Latest recorded reading'
+                                                    : 'Awaiting first reading'}
+                                            </span>
                                         </div>
                                         <div className={styles.vitalValueRow}>
                                             <Icon size={18} className={styles.vitalIcon} />
                                             <div className={styles.vitalValueWrap}>
-                                                <strong className={styles.vitalValue}>—</strong>
+                                                <strong className={styles.vitalValue}>{value}</strong>
                                                 <span className={styles.vitalUnit}>{unit}</span>
                                             </div>
                                         </div>
                                         <span className={styles.vitalUpdated}>
-                                            Frequency: every {vital.frequencyValue} {vital.frequencyUnit}
+                                            {latestRecordedAt
+                                                ? `Last updated at ${latestRecordedAt}`
+                                                : `Frequency: every ${vital.frequencyValue} ${vital.frequencyUnit}`}
                                         </span>
                                     </article>
                                 )

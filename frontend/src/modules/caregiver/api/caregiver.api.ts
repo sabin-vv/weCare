@@ -37,6 +37,13 @@ export interface VitalPlanItem {
     frequencyUnit: string
     durationValue: number
     durationUnit: string
+    latestReading?: {
+        value?: number
+        systolic?: number
+        diastolic?: number
+        unit?: string
+        recordedAt?: string
+    }
 }
 
 export interface PatientSummary {

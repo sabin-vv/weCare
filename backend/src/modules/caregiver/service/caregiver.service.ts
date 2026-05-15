@@ -20,7 +20,12 @@ import {
     toCaregiverProfileResponse,
     toCaregiverProfileResponseFromAggregation,
 } from '../mapper/caregiver.mapper'
-import { CaregiverProfileResponse, CaregiverVitalLogResponse, SymptomLogDTO } from '../types/caregiver.types'
+import {
+    CaregiverProfileResponse,
+    CaregiverVitalLogResponse,
+    CaregiverVitalPlanSummary,
+    SymptomLogDTO,
+} from '../types/caregiver.types'
 import { CreateCaregiverProfileDTO } from '../validator/caregiver.schema'
 import { LogMedicationDTO, LogSymptomDTO, LogVitalReadingDTO } from '../validator/caregiverLogging.schema'
 import { UpdateCaregiverSettingsDTO } from '../validator/updateCaregiverSettings.schema'
@@ -130,7 +135,7 @@ export class CaregiverService implements ICaregiverService {
         }))
     }
 
-    async getPatientVitalPlans(caregiverId: Types.ObjectId, patientId: string): Promise<VitalPlanItem[]> {
+    async getPatientVitalPlans(caregiverId: Types.ObjectId, patientId: string): Promise<CaregiverVitalPlanSummary[]> {
         const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
         if (!caregiver) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
@@ -150,7 +155,33 @@ export class CaregiverService implements ICaregiverService {
         for (const plan of plans) {
             items.push(...plan.vitals)
         }
-        return items
+
+        return await Promise.all(
+            items.map(async (item) => {
+                const latest = await this._vitalRepo.findByPatientIdAndType(
+                    patient._id.toString(),
+                    this._mapPlanVitalTypeToVitalType(item.type),
+                )
+                const latestReading = latest[0]
+
+                return {
+                    type: item.type,
+                    frequencyValue: item.frequencyValue,
+                    frequencyUnit: item.frequencyUnit,
+                    durationValue: item.durationValue,
+                    durationUnit: item.durationUnit,
+                    latestReading: latestReading
+                        ? {
+                              value: latestReading.value,
+                              systolic: latestReading.systolic,
+                              diastolic: latestReading.diastolic,
+                              unit: latestReading.unit,
+                              recordedAt: latestReading.recordedAt.toISOString(),
+                          }
+                        : undefined,
+                }
+            }),
+        )
     }
 
     async getMyPatients(caregiverId: Types.ObjectId): Promise<PatientSummary[]> {
