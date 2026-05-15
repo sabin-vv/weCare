@@ -63,3 +63,30 @@ export interface UserBasicInfo {
     email: string
     mobile: string
 }
+
+export interface SymptomLogDocument extends Document {
+    patientId: Types.ObjectId
+    caregiverId: Types.ObjectId
+    symptom: string
+    severity: 'mild' | 'moderate' | 'severe' | 'critical'
+    onsetTime: Date
+    observations?: string
+    createdAt: Date
+    updatedAt: Date
+}
+
+export interface SymptomLogDTO {
+    _id: string
+    symptom: string
+    severity: 'mild' | 'moderate' | 'severe' | 'critical'
+    onsetTime: string
+    observations?: string
+    createdAt: string
+}
+
+export interface CaregiverVitalLogResponse {
+    vitalId: string
+    vitalType: string
+    scheduleId?: string
+    recordedAt: string
+}
