@@ -1,9 +1,8 @@
 .errorWrapper {
     width: 100%;
-    margin-bottom: 5px;
-    padding-left: 10px;
+    padding-left: 2px;
 }
 .errorWrapper p {
-    color: #ef4444;
+    color: #dc2626;
     font-size: 12px;
 }
