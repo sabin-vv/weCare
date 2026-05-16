@@ -20,8 +20,8 @@
 }
 
 .filterItem {
-    padding: 10px 18px;
-    border-radius: 24px;
+    padding: 6px 12px;
+    border-radius: 12px;
     background-color: #f1f5f9;
     color: #475569;
     font-size: 14px;
@@ -36,13 +36,13 @@
     transform: translateY(-1px);
 }
 
-.filterItem[aria-current="true"] {
-    background-color: #2563eb;
+.filterItem[aria-current='true'] {
+    background-color: #4475e0;
     color: white;
     box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
-.filterItem[aria-current="true"]:hover {
+.filterItem[aria-current='true']:hover {
     background-color: #1d4ed8;
 }
 
