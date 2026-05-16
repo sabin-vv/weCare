@@ -115,13 +115,17 @@
 
 .disabledAddButton {
     border: none;
+    height: fit-content;
     padding: 5px 10px;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
     opacity: 0.5;
     cursor: not-allowed;
-    pointer-events: none;
+}
+.disabledAddButton:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
 }
 
 .editBtn {

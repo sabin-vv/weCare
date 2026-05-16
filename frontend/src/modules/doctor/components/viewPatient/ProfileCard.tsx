@@ -3,6 +3,7 @@ import type { ProfileCardProps } from '../../types/doctor.types'
 import styles from './ProfileCard.module.css'
 
 import { env } from '@/config/env'
+import Button from '@/shared/components/Button/Button'
 
 const ProfileCard = ({
     name,
@@ -54,7 +55,8 @@ const ProfileCard = ({
                             {conditions && conditions.length > 0 ? (
                                 conditions.join(',')
                             ) : (
-                                <button
+                                <Button
+                                    disabled={appointmentStatus === 'confirmed'}
                                     className={
                                         appointmentStatus === 'confirmed'
                                             ? styles.disabledAddButton
@@ -63,7 +65,7 @@ const ProfileCard = ({
                                     onClick={onAddCondition}
                                 >
                                     Add
-                                </button>
+                                </Button>
                             )}
                         </div>
 
