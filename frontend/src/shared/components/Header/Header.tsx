@@ -24,7 +24,7 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
 
     const publicLinks: NavLink[] = [
         { label: 'Home', path: '/' },
-        { label: 'Book an Appointment', path: '/appointments' },
+        { label: 'Book an Appointment', path: '/doctors' },
     ]
 
     const links = isAuthenticated ? navLinks : publicLinks
