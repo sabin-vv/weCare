@@ -4,7 +4,6 @@ import { PatientDocument } from '../types/patient.types'
 
 export interface ListPatientParams {
     search: string
-    filter: string
     page: number
     limit: number
     searchUserIds?: Types.ObjectId[]

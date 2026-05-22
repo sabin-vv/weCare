@@ -28,6 +28,7 @@ import { UpdatePatientConditionDTO } from '../validator/updatePatientCondition.s
 import { UpdatePatientSettingsDTO } from '../validator/updatePatientSettings.schema'
 
 const STARTING_ID = 1000
+const DOCTOR_PATIENT_APPOINTMENT_FILTERS = ['confirmed', 'in_consultation', 'completed'] as const
 
 @injectable()
 export class PatientService implements IPatientService {
@@ -166,23 +167,22 @@ export class PatientService implements IPatientService {
         const normalizedFilter = params.filter || 'all'
         const normalizedSearch = params.search.trim()
 
-        const appointmentStatuses = ['confirmed', 'in_consultation', 'completed']
-        let filteredUserIds: Types.ObjectId[] | undefined
+        let appointmentFilteredUserIds: Types.ObjectId[] | undefined
 
         if (normalizedFilter === 'all') {
-            const patientIds = await this._appointmentRepo.findPatientIdsByStatus(
+            const matchedPatientUserIds = await this._appointmentRepo.findPatientIdsByStatus(
                 doctor._id.toString(),
-                appointmentStatuses,
+                [...DOCTOR_PATIENT_APPOINTMENT_FILTERS],
             )
-            filteredUserIds = patientIds.map((id) => new Types.ObjectId(id))
-        } else if (appointmentStatuses.includes(normalizedFilter)) {
-            const patientIds = await this._appointmentRepo.findPatientIdsByStatus(doctor._id.toString(), [
+            appointmentFilteredUserIds = matchedPatientUserIds.map((id) => new Types.ObjectId(id))
+        } else if (DOCTOR_PATIENT_APPOINTMENT_FILTERS.includes(normalizedFilter as (typeof DOCTOR_PATIENT_APPOINTMENT_FILTERS)[number])) {
+            const matchedPatientUserIds = await this._appointmentRepo.findPatientIdsByStatus(doctor._id.toString(), [
                 normalizedFilter,
             ])
-            filteredUserIds = patientIds.map((id) => new Types.ObjectId(id))
+            appointmentFilteredUserIds = matchedPatientUserIds.map((id) => new Types.ObjectId(id))
         }
 
-        if (filteredUserIds && filteredUserIds.length === 0) {
+        if (appointmentFilteredUserIds && appointmentFilteredUserIds.length === 0) {
             return {
                 patients: [],
                 pagination: {
@@ -205,12 +205,10 @@ export class PatientService implements IPatientService {
         const { data: patients, total } = await this._patientRepo.listPatientsByDoctor({
             ...params,
             search: normalizedSearch,
-            filter:
-                normalizedFilter === 'all' || appointmentStatuses.includes(normalizedFilter) ? 'all' : normalizedFilter,
             page,
             limit,
             searchUserIds,
-            userIds: filteredUserIds,
+            userIds: appointmentFilteredUserIds,
         })
 
         const userIds = patients.map((patient) => patient.userId)

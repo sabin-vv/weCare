@@ -40,16 +40,10 @@ export class PatientRepository extends BaseRepository<PatientDocument> implement
     }
 
     async listPatientsByDoctor(params: ListPatientParams): Promise<{ data: PatientDocument[]; total: number }> {
-        const { search, filter, page, limit, searchUserIds, userIds, excludeUserIds } = params
+        const { search, page, limit, searchUserIds, userIds, excludeUserIds } = params
         const pageSafe = Math.max(1, page || 1)
         const limitSafe = Math.max(1, limit || 8)
         const query: Record<string, unknown> = {}
-
-        if (filter === 'high_risk') {
-            query.riskLevel = 'high_risk'
-        } else if (filter === 'hospitalized') {
-            query.clinicalStatus = 'hospitalized'
-        }
 
         const skip = (pageSafe - 1) * limitSafe
 
