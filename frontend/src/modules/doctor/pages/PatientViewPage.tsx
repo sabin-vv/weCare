@@ -1,5 +1,5 @@
 import { Heart, Activity, Thermometer, Droplets } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
 import { useParams } from 'react-router-dom'
 
@@ -14,7 +14,7 @@ import {
 import MedicationTable from '../components/viewPatient/MedicationTable'
 import ProfileCard from '../components/viewPatient/ProfileCard'
 import VitalCard from '../components/viewPatient/VitalCard'
-import type { PatientDetails, PatientSeverityLevel } from '../types/doctor.types'
+import type { CaregiverOption, PatientDetails, PatientSeverityLevel } from '../types/doctor.types'
 
 import styles from './PatientViewPage.module.css'
 
@@ -24,20 +24,6 @@ import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-
-interface CaregiverOption {
-    id: string
-    fullName: string
-    email: string
-    phoneNumber: string
-    profileImage: string
-}
-
-const getLatestVital = (patient: PatientDetails, type: PatientDetails['vitals'][number]['type']) => {
-    return patient.vitals
-        .filter((vital) => vital.type === type)
-        .sort((a, b) => new Date(b.recordedAt).getTime() - new Date(a.recordedAt).getTime())[0]
-}
 
 const SEVERITY_OPTIONS: Array<{ label: string; value: PatientSeverityLevel }> = [
     { label: 'Mild', value: 'mild' },
@@ -254,10 +240,19 @@ const PatientViewPage = () => {
         )
     }
 
-    const heartRate = getLatestVital(patient, 'heart_rate')
-    const bloodPressure = getLatestVital(patient, 'blood_pressure')
-    const spo2 = getLatestVital(patient, 'spo2')
-    const bloodSugar = getLatestVital(patient, 'blood_sugar')
+    const vitalIcons: Record<string, ReactNode> = {
+        blood_pressure: <Activity />,
+        heart_rate: <Heart />,
+        spo2: <Droplets />,
+        blood_sugar: <Thermometer />,
+    }
+    const vitalNameFormat = (vital: string): string => {
+        if (vital === 'blood_pressure') return 'Blood Pressure'
+        else if (vital === 'heart_rate') return 'Heart Rate'
+        else if (vital === 'spo2') return 'SPO2'
+        else if (vital === 'blood_sugar') return 'Bloood Sugar'
+        else return vital
+    }
 
     return (
         <DoctorLayout>
@@ -288,38 +283,17 @@ const PatientViewPage = () => {
                         marginTop: '20px',
                     }}
                 >
-                    <VitalCard
-                        icon={<Heart />}
-                        vitalName="Heart Rate"
-                        value={heartRate?.value?.toString() ?? '--'}
-                        unit={heartRate?.unit ?? 'bpm'}
-                        status={heartRate ? 'Recorded' : 'No data'}
-                    />
-                    <VitalCard
-                        icon={<Activity />}
-                        vitalName="Blood Pressure"
-                        value={
-                            bloodPressure?.systolic !== undefined && bloodPressure?.diastolic !== undefined
-                                ? `${bloodPressure.systolic}/${bloodPressure.diastolic}`
-                                : '--'
-                        }
-                        unit={bloodPressure?.unit ?? 'mmHg'}
-                        status={bloodPressure ? 'Recorded' : 'No data'}
-                    />
-                    <VitalCard
-                        icon={<Droplets />}
-                        vitalName="SpO2"
-                        value={spo2?.value?.toString() ?? '--'}
-                        unit={spo2?.unit ?? '%'}
-                        status={spo2 ? 'Recorded' : 'No data'}
-                    />
-                    <VitalCard
-                        icon={<Thermometer />}
-                        vitalName="Blood Sugar"
-                        value={bloodSugar?.value?.toString() ?? '--'}
-                        unit={bloodSugar?.unit ?? 'mg/dL'}
-                        status={bloodSugar ? 'Recorded' : 'No data'}
-                    />
+                    {patient.vitals.length > 0 &&
+                        patient.vitals.map((vital) => (
+                            <VitalCard
+                                key={vital._id}
+                                vitalName={vitalNameFormat(vital.type)}
+                                value={vital.value?.toString() || `${vital.systolic}/${vital.diastolic}`}
+                                unit={vital.unit}
+                                icon={vitalIcons[vital.type]}
+                                status={vital.recordedAt}
+                            />
+                        ))}
                 </div>
                 <MedicationTable
                     patientId={patient._id}
