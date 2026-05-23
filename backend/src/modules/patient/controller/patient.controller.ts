@@ -56,12 +56,12 @@ export class PatientController {
         if (!doctorId) {
             throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
         }
-        const { search, filter, appointmentStatus, accountStatus, riskLevel, page, limit } = req.query
+        const { search, filter, appointmentStatus, clinicalStatus, riskLevel, page, limit } = req.query
 
         const result = await this._patientService.listPatients(doctorId, {
             search: (search as string)?.trim() || '',
             appointmentStatus: (appointmentStatus as string) || (filter as string) || 'all',
-            accountStatus: (accountStatus as string) || 'all',
+            clinicalStatus: (clinicalStatus as string) || 'all',
             riskLevel: (riskLevel as string) || 'all',
             page: parseInt(page as string) || 1,
             limit: parseInt(limit as string) || 8,
