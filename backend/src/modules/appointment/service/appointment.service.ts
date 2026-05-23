@@ -263,7 +263,12 @@ export class AppointmentService implements IAppointmentService {
     }
 
     async getDoctorAppointments(doctorId: string): Promise<AppointmentResponseDTO[]> {
-        const appointments = await this._appointmentRepo.findByDoctorId(doctorId)
+        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
+        if (!doctor) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+        }
+
+        const appointments = await this._appointmentRepo.findByDoctorId(doctor._id.toString())
         return toAppointmentListResponseDTO(appointments)
     }
     async cancelAppointment(
