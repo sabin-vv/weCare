@@ -41,6 +41,22 @@ export class AppointmentController {
             data: appointments,
         })
     }
+
+    getDoctorAppointments = async (req: Request, res: Response) => {
+        const doctorId = req.user?.userId
+        if (!doctorId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const appointments = await this._appointmentService.getDoctorAppointments(doctorId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: 'Doctor appointments fetched successfully',
+            data: appointments,
+        })
+    }
+
     cancellAppointment = async (req: Request, res: Response) => {
         const { appointmentId } = req.params
         const reason: string = req.body.reason
