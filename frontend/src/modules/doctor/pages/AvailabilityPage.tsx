@@ -12,7 +12,7 @@ import { validateDoctorAvailability } from '../validator/availabilityValidation'
 import styles from './AvailabilityPage.module.css'
 
 import DoctorLayout from '@/layout/DoctorLayout'
-import PageHeader from '@/shared/components/PageHeader/PageHeader'
+import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const initialSchedule: WeeklySchedule[] = [
@@ -137,7 +137,9 @@ const AvailabilityPage = () => {
                 end: updatedAvailability.availability.endDate,
             })
             if (updatedAvailability.cancelledCount > 0) {
-                toast.success(`Availability saved. ${updatedAvailability.cancelledCount} appointment(s) were cancelled.`)
+                toast.success(
+                    `Availability saved. ${updatedAvailability.cancelledCount} appointment(s) were cancelled.`,
+                )
             } else {
                 toast.success('Availability saved successfully')
             }
@@ -158,13 +160,11 @@ const AvailabilityPage = () => {
 
     return (
         <DoctorLayout>
-            <div className={styles.page}>
+            <MainWrapper
+                title="Set Weekly Availability"
+                subtitle="Define your standard working hours and consultation slots for the week."
+            >
                 <div className={styles.content}>
-                    <PageHeader
-                        title="Set Weekly Availability"
-                        subtitle="Define your standard working hours and consultation slots for the week."
-                    />
-
                     {isLoadingAvailability ? (
                         <div className={styles.loadingCard}>
                             <p className={styles.loadingText}>Loading availability...</p>
@@ -297,7 +297,7 @@ const AvailabilityPage = () => {
                         </div>
                     )}
                 </div>
-            </div>
+            </MainWrapper>
         </DoctorLayout>
     )
 }
