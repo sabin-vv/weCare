@@ -14,7 +14,7 @@ export interface IPatientService {
         params: {
             search: string
             appointmentStatus: string
-            accountStatus: string
+            clinicalStatus: string
             riskLevel: string
             page: number
             limit: number

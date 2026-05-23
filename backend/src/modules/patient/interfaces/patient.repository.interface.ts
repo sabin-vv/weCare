@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
 
-import { AccountStatus, PatientDocument, RiskLevel } from '../types/patient.types'
+import { AccountStatus, ClinicalStatus, PatientDocument, RiskLevel } from '../types/patient.types'
 
 export interface ListPatientParams {
     search: string
@@ -8,6 +8,7 @@ export interface ListPatientParams {
     limit: number
     primaryDoctorId: Types.ObjectId
     accountStatus?: AccountStatus | 'all'
+    clinicalStatus?: ClinicalStatus | 'all'
     riskLevel?: RiskLevel | 'all'
     searchUserIds?: Types.ObjectId[]
     userIds?: Types.ObjectId[]
