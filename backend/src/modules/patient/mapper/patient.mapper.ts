@@ -64,13 +64,23 @@ export const toPatientProfileResponseDTO = (
     }
 }
 
+const mapAppointmentStatus = (status?: string): 'confirmed' | 'in_consultation' | 'completed' => {
+    if (!status) return 'confirmed'
+    if (['confirmed', 'in_consultation', 'completed'].includes(status)) {
+        return status as 'confirmed' | 'in_consultation' | 'completed'
+    }
+    return 'confirmed'
+}
+
 export const toListPatientsMapper = (
     user: UserDocument,
     patient: PatientDocument,
     appointment: AppointmentDocument | null,
     caregiver: UserDocument | null,
 ): ListPatientMapper => {
-    const status = appointment?.status || patient.clinicalStatus || patient.accountStatus || 'active'
+    const accountStatus = patient.accountStatus || 'active'
+    const appointmentStatus = mapAppointmentStatus(appointment?.status)
+    const status = appointmentStatus
 
     return {
         _id: patient._id.toString(),
@@ -80,6 +90,8 @@ export const toListPatientsMapper = (
         conditions: patient.conditions || [],
         riskLevel: patient.riskLevel,
         caregiver: caregiver?.name || 'Unassigned',
+        accountStatus,
+        appointmentStatus,
         status,
     }
 }
@@ -92,6 +104,7 @@ export const toPatientDetailsDTO = (
     vitals: VitalDocument[],
     prescriptions: PrescriptionDocument[],
 ): PatientDetailsDTO => {
+    const appointmentStatusForDetails = appointment ? mapAppointmentStatus(appointment.status) : 'confirmed'
     const status = appointment?.status || patient.clinicalStatus || patient.accountStatus || 'active'
 
     const age = new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()
@@ -149,7 +162,7 @@ export const toPatientDetailsDTO = (
         caregiver: caregiver?.name || 'Unassigned',
         status,
         clinicalStatus: patient.clinicalStatus || 'active',
-        appointmentStatus: appointment?.status || 'no_appointment',
+        appointmentStatus: appointmentStatusForDetails,
         vitals: mappedVitals,
         prescriptions: mappedPrescriptions,
     }
