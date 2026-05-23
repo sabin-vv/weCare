@@ -22,13 +22,15 @@ import {
     toPatientProfileResponseDTO,
     toPatientResponseDTO,
 } from '../mapper/patient.mapper'
-import { ListPatientMapper, ListPatientsResponse, PatientProfileResponseDTO } from '../types/patient.types'
+import { AccountStatus, ListPatientMapper, ListPatientsResponse, PatientProfileResponseDTO, RiskLevel } from '../types/patient.types'
 import { RegisterPatientDTO } from '../validator/patient.schema'
 import { UpdatePatientConditionDTO } from '../validator/updatePatientCondition.schema'
 import { UpdatePatientSettingsDTO } from '../validator/updatePatientSettings.schema'
 
 const STARTING_ID = 1000
 const DOCTOR_PATIENT_APPOINTMENT_FILTERS = ['confirmed', 'in_consultation', 'completed'] as const
+const DOCTOR_PATIENT_ACCOUNT_FILTERS = ['active', 'archived', 'suspended'] as const
+const DOCTOR_PATIENT_RISK_LEVEL_FILTERS = ['mild', 'moderate', 'severe', 'high_risk'] as const
 
 @injectable()
 export class PatientService implements IPatientService {
@@ -155,7 +157,14 @@ export class PatientService implements IPatientService {
     }
     async listPatients(
         doctorId: string,
-        params: { search: string; filter: string; page: number; limit: number },
+        params: {
+            search: string
+            appointmentStatus: string
+            accountStatus: string
+            riskLevel: string
+            page: number
+            limit: number
+        },
     ): Promise<ListPatientsResponse> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
@@ -164,20 +173,26 @@ export class PatientService implements IPatientService {
 
         const page = Math.max(1, params.page || 1)
         const limit = Math.max(1, params.limit || 8)
-        const normalizedFilter = params.filter || 'all'
+        const normalizedAppointmentStatus = params.appointmentStatus || 'all'
+        const normalizedAccountStatus = params.accountStatus || 'all'
+        const normalizedRiskLevel = params.riskLevel || 'all'
         const normalizedSearch = params.search.trim()
 
         let appointmentFilteredUserIds: Types.ObjectId[] | undefined
 
-        if (normalizedFilter === 'all') {
+        if (normalizedAppointmentStatus === 'all') {
             const matchedPatientUserIds = await this._appointmentRepo.findPatientIdsByStatus(
                 doctor._id.toString(),
                 [...DOCTOR_PATIENT_APPOINTMENT_FILTERS],
             )
             appointmentFilteredUserIds = matchedPatientUserIds.map((id) => new Types.ObjectId(id))
-        } else if (DOCTOR_PATIENT_APPOINTMENT_FILTERS.includes(normalizedFilter as (typeof DOCTOR_PATIENT_APPOINTMENT_FILTERS)[number])) {
+        } else if (
+            DOCTOR_PATIENT_APPOINTMENT_FILTERS.includes(
+                normalizedAppointmentStatus as (typeof DOCTOR_PATIENT_APPOINTMENT_FILTERS)[number],
+            )
+        ) {
             const matchedPatientUserIds = await this._appointmentRepo.findPatientIdsByStatus(doctor._id.toString(), [
-                normalizedFilter,
+                normalizedAppointmentStatus,
             ])
             appointmentFilteredUserIds = matchedPatientUserIds.map((id) => new Types.ObjectId(id))
         }
@@ -203,10 +218,20 @@ export class PatientService implements IPatientService {
         }
 
         const { data: patients, total } = await this._patientRepo.listPatientsByDoctor({
-            ...params,
             search: normalizedSearch,
             page,
             limit,
+            primaryDoctorId: doctor._id,
+            accountStatus: DOCTOR_PATIENT_ACCOUNT_FILTERS.includes(
+                normalizedAccountStatus as (typeof DOCTOR_PATIENT_ACCOUNT_FILTERS)[number],
+            )
+                ? (normalizedAccountStatus as AccountStatus)
+                : 'all',
+            riskLevel: DOCTOR_PATIENT_RISK_LEVEL_FILTERS.includes(
+                normalizedRiskLevel as (typeof DOCTOR_PATIENT_RISK_LEVEL_FILTERS)[number],
+            )
+                ? (normalizedRiskLevel as RiskLevel)
+                : 'all',
             searchUserIds,
             userIds: appointmentFilteredUserIds,
         })
