@@ -12,6 +12,7 @@ export const createAppointmentRoutes = () => {
 
     router.use(requireAuth)
     router.get('/patient', appointmentController.getPatientAppointments)
+    router.get('/doctor', appointmentController.getDoctorAppointments)
     router.patch('/:appointmentId/cancel', appointmentController.cancellAppointment)
     router.post('/:appointmentId/retry-payment', validate(retryPaymentSchema), appointmentController.retryPayment)
     router.post('/', validate(createAppointmentSchema), appointmentController.createAppointment)
