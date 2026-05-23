@@ -6,6 +6,7 @@ import { createCaregiverProfile } from '../api/caregiver.api'
 
 import styles from './CaregiverDetailsForm.module.css'
 
+import { env } from '@/config/env'
 import { getCurrentUser, presignUpload, uploadToS3 } from '@/modules/auth/api/auth.api'
 import FileUploadBox from '@/modules/auth/components/FileUploadBox'
 import { caregiverDetailsSchema } from '@/modules/auth/validator/register.schema'
@@ -70,6 +71,11 @@ const CaregiverDetailsForm = ({ documents: initialDocuments }: CaregiverDetailsF
         }
     }, [initialDocuments])
 
+    const getStoredFileKey = (value: string) => {
+        const baseUrl = env.AWS_BASE_URL.replace(/\/$/, '')
+        return value.startsWith(baseUrl) ? value.slice(baseUrl.length).replace(/^\/+/, '') : value
+    }
+
     const uploadFileToS3 = async (file: File, folder: string): Promise<string> => {
         try {
             const contentType = file.type as 'image/png' | 'image/jpeg' | 'application/pdf'
@@ -105,26 +111,34 @@ const CaregiverDetailsForm = ({ documents: initialDocuments }: CaregiverDetailsF
             const formData = new FormData()
             formData.append('email', user.email)
 
-            if (documents.govId) {
+            if (documents.govId instanceof File) {
                 const govIdKey = await uploadFileToS3(documents.govId, 'documents/caregiverGovId')
                 formData.append('govIdImage', govIdKey)
+            } else if (typeof documents.govId === 'string') {
+                formData.append('govIdImage', getStoredFileKey(documents.govId))
             }
 
-            if (documents.profileImage) {
+            if (documents.profileImage instanceof File) {
                 const profileImageKey = await uploadFileToS3(documents.profileImage, 'documents/caregiverProfile')
                 formData.append('profileImage', profileImageKey)
+            } else if (typeof documents.profileImage === 'string') {
+                formData.append('profileImage', getStoredFileKey(documents.profileImage))
             }
 
             formData.append('certificateNumber', documents.certificate.number)
-            if (documents.certificate.document) {
+            if (documents.certificate.document instanceof File) {
                 const certKey = await uploadFileToS3(documents.certificate.document, 'documents/caregiverCertificate')
                 formData.append('certificateImage', certKey)
+            } else if (typeof documents.certificate.document === 'string') {
+                formData.append('certificateImage', getStoredFileKey(documents.certificate.document))
             }
 
             formData.append('licenseNumber', documents.license.number)
-            if (documents.license.document) {
+            if (documents.license.document instanceof File) {
                 const licenseKey = await uploadFileToS3(documents.license.document, 'documents/caregiverLicense')
                 formData.append('licenseImage', licenseKey)
+            } else if (typeof documents.license.document === 'string') {
+                formData.append('licenseImage', getStoredFileKey(documents.license.document))
             }
 
             const res = await createCaregiverProfile(formData)
