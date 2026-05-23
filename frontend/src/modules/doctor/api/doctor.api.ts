@@ -64,7 +64,7 @@ export const updateDoctorAvailability = async (data: DoctorAvailability): Promis
 export const listPatients = async (
     search: string,
     appointmentStatus: string,
-    accountStatus: string,
+    clinicalStatus: string,
     riskLevel: string,
     page: number,
     limit: number,
@@ -73,7 +73,7 @@ export const listPatients = async (
         params: {
             search,
             appointmentStatus,
-            accountStatus,
+            clinicalStatus,
             riskLevel,
             page,
             limit,
