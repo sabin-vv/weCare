@@ -24,6 +24,7 @@ import OtpVerification from '@/modules/auth/components/OtpVerification'
 import { OtpPurpose } from '@/modules/auth/types/auth.types'
 import ChangePasswordForm from '@/shared/components/ChangePasswordForm'
 import ImageCropper from '@/shared/components/ImageCropper/ImageCropper'
+import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
@@ -286,7 +287,7 @@ const DoctorSettingsForm = () => {
     }
 
     return (
-        <div className={styles.container}>
+        <MainWrapper title="Account Settings" subtitle="Manage your profile and account preferences.">
             <div className={styles.stack}>
                 <DoctorSettingsProfileCard
                     savedState={savedState}
@@ -350,7 +351,7 @@ const DoctorSettingsForm = () => {
                     onClose={() => setImageCrop(null)}
                 />
             )}
-        </div>
+        </MainWrapper>
     )
 }
 
