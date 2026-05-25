@@ -33,12 +33,20 @@ export class VitalRepository extends BaseRepository<VitalDocument> implements IV
         return await vitalPlanModel.create(data)
     }
 
+    async findVitalPlanById(planId: string): Promise<VitalPlanDocument | null> {
+        return await vitalPlanModel.findById(planId)
+    }
+
     async findVitalPlansByPatientId(patientId: string): Promise<VitalPlanDocument[]> {
         return await vitalPlanModel.find({ patientId }).sort({ createdAt: -1 })
     }
 
     async findVitalPlansByPatientIdAndStatus(patientId: string, status: VitalPlanStatus): Promise<VitalPlanDocument[]> {
         return await vitalPlanModel.find({ patientId, status }).sort({ createdAt: -1 })
+    }
+
+    async updateVitalPlan(planId: string, data: Partial<VitalPlanDocument>): Promise<VitalPlanDocument | null> {
+        return await vitalPlanModel.findByIdAndUpdate(planId, data, { new: true })
     }
 
     async findActiveVitalPlans(): Promise<VitalPlanDocument[]> {

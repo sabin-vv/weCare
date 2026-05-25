@@ -65,6 +65,22 @@ export class VitalController {
         })
     }
 
+    cancelVitalPlan = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const { planId } = req.params as { planId: string }
+        const plan = await this._vitalService.cancelVitalPlan(userId, planId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: plan,
+            message: 'Vital plan cancelled successfully',
+        })
+    }
+
     getPatientVitalSchedules = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {

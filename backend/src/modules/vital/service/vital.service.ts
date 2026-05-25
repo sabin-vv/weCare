@@ -77,10 +77,40 @@ export class VitalService implements IVitalService {
         }
 
         if (status) {
-            return await this._vitalRepo.findVitalPlansByPatientIdAndStatus(patientId, status as VitalPlanDocument['status'])
+            return await this._vitalRepo.findVitalPlansByPatientIdAndStatus(
+                patientId,
+                status as VitalPlanDocument['status'],
+            )
         }
 
-return await this._vitalRepo.findVitalPlansByPatientId(patientId)
+        return await this._vitalRepo.findVitalPlansByPatientId(patientId)
+    }
+
+    async cancelVitalPlan(doctorUserId: string, planId: string): Promise<VitalPlanDocument> {
+        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorUserId))
+        if (!doctor) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+        }
+
+        const plan = await this._vitalRepo.findVitalPlanById(planId)
+        if (!plan) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Vital plan not found')
+        }
+
+        if (plan.requestedBy.toString() !== doctor._id.toString()) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to cancel this vital plan')
+        }
+
+        if (plan.status === 'cancelled') {
+            return plan
+        }
+
+        const updatedPlan = await this._vitalRepo.updateVitalPlan(planId, { status: 'cancelled' })
+        if (!updatedPlan) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Vital plan not found')
+        }
+
+        return updatedPlan
     }
 
     async generateDailyVitalSchedule(date: Date): Promise<{ created: number; skipped: number } | undefined> {
