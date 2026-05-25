@@ -63,7 +63,6 @@ export const updateDoctorAvailability = async (data: DoctorAvailability): Promis
 
 export const listPatients = async (
     search: string,
-    appointmentStatus: string,
     clinicalStatus: string,
     riskLevel: string,
     page: number,
@@ -72,7 +71,6 @@ export const listPatients = async (
     const res = await api.get(`${PATIENTS_API}/`, {
         params: {
             search,
-            appointmentStatus,
             clinicalStatus,
             riskLevel,
             page,
