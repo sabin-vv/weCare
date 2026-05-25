@@ -48,20 +48,52 @@
     transform: translateY(-1px);
 }
 
-.filterItem[aria-current='true'] {
-    background-color: #4475e0;
+.viewBtn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
     color: white;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.filterItem[aria-current='true']:hover {
-    background-color: #1d4ed8;
+.viewBtn:hover {
+    background-color: #0056b3;
 }
 
 .patientCell {
     display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.avatarImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatarFallback {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e8f0fe;
+    color: #2557a7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.patientInfo {
+    display: flex;
     flex-direction: column;
-    gap: 4px;
     min-width: 0;
 }
 
