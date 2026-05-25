@@ -55,12 +55,13 @@ export const toPatientProfileResponseDTO = (
         name: user.name,
         email: user.email,
         mobile: user.mobile,
+        isActive: user.isActive,
         patientId: patient.patientId,
         dateOfBirth: patient.dateOfBirth.toISOString(),
         gender: patient.gender,
         conditions: patient.conditions ?? [],
         profileImage: patient.profileImage,
-        isActive: user.isActive,
+        caregiverId: patient.caregiverId?.toString(),
     }
 }
 
