@@ -38,6 +38,7 @@ export interface PatientProfileResponseDTO {
     gender: string
     conditions: string[]
     profileImage?: string
+    caregiverId?: string
     isActive: boolean
 }
 
