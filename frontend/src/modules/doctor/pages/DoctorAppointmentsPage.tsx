@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 import { getDoctorAppointments } from '../api/doctor.api'
 import type { DoctorAppointment } from '../types/doctor.types'
@@ -12,6 +13,7 @@ import SearchField from '@/shared/components/SearchField/SearchField'
 import DataTable from '@/shared/components/Table/DataTable'
 import type { Column } from '@/shared/components/Table/dataTable.types'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { getFileUrl } from '@/utils/getFileUrl'
 
 const CONSULTATION_STATUS_OPTIONS = [
     { label: 'All', value: 'all' },
@@ -25,6 +27,7 @@ const DoctorAppointmentsPage = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [search, setSearch] = useState('')
     const [consultationStatus, setConsultationStatus] = useState('all')
+    const navigate = useNavigate()
 
     useEffect(() => {
         const fetchAppointments = async () => {
@@ -61,11 +64,16 @@ const DoctorAppointmentsPage = () => {
     }
 
     const filteredAppointments = appointments.filter((appointment) => {
-        if (appointment.status === 'cancelled' || appointment.status === 'pending_payment') {
+        if (
+            appointment.status === 'cancelled' ||
+            appointment.status === 'pending_payment' ||
+            appointment.status === 'missed'
+        ) {
             return false
         }
 
         const normalizedSearch = search.trim().toLowerCase()
+
         const matchesSearch =
             !normalizedSearch ||
             appointment.patientId.name.toLowerCase().includes(normalizedSearch) ||
@@ -76,14 +84,34 @@ const DoctorAppointmentsPage = () => {
         return matchesSearch && matchesConsultationStatus
     })
 
+    const PatientAvatar = ({ name, profileImage }: { name?: string; profileImage?: string }) => {
+        const [hasError, setHasError] = useState(false)
+        const imageUrl = profileImage ? getFileUrl(profileImage) : ''
+        const safeName = name?.trim() || 'Unknown Patient'
+        if (!imageUrl || hasError) {
+            const initials = safeName
+                .split(' ')
+                .filter(Boolean)
+                .map((p) => p[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2)
+            return <div className={styles.avatarFallback}>{initials}</div>
+        }
+        return <img src={imageUrl} alt={safeName} className={styles.avatarImage} onError={() => setHasError(true)} />
+    }
+
     const columns: Column<DoctorAppointment>[] = [
         {
             header: 'Patient',
             key: 'patientId',
             render: (item) => (
                 <div className={styles.patientCell}>
-                    <span className={styles.patientName}>{item.patientId.name}</span>
-                    <span className={styles.patientEmail}>{item.patientId.email}</span>
+                    <PatientAvatar name={item.patientId?.name} profileImage={item.patientId?.profileImage} />
+                    <div className={styles.patientInfo}>
+                        <span className={styles.patientName}>{item.patientId.name}</span>
+                        <span className={styles.patientEmail}>{item.patientId.email}</span>
+                    </div>
                 </div>
             ),
         },
@@ -108,6 +136,15 @@ const DoctorAppointmentsPage = () => {
                 <span className={`${styles.badge} ${styles[item.status]}`}>
                     {formatAppointmentStatusLabel(item.status)}
                 </span>
+            ),
+        },
+        {
+            header: 'Action',
+            key: '_id',
+            render: (item) => (
+                <button className={styles.viewBtn} onClick={() => navigate(`/doctor/appointments/${item._id}`)}>
+                    View
+                </button>
             ),
         },
     ]
