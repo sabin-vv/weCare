@@ -269,7 +269,39 @@ export class AppointmentService implements IAppointmentService {
         }
 
         const appointments = await this._appointmentRepo.findByDoctorId(doctor._id.toString())
-        return toAppointmentListResponseDTO(appointments)
+        const appointmentResponses = toAppointmentListResponseDTO(appointments)
+        const patientProfileImageEntries = await Promise.all(
+            appointmentResponses.map(async (appointment) => {
+                const patient = appointment.patientId
+                if (typeof patient === 'string' || patient instanceof Types.ObjectId) {
+                    return null
+                }
+
+                const patientProfile = await this._patientRepo.findByUserId(new Types.ObjectId(patient._id))
+                return [patient._id.toString(), patientProfile?.profileImage] as const
+            }),
+        )
+
+        const patientProfileImageMap = new Map(
+            patientProfileImageEntries.filter(
+                (entry): entry is readonly [string, string | undefined] => entry !== null,
+            ),
+        )
+
+        return appointmentResponses.map((appointment) => {
+            const patient = appointment.patientId
+            if (typeof patient === 'string' || patient instanceof Types.ObjectId) {
+                return appointment
+            }
+
+            return {
+                ...appointment,
+                patientId: {
+                    ...patient,
+                    profileImage: patientProfileImageMap.get(patient._id.toString()),
+                },
+            }
+        })
     }
     async cancelAppointment(
         id: string,
