@@ -15,6 +15,7 @@ const SearchField = ({
     disabled = false,
 }: SearchFieldProps) => {
     const isFirstMount = useRef(true)
+    const skipNextSearchRef = useRef(false)
     const [showSuggestions, setShowSuggestions] = useState(false)
     const wrapperRef = useRef<HTMLDivElement>(null)
 
@@ -38,6 +39,10 @@ const SearchField = ({
             isFirstMount.current = false
             return
         }
+        if (skipNextSearchRef.current) {
+            skipNextSearchRef.current = false
+            return
+        }
 
         const handler = setTimeout(() => {
             onSearch(value)
@@ -59,6 +64,7 @@ const SearchField = ({
     }
 
     const handleSuggestionClick = (suggestion: string) => {
+        skipNextSearchRef.current = true
         onSelect?.(suggestion)
         setShowSuggestions(false)
     }
