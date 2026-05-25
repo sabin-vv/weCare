@@ -1,5 +1,4 @@
-import { AppointmentResponseDTO, DoctorAppointmentsResponseDTO } from '../mapper/appointment.mapper'
-import { AppointmentDocument } from '../types/appointment.types'
+import { AppointmentDocument, AppointmentResponseDTO, DoctorAppointmentsResponseDTO } from '../types/appointment.types'
 import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 
 export interface RazorpayOrder {
