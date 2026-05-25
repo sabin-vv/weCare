@@ -16,24 +16,8 @@ import { IWalletService } from '../../wallet/interfaces/wallet.service.interface
 import { ISubscriptionRepository } from '../interfaces/subscription.repository.interface'
 import { ISubscriptionService, VerifySubscriptionPaymentDTO } from '../interfaces/subscription.service.interface'
 import { toSubscriptionDTO } from '../mapper/subscription.mapper'
-import type { SubscriptionDTO } from '../types/subscription.types'
+import type { CreateSubscriptionResult, SubscriptionDTO, WalletSubscriptionResult } from '../types/subscription.types'
 import { CreateSubscriptionDTO } from '../validator/subscription.schema'
-
-export interface CreateSubscriptionResult {
-    subscriptionId: string
-    paymentId: string
-    orderId: string
-    amount: number
-    currency: string
-    keyId: string
-}
-
-export interface WalletSubscriptionResult {
-    subscriptionId: string
-    paymentId: string
-    walletBalance: number
-    subscriptionConfirmed: true
-}
 
 @injectable()
 export class SubscriptionService implements ISubscriptionService {
@@ -66,7 +50,9 @@ export class SubscriptionService implements ISubscriptionService {
             return null
         }
 
-        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(subscription.caregiverId.toString()))
+        const caregiver = await this._caregiverRepo.findByUserId(
+            new Types.ObjectId(subscription.caregiverId.toString()),
+        )
         const caregiverUser = caregiver ? await this._userRepo.findById(caregiver.userId.toString()) : null
 
         return toSubscriptionDTO(subscription, caregiver ?? undefined, caregiverUser ?? undefined)
@@ -211,7 +197,9 @@ export class SubscriptionService implements ISubscriptionService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Subscription not found')
         }
 
-        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(subscription.caregiverId.toString()))
+        const caregiver = await this._caregiverRepo.findByUserId(
+            new Types.ObjectId(subscription.caregiverId.toString()),
+        )
         const caregiverUser = caregiver ? await this._userRepo.findById(caregiver.userId.toString()) : null
 
         return toSubscriptionDTO(subscription, caregiver ?? undefined, caregiverUser ?? undefined)
