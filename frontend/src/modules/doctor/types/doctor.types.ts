@@ -179,20 +179,20 @@ export interface NotificationFailure {
 }
 
 export interface DoctorAppointment {
-    _id: string
-    patientId: {
-        _id: string
-        name: string
-        email: string
-        profileImage?: string
-    }
+    appointmentId: string
+    patientId: string
+    name: string
+    email: string
+    profileImage?: string
     appointmentDate: string
     slotStart: string
     slotEnd: string
-    status: 'pending_payment' | 'confirmed' | 'cancelled' | 'missed' | 'in_consultation' | 'completed'
-    paymentStatus: 'pending' | 'paid' | 'failed' | 'refund_pending' | 'refunded'
-    amount: number
-    createdAt: string
+    status: 'confirmed' | 'completed'
+}
+
+export interface DoctorAppointmentsResponse {
+    appointments: DoctorAppointment[]
+    pagination: Pagination
 }
 
 export interface DoctorAvailabilityUpdateResult {
