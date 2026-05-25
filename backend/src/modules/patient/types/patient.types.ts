@@ -2,7 +2,6 @@ import { Document, Types } from 'mongoose'
 
 export type RiskLevel = 'mild' | 'moderate' | 'severe' | 'high_risk'
 export type AccountStatus = 'suspended' | 'active' | 'archived'
-export type AppointmentStatus = 'confirmed' | 'in_consultation' | 'completed'
 
 export type ClinicalStatus = 'active' | 'hospitalized' | 'deceased'
 export interface PatientDocument extends Document {
@@ -51,7 +50,6 @@ export interface ListPatientMapper {
     riskLevel?: string
     caregiver?: string
     clinicalStatus: ClinicalStatus
-    appointmentStatus: AppointmentStatus
 }
 
 export interface PatientListPagination {
