@@ -26,6 +26,8 @@ import {
     ClinicalStatus,
     ListPatientMapper,
     ListPatientsResponse,
+    PatientDetailsDTO,
+    PatientDocument,
     PatientProfileResponseDTO,
     RiskLevel,
 } from '../types/patient.types'
@@ -74,18 +76,17 @@ export class PatientService implements IPatientService {
         return { doctor, patient }
     }
 
-    private async buildPatientDetails(doctorId: string, patient: import('../types/patient.types').PatientDocument) {
+    private async buildPatientDetails(doctorId: string, patient: PatientDocument) {
         const user = await this._userRepo.findById(patient.userId.toString())
         if (!user) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
         }
 
-        const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
-            doctorId,
+        const [appointment] = await this._appointmentRepo.findDoctorVisibleAppointmentsByDoctorAndPatientIds(doctorId, [
             patient.userId.toString(),
-        )
+        ])
 
-        let caregiver: import('../../auth/types/auth.types').UserDocument | null = null
+        let caregiver: UserDocument | null = null
         if (patient.caregiverId) {
             caregiver = await this._userRepo.findById(patient.caregiverId.toString())
         }
@@ -161,6 +162,7 @@ export class PatientService implements IPatientService {
 
         return toPatientProfileResponseDTO(updatedUser, patient)
     }
+
     async listPatients(
         doctorId: string,
         params: {
@@ -283,11 +285,9 @@ export class PatientService implements IPatientService {
         }
     }
 
-    async getPatientById(
-        doctorId: string,
-        patientId: string,
-    ): Promise<import('../types/patient.types').PatientDetailsDTO> {
+    async getPatientById(doctorId: string, patientId: string): Promise<PatientDetailsDTO> {
         const { doctor, patient } = await this.resolveDoctorPatientContext(doctorId, patientId)
+
         return await this.buildPatientDetails(doctor._id.toString(), patient)
     }
 
@@ -295,7 +295,7 @@ export class PatientService implements IPatientService {
         doctorId: string,
         patientId: string,
         dto: UpdatePatientConditionDTO,
-    ): Promise<import('../types/patient.types').PatientDetailsDTO> {
+    ): Promise<PatientDetailsDTO> {
         const { doctor } = await this.resolveDoctorPatientContext(doctorId, patientId)
 
         const patient = await this._patientRepo.updateById(patientId, {
@@ -310,11 +310,7 @@ export class PatientService implements IPatientService {
         return await this.buildPatientDetails(doctor._id.toString(), patient)
     }
 
-    async assignCaregiver(
-        doctorId: string,
-        patientId: string,
-        caregiverId: string,
-    ): Promise<import('../types/patient.types').PatientDetailsDTO> {
+    async assignCaregiver(doctorId: string, patientId: string, caregiverId: string): Promise<PatientDetailsDTO> {
         const { doctor } = await this.resolveDoctorPatientContext(doctorId, patientId)
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(caregiverId))
