@@ -14,6 +14,7 @@
         transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
         box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
         border-color 0.28s ease;
+    gap: 16px;
 }
 .card:hover {
     transform: translateY(-4px) scale(1.01);
@@ -29,6 +30,8 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    flex: 1;
+    min-width: 0;
 }
 
 .imageWrapper {
@@ -56,12 +59,15 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1;
+    min-width: 0;
 }
 
 .topRow {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .name {
@@ -69,6 +75,7 @@
     font-weight: 600;
     color: #2f2f2f;
     margin: 0;
+    overflow-wrap: anywhere;
 }
 
 .riskBadge {
@@ -87,6 +94,7 @@
     gap: 8px;
     color: #8a8a8a;
     font-size: 14px;
+    flex-wrap: wrap;
 }
 
 .conditionRow {
@@ -94,6 +102,7 @@
     align-items: center;
     gap: 6px;
     font-size: 14px;
+    flex-wrap: wrap;
 }
 
 .conditionLabel {
@@ -107,6 +116,8 @@
     color: #5f55ff;
     font-weight: 500;
     font-size: 14px;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .addCondition {
@@ -150,9 +161,10 @@
 
 .rightSection {
     display: flex;
-    flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 .caregiverBtn {
@@ -180,6 +192,7 @@
     border: 1px solid #d1fae5;
     border-radius: 8px;
     min-width: 150px;
+    max-width: 100%;
 }
 
 .caregiverLabel {
@@ -200,6 +213,7 @@
     font-size: 14px;
     font-weight: 600;
     color: #065f46;
+    overflow-wrap: anywhere;
 }
 
 .editIconBtn {
@@ -221,6 +235,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 
 .hospitalBtn {
@@ -241,6 +256,7 @@
 
 .statusSelect {
     min-width: 160px;
+    width: 100%;
     background: #3b82f6;
     color: white;
     border: none;
@@ -298,29 +314,86 @@
     opacity: 0.9;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .card {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
     }
 
     .rightSection {
         width: 100%;
-        align-items: stretch;
+        justify-content: flex-start;
+    }
+
+    .startBtn,
+    .consulatationStatus {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 16px;
+    }
+
+    .leftSection {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .imageWrapper {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+
+    .name {
+        font-size: 20px;
     }
 
     .actions {
-        flex-direction: column;
         width: 100%;
     }
 
-    .hospitalBtn,
+    .rightSection,
+    .caregiverInfo,
+    .caregiverNameRow,
+    .consulatationStatus,
+    .startBtn,
+    .inConsultationBtn,
     .statusSelect,
     .caregiverBtn {
         width: 100%;
     }
 
-    .metaInfo {
-        flex-wrap: wrap;
+    .caregiverNameRow {
+        justify-content: space-between;
+    }
+
+    .startBtn,
+    .inConsultationBtn,
+    .caregiverBtn {
+        text-align: center;
+    }
+}
+
+@media (max-width: 560px) {
+    .leftSection {
+        flex-direction: column;
+    }
+
+    .infoSection,
+    .topRow {
+        width: 100%;
+    }
+
+    .metaInfo,
+    .conditionRow {
+        gap: 4px 8px;
+    }
+
+    .riskBadge {
+        font-size: 11px;
+        padding: 4px 8px;
     }
 }

@@ -21,6 +21,8 @@ const ProfileCard = ({
     onCompleteConsultation,
     onAddCondition,
     onAssignCaregiver,
+    clinicalStatus,
+    onClinicalStatusChange,
 }: ProfileCardProps) => {
     const baseUrl = env.AWS_BASE_URL
 
@@ -104,6 +106,14 @@ const ProfileCard = ({
                 </div>
             ) : (
                 <div className={styles.rightSection}>
+                    <div className={styles.actions}>
+                        <SelectField
+                            className={styles.statusSelect}
+                            options={clinicalStatusOptions}
+                            value={clinicalStatus}
+                            onChange={(e) => onClinicalStatusChange?.(e.target.value)}
+                        />
+                    </div>
                     {caregiver ? (
                         <div className={styles.caregiverInfo}>
                             <span className={styles.caregiverLabel}>Assigned Caregiver</span>
@@ -123,11 +133,6 @@ const ProfileCard = ({
                             Assign Caregiver ▼
                         </button>
                     )}
-
-                    <div className={styles.actions}>
-                        <Button className={styles.hospitalBtn}>Admit to Hospital</Button>
-                        <SelectField className={styles.statusSelect} options={clinicalStatusOptions} />
-                    </div>
                 </div>
             )}
         </div>
