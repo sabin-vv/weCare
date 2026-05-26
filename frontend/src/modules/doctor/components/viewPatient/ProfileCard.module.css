@@ -10,7 +10,19 @@
 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     border: 1px solid #ececec;
-    gap: 20px;
+    transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 0.28s ease;
+}
+.card:hover {
+    transform: translateY(-4px) scale(1.01);
+
+    box-shadow:
+        0 10px 24px rgba(15, 23, 42, 0.08),
+        0 4px 8px rgba(15, 23, 42, 0.04);
+
+    border-color: #dbeafe;
 }
 
 .leftSection {
@@ -139,7 +151,7 @@
 .rightSection {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: stretch;
     gap: 12px;
 }
 
@@ -228,6 +240,7 @@
 }
 
 .statusSelect {
+    min-width: 160px;
     background: #3b82f6;
     color: white;
     border: none;
