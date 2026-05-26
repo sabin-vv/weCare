@@ -332,4 +332,19 @@ export class PatientService implements IPatientService {
 
         return await this.buildPatientDetails(doctor._id.toString(), patient)
     }
+
+    async updateClinicalStatus(
+        doctorId: string,
+        patientId: string,
+        clinicalStatus: ClinicalStatus,
+    ): Promise<PatientDetailsDTO> {
+        const { doctor } = await this.resolveDoctorPatientContext(doctorId, patientId)
+
+        const patient = await this._patientRepo.updateById(patientId, { clinicalStatus })
+        if (!patient) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+        }
+
+        return await this.buildPatientDetails(doctor._id.toString(), patient)
+    }
 }
