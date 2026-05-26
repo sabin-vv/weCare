@@ -12,6 +12,7 @@ import {
     updatePatientCondition,
     assignCaregiver,
     listCaregivers,
+    updateClinicalStatus,
 } from '../api/doctor.api'
 import MedicationTable from '../components/viewPatient/MedicationTable'
 import ProfileCard from '../components/viewPatient/ProfileCard'
@@ -288,6 +289,17 @@ const PatientViewPage = () => {
         }
     }
 
+    const handleClinicalStatusChange = async (clinicalStatus: string) => {
+        if (!patient) return
+        try {
+            const updated = await updateClinicalStatus(patient._id, clinicalStatus)
+            setPatient(updated.data)
+            toast.success(updated.message)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+        }
+    }
+
     return (
         <DoctorLayout>
             <MainWrapper>
@@ -301,6 +313,8 @@ const PatientViewPage = () => {
                     profileImage={patient.profileImage}
                     appointmentStatus={patient.appointmentStatus}
                     caregiver={patient.caregiver}
+                    clinicalStatus={patient.clinicalStatus}
+                    onClinicalStatusChange={handleClinicalStatusChange}
                     onStartConsultation={handleStartConsultation}
                     onCompleteConsultation={handleCompleteConsultation}
                     onAddCondition={() => {
