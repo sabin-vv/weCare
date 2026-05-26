@@ -179,3 +179,13 @@ export const listCaregivers = async (search?: string) => {
         profileImage: string
     }[]
 }
+
+export const updateClinicalStatus = async (
+    patientId: string,
+    clinicalStatus: string,
+): Promise<PatientDetailsResponse> => {
+    const res = await api.patch(`${PATIENTS_API}/${patientId}/clinical-status`, {
+        clinicalStatus,
+    })
+    return res.data.data
+}
