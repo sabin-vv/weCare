@@ -29,7 +29,7 @@
 
 .searchSection {
     display: grid;
-    grid-template-columns: 1fr 200px;
+    grid-template-columns: 1fr 250px;
     gap: 24px;
     margin-bottom: 32px;
 }
