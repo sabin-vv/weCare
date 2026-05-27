@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import type { ProfileCardProps } from '../../types/doctor.types'
 
 import styles from './ProfileCard.module.css'
@@ -24,6 +26,7 @@ const ProfileCard = ({
     clinicalStatus,
     onClinicalStatusChange,
 }: ProfileCardProps) => {
+    const [pendingStatus, setPendingStatus] = useState<string | null>(null)
     const baseUrl = env.AWS_BASE_URL
 
     const clinicalStatusOptions: SelectOptions[] = [
@@ -107,12 +110,34 @@ const ProfileCard = ({
             ) : (
                 <div className={styles.rightSection}>
                     <div className={styles.actions}>
-                        <SelectField
-                            className={styles.statusSelect}
-                            options={clinicalStatusOptions}
-                            value={clinicalStatus}
-                            onChange={(e) => onClinicalStatusChange?.(e.target.value)}
-                        />
+                        {pendingStatus ? (
+                            <div className={styles.confirmRow}>
+                                <span className={styles.confirmText}>
+                                    Change to <strong>{pendingStatus}</strong>?
+                                </span>
+                                <div className={styles.confirmActions}>
+                                    <button
+                                        className={styles.confirmBtn}
+                                        onClick={() => {
+                                            onClinicalStatusChange?.(pendingStatus)
+                                            setPendingStatus(null)
+                                        }}
+                                    >
+                                        Confirm
+                                    </button>
+                                    <button className={styles.cancelBtn} onClick={() => setPendingStatus(null)}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <SelectField
+                                className={styles.statusSelect}
+                                options={clinicalStatusOptions}
+                                value={clinicalStatus}
+                                onChange={(e) => setPendingStatus(e.target.value)}
+                            />
+                        )}
                     </div>
                     {caregiver ? (
                         <div className={styles.caregiverInfo}>
