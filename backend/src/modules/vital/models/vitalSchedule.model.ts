@@ -20,7 +20,7 @@ const vitalScheduleSchema = new Schema<VitalScheduleDocument>(
         },
         vitalType: {
             type: String,
-            enum: ['blood_pressure', 'blood_sugar', 'heart_rate', 'temperature', 'oxygen_saturation'],
+            enum: ['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate'],
             required: true,
         },
         scheduleDate: {

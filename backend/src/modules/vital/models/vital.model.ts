@@ -1,5 +1,6 @@
 import { model, Schema, Types } from 'mongoose'
 
+import { UserRole } from '../../auth/types/auth.types'
 import { VitalDocument } from '../types/vital.types'
 
 const vitalSchema = new Schema<VitalDocument>(
@@ -11,7 +12,7 @@ const vitalSchema = new Schema<VitalDocument>(
         },
         type: {
             type: String,
-            enum: ['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate', 'temperature'],
+            enum: ['blood_sugar', 'blood_pressure', 'spo2', 'heart_rate'],
             required: true,
         },
         value: {
@@ -35,7 +36,14 @@ const vitalSchema = new Schema<VitalDocument>(
         recordedBy: {
             type: Types.ObjectId,
             ref: 'User',
+        },
+        recordedByRole: {
+            type: String,
+            enum: [...Object.values(UserRole), 'system'],
             required: true,
+        },
+        notes: {
+            type: String,
         },
     },
     { timestamps: true },

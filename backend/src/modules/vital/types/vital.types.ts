@@ -1,8 +1,12 @@
 import { Document, Types } from 'mongoose'
 
+import { UserRole } from '../../auth/types/auth.types'
+
 export type VitalType = 'blood_sugar' | 'blood_pressure' | 'spo2' | 'heart_rate' | 'temperature'
 export type VitalPlanType = 'blood_pressure' | 'blood_sugar' | 'heart_rate' | 'temperature' | 'oxygen_saturation'
 export type VitalPlanStatus = 'active' | 'completed' | 'cancelled'
+
+export type RecordedByRole = UserRole | 'system'
 
 export interface VitalDocument extends Document {
     patientId: Types.ObjectId
@@ -12,7 +16,9 @@ export interface VitalDocument extends Document {
     diastolic?: number
     unit: string
     recordedAt: Date
-    recordedBy: Types.ObjectId
+    recordedBy?: Types.ObjectId
+    recordedByRole: RecordedByRole
+    notes?: string
     createdAt: Date
     updatedAt: Date
 }
