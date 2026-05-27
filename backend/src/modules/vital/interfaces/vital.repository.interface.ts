@@ -1,6 +1,13 @@
 import { Types } from 'mongoose'
 
-import { VitalDocument, VitalPlanDocument, VitalPlanStatus, VitalPlanType, VitalScheduleDocument, VitalType } from '../types/vital.types'
+import {
+    VitalDocument,
+    VitalPlanDocument,
+    VitalPlanStatus,
+    VitalPlanType,
+    VitalScheduleDocument,
+    VitalType,
+} from '../types/vital.types'
 
 export interface IVitalRepository {
     create(data: Partial<VitalDocument>): Promise<VitalDocument>
@@ -27,4 +34,5 @@ export interface IVitalRepository {
         patientId: Types.ObjectId,
         vitalType: VitalPlanType,
     ): Promise<VitalScheduleDocument | null>
+    findLatestByPatientId(patientId: string): Promise<VitalDocument[]>
 }
