@@ -1,4 +1,4 @@
-import { Activity, Droplet, Heart, Thermometer, Wind } from 'lucide-react'
+import { Activity, Droplet, Heart, Wind } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 
@@ -270,9 +270,7 @@ const PatientDashboardPage = () => {
                                                     return <Droplet {...iconProps} />
                                                 case 'heart_rate':
                                                     return <Heart {...iconProps} />
-                                                case 'temperature':
-                                                    return <Thermometer {...iconProps} />
-                                                case 'oxygen_saturation':
+                                                case 'spo2':
                                                     return <Wind {...iconProps} />
                                                 default:
                                                     return <Activity {...iconProps} />
