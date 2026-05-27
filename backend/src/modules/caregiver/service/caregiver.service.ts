@@ -222,11 +222,15 @@ export class CaregiverService implements ICaregiverService {
         const recordedValue = this._buildRecordedVitalValue(dto)
 
         let updatedScheduleId: string | undefined
+
+        const user = await this._userRepo.findById(caregiver.userId.toString())
+
         if (schedule) {
             const updatedSchedule = await this._vitalRepo.updateVitalSchedule(schedule._id.toString(), {
                 status: 'recorded',
                 recordedAt,
                 recordedBy: caregiver.userId,
+                recordedByRole: user?.role,
                 recordedValue,
                 recordedNotes: dto.notes,
             })
@@ -238,7 +242,7 @@ export class CaregiverService implements ICaregiverService {
             updatedScheduleId = updatedSchedule._id.toString()
         }
 
-        const vitalType = this._mapPlanVitalTypeToVitalType(dto.vitalType)
+        const vitalType = dto.vitalType
         const vital = await this._vitalRepo.create({
             patientId: patient._id,
             type: vitalType,
@@ -248,6 +252,7 @@ export class CaregiverService implements ICaregiverService {
             unit: recordedValue.unit || this._getVitalUnit(dto.vitalType),
             recordedAt,
             recordedBy: caregiver.userId,
+            recordedByRole: user?.role,
         } as Partial<VitalDocument>)
 
         return {
@@ -341,11 +346,6 @@ export class CaregiverService implements ICaregiverService {
         throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Unsupported medication route')
     }
 
-    private _mapPlanVitalTypeToVitalType(vitalType: LogVitalReadingDTO['vitalType']): VitalDocument['type'] {
-        if (vitalType === 'oxygen_saturation') return 'spo2'
-        return vitalType
-    }
-
     private _buildRecordedVitalValue(dto: LogVitalReadingDTO) {
         if (dto.vitalType === 'blood_pressure') {
             if (dto.systolic === undefined || dto.diastolic === undefined) {
@@ -377,9 +377,8 @@ export class CaregiverService implements ICaregiverService {
                 return 'mg/dL'
             case 'heart_rate':
                 return 'BPM'
-            case 'temperature':
-                return '°F'
-            case 'oxygen_saturation':
+
+            case 'spo2':
                 return '%'
             default:
                 return ''
