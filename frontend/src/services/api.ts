@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import toast from 'react-hot-toast'
 
 import { HTTP_STATUS } from '@/shared/constants/http'
 import { clearStoredUser } from '@/utils/authStorage'
@@ -14,19 +15,19 @@ export const api = axios.create({
 })
 
 interface FailedRequest {
-    resolve: (token: string) => void
+    resolve: () => void
     reject: (error: unknown) => void
 }
 
 let isRefreshing = false
 let failedQueue: FailedRequest[] = []
 
-const processQueue = (error: unknown, token?: string) => {
+const processQueue = (error: unknown) => {
     failedQueue.forEach((prom) => {
-        if (error || !token) {
+        if (error) {
             prom.reject(error)
         } else {
-            prom.resolve(token)
+            prom.resolve()
         }
     })
 
@@ -45,12 +46,13 @@ api.interceptors.response.use(
         if (error.response?.status === HTTP_STATUS.UNAUTHORIZED && !originalRequest._retry) {
             if (originalRequest.url === '/auth/refresh-token') {
                 clearStoredUser()
+                toast.error('Your session expired. Please log in.')
                 window.location.href = '/auth/login'
                 return Promise.reject(error)
             }
 
             if (isRefreshing) {
-                return new Promise<string>((resolve, reject) => {
+                return new Promise<void>((resolve, reject) => {
                     failedQueue.push({ resolve, reject })
                 })
                     .then(() => {
@@ -65,15 +67,15 @@ api.interceptors.response.use(
             isRefreshing = true
 
             try {
-                const res = await api.post<{ accessToken: string }>('/auth/refresh-token')
-                const newToken = res.data.accessToken
-                processQueue(null, newToken)
+                await api.post('/auth/refresh-token')
+                processQueue(null)
                 isRefreshing = false
                 return api(originalRequest)
             } catch (refreshError: unknown) {
-                processQueue(refreshError, undefined)
+                processQueue(refreshError)
                 isRefreshing = false
                 clearStoredUser()
+                toast.error('Your session expired. Please log in.')
                 window.location.href = '/auth/login'
                 return Promise.reject(refreshError)
             }
