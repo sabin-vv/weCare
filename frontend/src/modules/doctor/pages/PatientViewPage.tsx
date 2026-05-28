@@ -17,7 +17,7 @@ import {
 import MedicationTable from '../components/viewPatient/MedicationTable'
 import ProfileCard from '../components/viewPatient/ProfileCard'
 import VitalCard from '../components/viewPatient/VitalCard'
-import type { CaregiverOption, PatientDetails, PatientSeverityLevel, PatientVitalPlan } from '../types/doctor.types'
+import type { CaregiverOption, PatientDetails, RiskLevel, PatientVitalPlan } from '../types/doctor.types'
 
 import styles from './PatientViewPage.module.css'
 
@@ -29,7 +29,7 @@ import SearchField from '@/shared/components/SearchField/SearchField'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
-const SEVERITY_OPTIONS: Array<{ label: string; value: PatientSeverityLevel }> = [
+const SEVERITY_OPTIONS: Array<{ label: string; value: RiskLevel }> = [
     { label: 'Mild', value: 'mild' },
     { label: 'Moderate', value: 'moderate' },
     { label: 'Severe', value: 'severe' },
@@ -45,7 +45,7 @@ const PatientViewPage = () => {
     const [showConditionModal, setShowConditionModal] = useState(false)
     const [conditionQuery, setConditionQuery] = useState('')
     const [selectedConditions, setSelectedConditions] = useState<ConditionResult[]>([])
-    const [selectedSeverity, setSelectedSeverity] = useState<PatientSeverityLevel | ''>('')
+    const [selectedSeverity, setSelectedSeverity] = useState<RiskLevel | ''>('')
     const [conditionSuggestions, setConditionSuggestions] = useState<ConditionResult[]>([])
     const [isSearchingConditions, setIsSearchingConditions] = useState(false)
     const [isApplyingCondition, setIsApplyingCondition] = useState(false)
@@ -107,7 +107,7 @@ const PatientViewPage = () => {
                 code: condition,
             })),
         )
-        setSelectedSeverity((patient?.riskLevel as PatientSeverityLevel | undefined) ?? '')
+        setSelectedSeverity((patient?.riskLevel as RiskLevel | undefined) ?? '')
         setConditionSuggestions([])
         setIsSearchingConditions(false)
     }
