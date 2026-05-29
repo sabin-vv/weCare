@@ -2,7 +2,7 @@ import { Types } from 'mongoose'
 import { injectable } from 'tsyringe'
 
 import { IMedicationRepository } from '../interfaces/medication.repository.interface'
-import { SystemGeneratedScheduleModel } from '../model/medicationSchedule.model'
+import { SystemGeneratedScheduleModel } from '../models/medicationSchedule.model'
 import { MedicationScheduleInput, MedicationScheduleModel } from '../types/medication.type'
 
 @injectable()
