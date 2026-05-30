@@ -8,7 +8,7 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { IVitalService } from '../interfaces/vital.service.interface'
-import { VitalDocument, VitalPlanDocument, VitalScheduleDocument,VitalScheduleDTO } from '../types/vital.types'
+import { VitalDocument, VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
 import { CreateVitalDTO, CreateVitalPlanDTO } from '../validator/vital.schema'
 
 @injectable()
@@ -18,6 +18,27 @@ export class VitalService implements IVitalService {
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
     ) {}
+
+    private async resolveDoctorAndPlan(doctorId: string, planId: string) {
+        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
+
+        if (!doctor) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile Not found')
+        }
+
+        const plan = await this._vitalRepo.findVitalPlanById(planId)
+
+        if (!plan) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Vital plan not found')
+        }
+        return { doctor, plan }
+    }
+
+    private validatePlanOwnerShip(plan: VitalPlanDocument, doctorId: Types.ObjectId) {
+        if (plan.requestedBy.toString() !== doctorId.toString()) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to change vital plan')
+        }
+    }
 
     async createVital(recordedBy: string, dto: CreateVitalDTO): Promise<VitalDocument> {
         const patient = await this._patientRepo.findById(dto.patientId)
@@ -87,19 +108,9 @@ export class VitalService implements IVitalService {
     }
 
     async cancelVitalPlan(doctorUserId: string, planId: string): Promise<VitalPlanDocument> {
-        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorUserId))
-        if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
-        }
+        const { doctor, plan } = await this.resolveDoctorAndPlan(doctorUserId, planId)
 
-        const plan = await this._vitalRepo.findVitalPlanById(planId)
-        if (!plan) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Vital plan not found')
-        }
-
-        if (plan.requestedBy.toString() !== doctor._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to cancel this vital plan')
-        }
+        this.validatePlanOwnerShip(plan, doctor._id)
 
         if (plan.status === 'cancelled') {
             return plan
