@@ -162,4 +162,16 @@ export class VitalRepository extends BaseRepository<VitalDocument> implements IV
             },
         )
     }
+
+    async completeVitalPlanByPatientId(patientId: string): Promise<void> {
+        await vitalPlanModel.updateMany(
+            {
+                patientId: new Types.ObjectId(patientId),
+                status: { $in: ['active', 'paused'] },
+            },
+            {
+                $set: { status: 'completed' },
+            },
+        )
+    }
 }
