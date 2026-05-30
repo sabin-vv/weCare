@@ -3,8 +3,8 @@ import { Document, Types } from 'mongoose'
 import { UserRole } from '../../auth/types/auth.types'
 
 export type VitalType = 'blood_sugar' | 'blood_pressure' | 'spo2' | 'heart_rate'
-export type VitalPlanType = 'blood_pressure' | 'blood_sugar' | 'heart_rate' | 'spo2'
-export type VitalPlanStatus = 'active' | 'completed' | 'cancelled'
+
+export type VitalPlanStatus = 'active' | 'completed' | 'cancelled' | 'paused'
 
 export type RecordedByRole = UserRole | 'system'
 
@@ -24,7 +24,7 @@ export interface VitalDocument extends Document {
 }
 
 export interface VitalPlanItem {
-    type: VitalPlanType
+    type: VitalType
     frequencyValue: number
     frequencyUnit: 'hours' | 'days' | 'weeks'
     durationValue: number
@@ -37,6 +37,7 @@ export interface VitalPlanDocument extends Document {
     vitals: VitalPlanItem[]
     instructions?: string
     status: VitalPlanStatus
+    statusReason: string
     createdAt: Date
     updatedAt: Date
 }
@@ -45,7 +46,7 @@ export interface VitalScheduleDocument extends Document {
     vitalPlanId: Types.ObjectId
     patientId: Types.ObjectId
     caregiverId?: Types.ObjectId
-    vitalType: VitalPlanType
+    vitalType: VitalType
     scheduleDate: Date
     scheduleTime: Date
     endDate: Date
