@@ -110,10 +110,20 @@ export class PatientService implements IPatientService {
 
         return toPatientDetailsDTO(user, patient, appointment, caregiver, vitals, prescriptions)
     }
+
     private async pausePatientMonitoring(patientId: string, reason: string) {
-        this._vitalRepo.pauseVitalPlanByPatientId(patientId, reason)
-        this._vitalRepo.cancelPendingSchedulesByPatient(patientId, reason)
-        this._medicationRepo.cancelMedicationSchedulesByPatient(patientId, reason)
+        await this._vitalRepo.pauseVitalPlanByPatientId(patientId, reason)
+        await this._vitalRepo.cancelPendingSchedulesByPatient(patientId, reason)
+        await this._medicationRepo.cancelMedicationSchedulesByPatient(patientId, reason)
+        await this._prescriptionRepo.pausePrescription(patientId)
+    }
+
+    private async completePatientMonitoring(patientId: string, reason: string) {
+        await this._vitalRepo.completeVitalPlanByPatientId(patientId)
+        await this._vitalRepo.cancelPendingSchedulesByPatient(patientId, reason)
+        await this._prescriptionRepo.completePrescription(patientId)
+        await this._medicationRepo.cancelMedicationSchedulesByPatient(patientId, reason)
+        await this._patientRepo.removeCaregiver(patientId)
     }
 
     async registerPatient(dto: RegisterPatientDTO): Promise<PatientResponseDTO> {
