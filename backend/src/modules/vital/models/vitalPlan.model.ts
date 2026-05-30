@@ -59,8 +59,12 @@ const vitalPlanSchema = new Schema<VitalPlanDocument>(
         },
         status: {
             type: String,
-            enum: ['active', 'completed', 'cancelled'],
+            enum: ['active', 'completed', 'cancelled', 'paused'],
             default: 'active',
+        },
+        statusReason: {
+            type: String,
+            trim: true,
         },
     },
     { timestamps: true },
