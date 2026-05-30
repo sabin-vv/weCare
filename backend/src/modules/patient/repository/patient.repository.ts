@@ -2,9 +2,9 @@ import { Types } from 'mongoose'
 import { injectable } from 'tsyringe'
 
 import { BaseRepository } from '../../../core/base/base.repository'
-import { IPatientRepository, ListPatientParams } from '../interfaces/patient.repository.interface'
+import { IPatientRepository } from '../interfaces/patient.repository.interface'
 import { PatientModel } from '../models/patient.model'
-import { PatientDocument } from '../types/patient.types'
+import { ListPatientParams, PatientDocument } from '../types/patient.types'
 
 @injectable()
 export class PatientRepository extends BaseRepository<PatientDocument> implements IPatientRepository {
@@ -94,5 +94,15 @@ export class PatientRepository extends BaseRepository<PatientDocument> implement
         ])
 
         return { data, total }
+    }
+
+    async removeCaregiver(patientId: string): Promise<number> {
+        const result = await this.model.updateOne(
+            { _id: new Types.ObjectId(patientId) },
+            {
+                $set: { caregiverId: null },
+            },
+        )
+        return result.modifiedCount
     }
 }
