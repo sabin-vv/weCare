@@ -119,3 +119,16 @@ export interface PatientPrescriptionDTO {
     endDate?: string
     updatedAt: string
 }
+
+export interface ListPatientParams {
+    search: string
+    page: number
+    limit: number
+    primaryDoctorId: Types.ObjectId
+    accountStatus?: AccountStatus | 'all'
+    clinicalStatus?: ClinicalStatus | 'all'
+    riskLevel?: RiskLevel | 'all'
+    searchUserIds?: Types.ObjectId[]
+    userIds?: Types.ObjectId[]
+    excludeUserIds?: Types.ObjectId[]
+}
