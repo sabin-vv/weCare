@@ -99,7 +99,6 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .sort({ appointmentDate: 1, slotStart: 1 })
     }
 
-
     async findPatientIdsByStatus(doctorId: string, statuses: string[]): Promise<string[]> {
         const appointments = await AppointmentModel.find({
             doctorId,
@@ -156,5 +155,22 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             },
             { new: true },
         )
+    }
+
+    async cancelFutureAppointmentsByPatient(patientId: string, reason: string, cancelledBY: string): Promise<number> {
+        const now = new Date()
+        const result = await this.model.updateMany(
+            {
+                payientId: new Types.ObjectId(patientId),
+                appointmentDate: { $gte: now },
+                status: { $in: ['confirmed', 'pending_payment'] },
+            },
+            {
+                $set: { status: 'cancelled' },
+                cancelledAt: now,
+                cancelledBy: new Types.ObjectId(cancelledBY),
+            },
+        )
+        return result.modifiedCount
     }
 }
