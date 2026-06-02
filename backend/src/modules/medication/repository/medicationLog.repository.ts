@@ -20,7 +20,7 @@ export class MedicationLogRepository extends BaseRepository<MedicationLogDocumen
         return this.model.create({
             patientId: data.patientId,
             caregiverId: data.caregiverId,
-            medicationId: data.medicationId,
+            scheduleId: data.scheduleId,
             status: data.status,
             takenTime: data.takenTime,
             route: data.route,
