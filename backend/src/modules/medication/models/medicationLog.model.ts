@@ -42,6 +42,6 @@ const medicationLogSchema = new Schema<MedicationLogDocument>(
     { timestamps: true },
 )
 
-medicationLogSchema.index({ patientId: 1, medicationId: 1, takenTime: -1 })
+medicationLogSchema.index({ patientId: 1, scheduleId: 1, takenTime: -1 })
 
 export const MedicationLogModel = model<MedicationLogDocument>('MedicationLog', medicationLogSchema)
