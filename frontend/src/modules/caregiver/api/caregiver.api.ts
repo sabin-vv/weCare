@@ -1,8 +1,8 @@
-import type { CaregiverProfileResponse } from '../types/caregiver.types'
+import type { CaregiverProfileResponse, CreateReminderDTO, RemindersResponse } from '../types/caregiver.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
-import { CAREGIVERS_API } from '@/shared/constants/api.constants'
+import { CAREGIVERS_API, REMINDERS_API } from '@/shared/constants/api.constants'
 
 export const createCaregiverProfile = async (formData: FormData): Promise<ApiInterface> => {
     const res = await api.post(`${CAREGIVERS_API}/profile`, formData)
@@ -31,12 +31,16 @@ export interface MedicationSchedule {
     administrationNotes?: string
 }
 
-export interface VitalPlanItem {
+export interface VitalScheduleItem {
+    _id: string
+    vitalType: string
+    scheduleTime: string
+}
+
+export interface VitalPlanItem extends VitalScheduleItem {
     type: string
-    frequencyValue: number
-    frequencyUnit: string
-    durationValue: number
-    durationUnit: string
+    frequencyValue?: number
+    frequencyUnit?: string
 }
 
 export interface PatientSummary {
@@ -61,10 +65,13 @@ export const getPatientMedications = async (patientId: string): Promise<Medicati
 }
 
 export const getPatientVitalPlans = async (patientId: string): Promise<VitalPlanItem[]> => {
-    const res = await api.get<{ success: boolean; data: VitalPlanItem[]; message: string }>(
+    const res = await api.get<{ success: boolean; data: VitalScheduleItem[]; message: string }>(
         `${CAREGIVERS_API}/patients/${patientId}/vital-plans`,
     )
-    return res.data.data
+    return res.data.data.map((item) => ({
+        ...item,
+        type: item.vitalType,
+    }))
 }
 
 export const getMyPatients = async (): Promise<PatientSummary[]> => {
@@ -139,4 +146,21 @@ export const logSymptom = async (
         message: string
     }>(`${CAREGIVERS_API}/patients/${patientId}/symptoms/log`, data)
     return res.data.data
+}
+
+export const getReminders = async (): Promise<RemindersResponse> => {
+    const res = await api.get<{ success: boolean; data: RemindersResponse; message: string }>(REMINDERS_API)
+    return res.data.data
+}
+
+export const createReminder = async (dto: CreateReminderDTO): Promise<void> => {
+    await api.post(REMINDERS_API, dto)
+}
+
+export const markReminderDone = async (reminderId: string): Promise<void> => {
+    await api.patch(`${REMINDERS_API}/${reminderId}/done`)
+}
+
+export const deleteReminder = async (reminderId: string): Promise<void> => {
+    await api.delete(`${REMINDERS_API}/${reminderId}`)
 }
