@@ -30,4 +30,6 @@ export const TOKENS = {
     ISymptomLogService: Symbol('ISymptomLogService'),
     ISubscriptionRepository: Symbol('ISubscriptionRepository'),
     ISubscriptionService: Symbol('ISubscriptionService'),
+    IReminderRepository: Symbol('IReminderRepository'),
+    IReminderService: Symbol('IReminderService'),
 }
