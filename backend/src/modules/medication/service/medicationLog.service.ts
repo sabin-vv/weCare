@@ -16,7 +16,7 @@ export class MedicationLogService implements IMedicationLogService {
             ...dto,
             caregiverId: new Types.ObjectId(userId),
             patientId: new Types.ObjectId(dto.patientId),
-            medicationId: new Types.ObjectId(dto.medicationId),
+            scheduleId: new Types.ObjectId(dto.medicationId),
             takenTime: new Date(dto.takenTime),
             observations: dto.observations ?? '',
         })
