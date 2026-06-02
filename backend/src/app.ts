@@ -13,6 +13,7 @@ import { createMedicationLogRoutes } from './modules/medication/routes/medicatio
 import { createPatientRoutes } from './modules/patient/routes/patient.route'
 import { createPaymentRoutes } from './modules/payment/routes/payment.routes'
 import { createPrescriptionRoutes } from './modules/prescription/routes/prescription.route'
+import { createReminderRoutes } from './modules/reminder/routes/reminder.route'
 import { createSubscriptionRoutes } from './modules/subscription/routes/subscription.route'
 import { createSymptomLogRoutes } from './modules/symptom/routes/symptomLog.route'
 import { createUploadsRoutes } from './modules/uploads/routes/uploads.route'
@@ -46,6 +47,7 @@ app.use('/api/payments', createPaymentRoutes())
 app.use('/api/prescriptions', createPrescriptionRoutes())
 
 app.use('/api/medications', createMedicationRoutes())
+
 app.use('/api/medication-logs', createMedicationLogRoutes())
 
 app.use('/api/subscriptions', createSubscriptionRoutes())
@@ -55,6 +57,8 @@ app.use('/api/vitals', createVitalRoutes())
 app.use('/api/symptom-logs', createSymptomLogRoutes())
 
 app.use('/api/wallet', createWalletRoutes())
+
+app.use('/api/reminders', createReminderRoutes())
 
 app.use('/api/uploads', createUploadsRoutes())
 
