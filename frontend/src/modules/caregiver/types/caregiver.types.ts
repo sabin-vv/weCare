@@ -100,3 +100,38 @@ export interface SymptomLogFormState {
     severity: SymptomSeverity
     observations: string
 }
+
+export type ReminderSource = 'medication' | 'vital' | 'custom'
+
+export interface PatientOption {
+    _id: string
+    patientId: string
+    userName: string
+}
+
+export interface ReminderItem {
+    _id: string
+    source: ReminderSource
+    title: string
+    description?: string
+    patientId?: string
+    patientName?: string
+    scheduleTime: string
+    priority: 'low' | 'medium' | 'high' | 'critical'
+    status: 'pending' | 'completed' | 'missed'
+}
+
+export interface RemindersResponse {
+    reminders: ReminderItem[]
+    total: number
+    pendingCount: number
+    completedCount: number
+}
+
+export interface CreateReminderDTO {
+    title: string
+    description?: string
+    patientId?: string
+    scheduleTime: string
+    priority?: 'low' | 'medium' | 'high'
+}
