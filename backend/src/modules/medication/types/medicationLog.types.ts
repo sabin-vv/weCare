@@ -16,7 +16,7 @@ export interface MedicationLogDocument extends Document {
 export interface MedicationLogInput {
     patientId: Types.ObjectId
     caregiverId: Types.ObjectId
-    medicationId: Types.ObjectId
+    scheduleId: Types.ObjectId
     status: 'on_time' | 'taken_late' | 'skipped'
     takenTime: Date
     route: string
@@ -27,7 +27,7 @@ export interface MedicationLogDTO {
     _id: string
     patientId: string
     caregiverId: string
-    medicationId: string
+    scheduleId: string
     status: string
     takenTime: string
     route: string
