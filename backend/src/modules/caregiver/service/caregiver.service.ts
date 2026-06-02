@@ -195,7 +195,7 @@ export class CaregiverService implements ICaregiverService {
         await this._medicationLogRepo.create({
             patientId: patient._id,
             caregiverId: caregiver.userId,
-            medicationId: schedule._id,
+            scheduleId: schedule._id,
             status: dto.status,
             takenTime: administeredAt,
             route: normalizedRoute,
