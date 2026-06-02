@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import styles from './CaregiverLayout.module.css'
 
 import CaregiverHeader from '@/modules/caregiver/components/CaregiverHeader'
+import Footer from '@/shared/components/Footer/Footer'
 
 const CaregiverLayout = () => {
     return (
@@ -13,6 +14,7 @@ const CaregiverLayout = () => {
                     <div className={styles.content}>
                         <Outlet />
                     </div>
+                    <Footer />
                 </main>
             </div>
         </div>
