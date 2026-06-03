@@ -1,7 +1,6 @@
 import { Types } from 'mongoose'
 
 import {
-    VitalDocument,
     VitalPlanDocument,
     VitalPlanStatus,
     VitalScheduleDocument,
@@ -9,10 +8,6 @@ import {
 } from '../types/vital.types'
 
 export interface IVitalRepository {
-    create(data: Partial<VitalDocument>): Promise<VitalDocument>
-    findById(id: string): Promise<VitalDocument | null>
-    findByPatientId(patientId: string): Promise<VitalDocument[]>
-    findByPatientIdAndType(patientId: string, type: VitalType): Promise<VitalDocument[]>
     createVitalPlan(data: Partial<VitalPlanDocument>): Promise<VitalPlanDocument>
     findVitalPlanById(planId: string): Promise<VitalPlanDocument | null>
     findVitalPlansByPatientId(patientId: string): Promise<VitalPlanDocument[]>
@@ -33,13 +28,10 @@ export interface IVitalRepository {
         patientId: Types.ObjectId,
         vitalType: VitalType,
     ): Promise<VitalScheduleDocument | null>
-    findLatestByPatientId(patientId: string): Promise<VitalDocument[]>
+    findLatestRecordedSchedulesByPatientId(patientId: Types.ObjectId): Promise<VitalScheduleDocument[]>
 
     pauseVitalPlanByPatientId(patientId: string, reason: string): Promise<void>
-
     cancelPendingSchedulesByPatient(patientId: string, reason: string): Promise<void>
-
     completeVitalPlanByPatientId(patientId: string): Promise<void>
-
     resumeVitalPlanByPatientId(patientId: string): Promise<void>
 }
