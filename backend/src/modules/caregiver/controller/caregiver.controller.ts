@@ -117,6 +117,28 @@ export class CaregiverController {
         })
     }
 
+    getPatientVitalSchedules = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+        if (!caregiver) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+        }
+
+        const { patientId } = req.params as { patientId: string }
+
+        const schedules = await this._caregiverService.getPatientVitalSchedules(caregiver._id, patientId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: schedules,
+            message: 'Patient vital schedules fetched',
+        })
+    }
+
     getMyPatients = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
