@@ -11,7 +11,7 @@ import { MedicationScheduleDTO } from '../../medication/types/medication.type'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { SymptomLogModel } from '../../symptom/models/symptomLog.model'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
-import { VitalDocument, VitalPlanItem } from '../../vital/types/vital.types'
+import { VitalPlanItem, VitalScheduleDTO } from '../../vital/types/vital.types'
 import { ICaregiverRepository, PatientSummary } from '../interfaces/caregiver.repository.interface'
 import { ICaregiverService } from '../interfaces/caregiver.service.interface'
 import {
@@ -153,6 +153,39 @@ export class CaregiverService implements ICaregiverService {
         return items
     }
 
+    async getPatientVitalSchedules(
+        caregiverId: Types.ObjectId,
+        patientId: string,
+    ): Promise<VitalScheduleDTO[]> {
+        const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
+        if (!caregiver) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+        }
+
+        const patient = await this._patientRepo.findById(patientId)
+        if (!patient) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+        }
+
+        if (patient.caregiverId?.toString() !== caregiver.userId.toString()) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
+        }
+
+        const schedules = await this._vitalRepo.findVitalSchedulesByPatientId(patient._id)
+
+        return schedules.map((schedule) => ({
+            _id: schedule._id.toString(),
+            vitalType: schedule.vitalType,
+            scheduleTime: schedule.scheduleTime.toISOString(),
+            endDate: schedule.endDate.toISOString(),
+            priority: schedule.priority,
+            status: schedule.status,
+            recordedValue: schedule.recordedValue,
+            recordedAt: schedule.recordedAt?.toISOString(),
+            recordedNotes: schedule.recordedNotes,
+        }))
+    }
+
     async getMyPatients(caregiverId: Types.ObjectId): Promise<PatientSummary[]> {
         return await this._caregiverRepo.findPatientsByCaregiver(caregiverId)
     }
@@ -242,21 +275,8 @@ export class CaregiverService implements ICaregiverService {
             updatedScheduleId = updatedSchedule._id.toString()
         }
 
-        const vitalType = dto.vitalType
-        const vital = await this._vitalRepo.create({
-            patientId: patient._id,
-            type: vitalType,
-            value: recordedValue.value,
-            systolic: recordedValue.systolic,
-            diastolic: recordedValue.diastolic,
-            unit: recordedValue.unit || this._getVitalUnit(dto.vitalType),
-            recordedAt,
-            recordedBy: caregiver.userId,
-            recordedByRole: user?.role,
-        } as Partial<VitalDocument>)
-
         return {
-            vitalId: vital._id.toString(),
+            vitalId: updatedScheduleId ?? '',
             vitalType: dto.vitalType,
             scheduleId: updatedScheduleId,
             recordedAt: recordedAt.toISOString(),
