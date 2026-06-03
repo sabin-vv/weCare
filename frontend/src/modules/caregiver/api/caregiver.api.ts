@@ -1,4 +1,11 @@
-import type { CaregiverProfileResponse, CreateReminderDTO, RemindersResponse } from '../types/caregiver.types'
+import type {
+    CaregiverProfileResponse,
+    CreateReminderDTO,
+    MedicationSchedule,
+    PatientSummary,
+    RemindersResponse,
+    VitalScheduleItem,
+} from '../types/caregiver.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
@@ -19,44 +26,6 @@ export const updateCaregiverProfile = async (data: Record<string, unknown>): Pro
     return res.data
 }
 
-export interface MedicationSchedule {
-    _id: string
-    medicineName: string
-    dosage: string
-    route: string
-    scheduleTime: string
-    priority: string
-    status: string
-    administeredAt?: string
-    administrationNotes?: string
-}
-
-export interface VitalScheduleItem {
-    _id: string
-    vitalType: string
-    scheduleTime: string
-}
-
-export interface VitalPlanItem extends VitalScheduleItem {
-    type: string
-    frequencyValue?: number
-    frequencyUnit?: string
-}
-
-export interface PatientSummary {
-    _id: string
-    patientId: string
-    userName: string
-    userMobile: string
-    userEmail: string
-    dateOfBirth: string
-    gender: string
-    conditions: string[]
-    riskLevel: string
-    clinicalStatus: string
-    profileImage?: string
-}
-
 export const getPatientMedications = async (patientId: string): Promise<MedicationSchedule[]> => {
     const res = await api.get<{ success: boolean; data: MedicationSchedule[]; message: string }>(
         `${CAREGIVERS_API}/patients/${patientId}/medications`,
@@ -64,14 +33,11 @@ export const getPatientMedications = async (patientId: string): Promise<Medicati
     return res.data.data
 }
 
-export const getPatientVitalPlans = async (patientId: string): Promise<VitalPlanItem[]> => {
+export const getPatientVitalSchedules = async (patientId: string): Promise<VitalScheduleItem[]> => {
     const res = await api.get<{ success: boolean; data: VitalScheduleItem[]; message: string }>(
-        `${CAREGIVERS_API}/patients/${patientId}/vital-plans`,
+        `${CAREGIVERS_API}/patients/${patientId}/vital-schedules`,
     )
-    return res.data.data.map((item) => ({
-        ...item,
-        type: item.vitalType,
-    }))
+    return res.data.data
 }
 
 export const getMyPatients = async (): Promise<PatientSummary[]> => {
