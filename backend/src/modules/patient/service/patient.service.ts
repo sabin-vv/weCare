@@ -16,7 +16,6 @@ import { IVitalRepository } from '../../vital/interfaces/vital.repository.interf
 import { IPatientRepository } from '../interfaces/patient.repository.interface'
 import { IPatientService } from '../interfaces/patient.service.interface'
 import {
-    type PatientResponseDTO,
     toListPatientsMapper,
     toPatientDetailsDTO,
     toPatientEntity,
@@ -29,7 +28,9 @@ import {
     ListPatientsResponse,
     PatientDetailsDTO,
     PatientDocument,
+    PatientEntity,
     PatientProfileResponseDTO,
+    PatientResponseDTO,
     RiskLevel,
 } from '../types/patient.types'
 import { RegisterPatientDTO } from '../validator/patient.schema'
@@ -110,7 +111,7 @@ export class PatientService implements IPatientService {
         }
 
         const [vitals, prescriptions] = await Promise.all([
-            this._vitalRepo.findLatestByPatientId(patient._id.toString()),
+            this._vitalRepo.findLatestRecordedSchedulesByPatientId(patient._id),
             this._prescriptionRepo.findByPatientId(patient._id.toString()),
         ])
 
@@ -157,7 +158,7 @@ export class PatientService implements IPatientService {
         const user = await this._userRepo.create(userData)
 
         const patientId = await this.generateNextPatientId()
-        const patientData = toPatientEntity(user._id, patientId, dto)
+        const patientData: PatientEntity = toPatientEntity(user._id, patientId, dto)
         const patient = await this._patientRepo.create(patientData)
         return toPatientResponseDTO(user, patient)
     }
