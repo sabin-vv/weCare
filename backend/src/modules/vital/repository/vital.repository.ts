@@ -1,13 +1,10 @@
 import { Types } from 'mongoose'
 import { injectable } from 'tsyringe'
 
-import { BaseRepository } from '../../../core/base/base.repository'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
-import { VitalModel } from '../models/vital.model'
 import { vitalPlanModel } from '../models/vitalPlan.model'
 import { vitalScheduleModel } from '../models/vitalSchedule.model'
 import {
-    VitalDocument,
     VitalPlanDocument,
     VitalPlanStatus,
     VitalScheduleDocument,
@@ -15,19 +12,7 @@ import {
 } from '../types/vital.types'
 
 @injectable()
-export class VitalRepository extends BaseRepository<VitalDocument> implements IVitalRepository {
-    constructor() {
-        super(VitalModel)
-    }
-
-    async findByPatientId(patientId: string): Promise<VitalDocument[]> {
-        return await this.model.find({ patientId }).sort({ recordedAt: -1, createdAt: -1 })
-    }
-
-    async findByPatientIdAndType(patientId: string, type: VitalType): Promise<VitalDocument[]> {
-        return await this.model.find({ patientId, type }).sort({ recordedAt: -1, createdAt: -1 })
-    }
-
+export class VitalRepository implements IVitalRepository {
     async createVitalPlan(data: Partial<VitalPlanDocument>): Promise<VitalPlanDocument> {
         return await vitalPlanModel.create(data)
     }
@@ -124,13 +109,15 @@ export class VitalRepository extends BaseRepository<VitalDocument> implements IV
             .sort({ scheduleTime: 1 })
             .lean() as unknown as VitalScheduleDocument | null
     }
-    async findLatestByPatientId(patientId: string): Promise<VitalDocument[]> {
-        return this.model.aggregate([
-            { $match: { patientId: new Types.ObjectId(patientId) } },
-            { $sort: { recordedAt: -1 } },
-            { $group: { _id: '$type', doc: { $first: '$$ROOT' } } },
-            { $replaceRoot: { newRoot: '$doc' } },
-        ])
+
+    async findLatestRecordedSchedulesByPatientId(patientId: Types.ObjectId): Promise<VitalScheduleDocument[]> {
+        return vitalScheduleModel
+            .aggregate([
+                { $match: { patientId, status: 'recorded', recordedAt: { $ne: null } } },
+                { $sort: { recordedAt: -1 } },
+                { $group: { _id: '$vitalType', doc: { $first: '$$ROOT' } } },
+                { $replaceRoot: { newRoot: '$doc' } },
+            ]) as unknown as VitalScheduleDocument[]
     }
 
     async pauseVitalPlanByPatientId(patientId: string, reason: string): Promise<void> {
