@@ -135,3 +135,46 @@ export interface CreateReminderDTO {
     scheduleTime: string
     priority?: 'low' | 'medium' | 'high'
 }
+
+export interface MedicationSchedule {
+    _id: string
+    medicineName: string
+    dosage: string
+    route: string
+    scheduleTime: string
+    priority: 'low' | 'medium' | 'high' | 'critical'
+    status: 'pending' | 'administered' | 'missed' | 'skipped' | 'cancelled'
+    administeredAt?: string
+    administrationNotes?: string
+}
+
+export interface VitalScheduleItem {
+    _id: string
+    vitalType: string
+    scheduleTime: string
+    endDate: string
+    priority: string
+    status: 'pending' | 'recorded' | 'missed' | 'skipped' | 'cancelled'
+    recordedValue?: {
+        systolic?: number
+        diastolic?: number
+        value?: number
+        unit?: string
+    }
+    recordedAt?: string
+    recordedNotes?: string
+}
+
+export interface PatientSummary {
+    _id: string
+    patientId: string
+    userName: string
+    userMobile: string
+    userEmail: string
+    dateOfBirth: string
+    gender: string
+    conditions: string[]
+    riskLevel: string
+    clinicalStatus: string
+    profileImage?: string
+}
