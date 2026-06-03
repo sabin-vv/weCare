@@ -30,6 +30,7 @@ export const createCaregiverRoutes = () => {
     )
     router.get('/patients/:patientId/medications', requireAuth, caregiverController.getPatientMedications)
     router.get('/patients/:patientId/vital-plans', requireAuth, caregiverController.getPatientVitalPlans)
+    router.get('/patients/:patientId/vital-schedules', requireAuth, caregiverController.getPatientVitalSchedules)
     router.post(
         '/patients/:patientId/medications/:scheduleId/log',
         requireAuth,
