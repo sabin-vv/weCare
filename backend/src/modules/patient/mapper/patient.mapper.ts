@@ -3,7 +3,7 @@ import { Types } from 'mongoose'
 import { AppointmentDocument } from '../../appointment/types/appointment.types'
 import { UserDocument } from '../../auth/types/auth.types'
 import { PrescriptionDocument } from '../../prescription/types/prescription.types'
-import { VitalDocument } from '../../vital/types/vital.types'
+import { VitalScheduleDocument } from '../../vital/types/vital.types'
 import {
     ListPatientMapper,
     PatientDetailsDTO,
@@ -11,19 +11,10 @@ import {
     PatientEntity,
     PatientPrescriptionDTO,
     PatientProfileResponseDTO,
+    PatientResponseDTO,
     PatientVitalDTO,
 } from '../types/patient.types'
 import { RegisterPatientDTO } from '../validator/patient.schema'
-
-export interface PatientResponseDTO {
-    id: string
-    userId: string
-    patientId: string
-    dateOfBirth: string
-    gender: string
-    profileImage?: string
-    isActive: boolean
-}
 
 export const toPatientEntity = (userId: Types.ObjectId, patientId: string, dto: RegisterPatientDTO): PatientEntity => {
     return {
@@ -88,7 +79,7 @@ export const toPatientDetailsDTO = (
     patient: PatientDocument,
     appointment: AppointmentDocument | null,
     caregiver: UserDocument | null,
-    vitals: VitalDocument[],
+    vitals: VitalScheduleDocument[],
     prescriptions: PrescriptionDocument[],
 ): PatientDetailsDTO => {
     const appointmentStatusForDetails =
@@ -100,19 +91,20 @@ export const toPatientDetailsDTO = (
     const age = new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()
     const mappedVitals: PatientVitalDTO[] = vitals.map((vital) => ({
         _id: vital._id.toString(),
-        type: vital.type,
-        value: vital.value,
-        systolic: vital.systolic,
-        diastolic: vital.diastolic,
-        unit: vital.unit,
-        recordedAt: vital.recordedAt.toLocaleString('en-IN', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-        }),
+        type: vital.vitalType,
+        value: vital.recordedValue?.value,
+        systolic: vital.recordedValue?.systolic,
+        diastolic: vital.recordedValue?.diastolic,
+        unit: vital.recordedValue?.unit ?? '',
+        recordedAt:
+            vital.recordedAt?.toLocaleString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            }) ?? '',
         recordedBy: vital.recordedBy?.toString(),
     }))
     const mappedPrescriptions: PatientPrescriptionDTO[] = prescriptions.map((prescription) => ({
