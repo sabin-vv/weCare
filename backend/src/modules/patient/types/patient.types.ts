@@ -132,3 +132,13 @@ export interface ListPatientParams {
     userIds?: Types.ObjectId[]
     excludeUserIds?: Types.ObjectId[]
 }
+
+export interface PatientResponseDTO {
+    id: string
+    userId: string
+    patientId: string
+    dateOfBirth: string
+    gender: string
+    profileImage?: string
+    isActive: boolean
+}
