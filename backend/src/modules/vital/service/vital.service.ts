@@ -8,8 +8,8 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { IVitalService } from '../interfaces/vital.service.interface'
-import { VitalDocument, VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
-import { CreateVitalDTO, CreateVitalPlanDTO } from '../validator/vital.schema'
+import { VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
+import { CreateVitalPlanDTO } from '../validator/vital.schema'
 
 @injectable()
 export class VitalService implements IVitalService {
@@ -38,37 +38,6 @@ export class VitalService implements IVitalService {
         if (plan.requestedBy.toString() !== doctorId.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to change vital plan')
         }
-    }
-
-    async createVital(recordedBy: string, dto: CreateVitalDTO): Promise<VitalDocument> {
-        const patient = await this._patientRepo.findById(dto.patientId)
-        if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
-        }
-
-        return await this._vitalRepo.create({
-            patientId: patient._id,
-            type: dto.type,
-            value: dto.value,
-            systolic: dto.systolic,
-            diastolic: dto.diastolic,
-            unit: dto.unit,
-            recordedAt: dto.recordedAt ? new Date(dto.recordedAt) : new Date(),
-            recordedBy: new Types.ObjectId(recordedBy),
-        })
-    }
-
-    async getPatientVitals(patientId: string, type?: string): Promise<VitalDocument[]> {
-        const patient = await this._patientRepo.findById(patientId)
-        if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
-        }
-
-        if (type) {
-            return await this._vitalRepo.findByPatientIdAndType(patientId, type as VitalDocument['type'])
-        }
-
-        return await this._vitalRepo.findByPatientId(patientId)
     }
 
     async createVitalPlan(doctorUserId: string, dto: CreateVitalPlanDTO): Promise<VitalPlanDocument> {
