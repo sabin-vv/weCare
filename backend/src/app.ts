@@ -4,6 +4,7 @@ import express from 'express'
 
 import { errorMiddleware } from './core/middleware/errorMiddleware'
 import { createAdminRoutes } from './modules/admin/routes/admin.route'
+import { createAlertRoutes } from './modules/alert/routes/alert.route'
 import { createAppointmentRoutes } from './modules/appointment/routes/appointment.route'
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
@@ -59,6 +60,8 @@ app.use('/api/symptom-logs', createSymptomLogRoutes())
 app.use('/api/wallet', createWalletRoutes())
 
 app.use('/api/reminders', createReminderRoutes())
+
+app.use('/api/alerts', createAlertRoutes())
 
 app.use('/api/uploads', createUploadsRoutes())
 
