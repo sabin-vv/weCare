@@ -19,4 +19,5 @@ export const doctorNavLinks: NavLink[] = [
     { label: 'Patient List', path: '/doctor/patients' },
     { label: 'Appointments', path: '/doctor/appointments' },
     { label: 'Schedule', path: '/doctor/availability' },
+    { label: 'Alerts', path: '/doctor/alerts' },
 ]
