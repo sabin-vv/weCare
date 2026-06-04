@@ -48,6 +48,10 @@ import { IPrescriptionRepository } from '../modules/prescription/interfaces/pres
 import { IPrescriptionService } from '../modules/prescription/interfaces/prescription.service.interface'
 import { PrescriptionRepository } from '../modules/prescription/repository/prescription.repository'
 import { PrescriptionService } from '../modules/prescription/service/prescription.service'
+import { IAlertRepository } from '../modules/alert/interfaces/alert.repository.interface'
+import { IAlertService } from '../modules/alert/interfaces/alert.service.interface'
+import { AlertRepository } from '../modules/alert/repository/alert.repository'
+import { AlertService } from '../modules/alert/service/alert.service'
 import { IReminderRepository } from '../modules/reminder/interfaces/reminder.repository.interface'
 import { IReminderService } from '../modules/reminder/interfaces/reminder.service.interface'
 import { ReminderRepository } from '../modules/reminder/repository/reminder.repository'
@@ -122,6 +126,9 @@ container.register<ISymptomLogService>(TOKENS.ISymptomLogService, { useClass: Sy
 
 container.register<ISubscriptionRepository>(TOKENS.ISubscriptionRepository, { useClass: SubscriptionRepository })
 container.register<ISubscriptionService>(TOKENS.ISubscriptionService, { useClass: SubscriptionService })
+
+container.register<IAlertRepository>(TOKENS.IAlertRepository, { useClass: AlertRepository })
+container.register<IAlertService>(TOKENS.IAlertService, { useClass: AlertService })
 
 container.register<IReminderRepository>(TOKENS.IReminderRepository, { useClass: ReminderRepository })
 container.register<IReminderService>(TOKENS.IReminderService, { useClass: ReminderService })
