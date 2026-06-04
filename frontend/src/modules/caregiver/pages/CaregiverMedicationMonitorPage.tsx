@@ -21,20 +21,20 @@ import { useParams } from 'react-router-dom'
 
 import {
     getPatientMedications,
-    getPatientVitalPlans,
+    getPatientVitalSchedules,
     logMedicationAction,
     logSymptom,
     logVitalReading,
-    type MedicationSchedule,
-    type VitalPlanItem,
 } from '../api/caregiver.api'
 import type {
     AlertCard,
     MedicationLogFormState,
+    MedicationSchedule,
     SymptomLogFormState,
     SymptomSeverity,
     TimelineItem,
     VitalLogFormState,
+    VitalScheduleItem,
 } from '../types/caregiver.types'
 
 import styles from './CaregiverMedicationMonitorPage.module.css'
@@ -99,10 +99,56 @@ const symptomOptions = [
     'Cough',
 ]
 
+const formatTime = (isoString: string) =>
+    new Date(isoString).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+
+const formatDate = (isoString: string) =>
+    new Date(isoString).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
+const getMedicationStatusMeta = (status: MedicationSchedule['status']) => {
+    switch (status) {
+        case 'administered':
+            return {
+                title: 'Medication Administered',
+                note: 'Administered',
+                tone: 'success' as const,
+                actionLabel: 'Administered',
+            }
+        case 'missed':
+            return {
+                title: 'Medication Deviation',
+                note: 'Missed dose',
+                tone: 'critical' as const,
+                actionLabel: 'Take Action',
+            }
+        case 'skipped':
+            return {
+                title: 'Medication Skipped',
+                note: 'Skipped',
+                tone: 'warning' as const,
+                actionLabel: 'Skipped',
+            }
+        case 'cancelled':
+            return {
+                title: 'Medication Cancelled',
+                note: 'Cancelled',
+                tone: 'warning' as const,
+                actionLabel: 'Cancelled',
+            }
+        default:
+            return {
+                title: 'Medication Scheduled',
+                note: 'Scheduled',
+                tone: 'warning' as const,
+                actionLabel: 'Take Action',
+            }
+    }
+}
+
 const CaregiverMedicationMonitorPage = () => {
     const { patientId } = useParams<{ patientId: string }>()
     const [medications, setMedications] = useState<MedicationSchedule[]>([])
-    const [vitalPlans, setVitalPlans] = useState<VitalPlanItem[]>([])
+    const [vitalSchedules, setVitalSchedules] = useState<VitalScheduleItem[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [selectedMedication, setSelectedMedication] = useState<MedicationSchedule | null>(null)
@@ -139,10 +185,10 @@ const CaregiverMedicationMonitorPage = () => {
             if (showRefreshLoader) setIsRefreshing(true)
             const [medData, vitalData] = await Promise.all([
                 getPatientMedications(patientId),
-                getPatientVitalPlans(patientId),
+                getPatientVitalSchedules(patientId),
             ])
             setMedications(medData)
-            setVitalPlans(vitalData)
+            setVitalSchedules(vitalData)
         } catch (err) {
             console.error('Error fetching data:', err)
             toast.error(getErrorMessage(err))
@@ -160,16 +206,17 @@ const CaregiverMedicationMonitorPage = () => {
         fetchData()
     }, [patientId])
 
+    const now = new Date()
     const alerts: AlertCard[] = medications
-        .filter((med) => med.status === 'missed' || med.status === 'pending')
+        .filter((med) => med.status === 'missed' || (med.status === 'pending' && new Date(med.scheduleTime) < now))
         .map((med) => {
             const time = new Date(med.scheduleTime)
-            const timeStr = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+            const timeStr = `${formatDate(med.scheduleTime)}, ${formatTime(med.scheduleTime)}`
             const isOverdue = med.status === 'missed' || time < new Date()
             return {
                 id: med._id,
-                title: med.status === 'missed' ? 'Missed Dose' : 'Pending Dose',
-                medicine: med.medicineName,
+                title: med.status === 'missed' ? 'Missed Dose' : 'Overdue Dose',
+                medicine: `${med.medicineName} ${med.dosage}`,
                 scheduled: timeStr,
                 route: med.route,
                 overdue: isOverdue ? 'Needs attention' : '',
@@ -180,26 +227,32 @@ const CaregiverMedicationMonitorPage = () => {
     const timeline: TimelineItem[] = [...medications]
         .sort((a, b) => new Date(a.scheduleTime).getTime() - new Date(b.scheduleTime).getTime())
         .map((med) => {
-            const time = new Date(med.scheduleTime)
-            const timeStr = time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-            const note =
-                med.status === 'administered' ? 'Administered' : med.status === 'missed' ? 'Missed dose' : 'Scheduled'
+            const statusMeta = getMedicationStatusMeta(med.status)
             return {
                 id: med._id,
-                time: timeStr,
-                title:
-                    med.status === 'administered'
-                        ? `Medication Administered`
-                        : med.status === 'missed'
-                          ? `Medication Deviation`
-                          : `Medication Scheduled`,
+                time: formatTime(med.scheduleTime),
+                title: statusMeta.title,
                 medicine: `${med.medicineName} ${med.dosage}`,
-                note,
+                note: statusMeta.note,
                 route: med.route,
-                tone: med.status === 'administered' ? 'success' : med.status === 'missed' ? 'critical' : 'warning',
-                actionLabel: med.status === 'administered' ? 'Administered' : 'Take Action',
+                tone: statusMeta.tone,
+                actionLabel: statusMeta.actionLabel,
             }
         })
+
+    const scheduleCards = (() => {
+        const grouped = new Map<string, VitalScheduleItem>()
+        for (const s of vitalSchedules) {
+            const existing = grouped.get(s.vitalType)
+            if (!existing || (existing.status !== 'pending' && s.status === 'pending')) {
+                grouped.set(s.vitalType, s)
+            }
+        }
+        return Array.from(grouped.entries()).map(([type, schedule]) => ({
+            type,
+            schedule,
+        }))
+    })()
 
     const openMedicationModal = (medication: MedicationSchedule) => {
         const scheduledDate = new Date(medication.scheduleTime)
@@ -248,7 +301,7 @@ const CaregiverMedicationMonitorPage = () => {
     }
 
     const openVitalModal = (vitalType?: string) => {
-        const fallbackType = vitalType || vitalPlans[0]?.type || 'blood_pressure'
+        const fallbackType = vitalType || vitalSchedules[0]?.vitalType || 'blood_pressure'
         const now = new Date()
         const defaultTime = now.toLocaleTimeString('en-GB', {
             hour: '2-digit',
@@ -443,8 +496,8 @@ const CaregiverMedicationMonitorPage = () => {
                         <div className={styles.sectionTitleWrap}>
                             <Heart size={18} className={styles.sectionIconInfo} />
                             <div>
-                                <h3 className={styles.sectionTitle}>Vital Snapshot</h3>
-                                <p className={styles.sectionHint}>Latest recorded patient metrics</p>
+                                <h3 className={styles.sectionTitle}>Vital Checks</h3>
+                                <p className={styles.sectionHint}>Active vital plans ready for logging</p>
                             </div>
                         </div>
                         <button type="button" className={styles.secondaryAction} onClick={() => openVitalModal()}>
@@ -454,42 +507,49 @@ const CaregiverMedicationMonitorPage = () => {
                     </div>
 
                     <div className={styles.vitalsGrid}>
-                        {vitalPlans.length === 0 ? (
-                            <p className={styles.emptyText}>No vital plans assigned to this patient.</p>
+                        {scheduleCards.length === 0 ? (
+                            <p className={styles.emptyText}>No vital schedules for today.</p>
                         ) : (
-                            vitalPlans.map((vital) => {
-                                const Icon = iconMap[vital.type] || Activity
-                                const label = labelMap[vital.type] || vital.type
-                                const unit = unitMap[vital.type] || ''
+                            scheduleCards.map(({ type, schedule }) => {
+                                const Icon = iconMap[type] || Activity
+                                const label = labelMap[type] || type
+                                const unit = unitMap[type] || ''
+                                const scheduleTimeLabel = `${formatDate(schedule.scheduleTime)}, ${formatTime(schedule.scheduleTime)}`
+                                const statusLabel =
+                                    schedule.status === 'pending'
+                                        ? 'Pending'
+                                        : schedule.status === 'recorded'
+                                          ? 'Recorded'
+                                          : schedule.status === 'missed'
+                                            ? 'Missed'
+                                            : schedule.status
 
                                 return (
                                     <article
-                                        key={vital.type}
+                                        key={`${type}-${schedule._id}`}
                                         className={styles.vitalCard}
-                                        onClick={() => openVitalModal(vital.type)}
+                                        onClick={() => openVitalModal(type)}
                                         role="button"
                                         tabIndex={0}
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' || e.key === ' ') {
                                                 e.preventDefault()
-                                                openVitalModal(vital.type)
+                                                openVitalModal(type)
                                             }
                                         }}
                                     >
                                         <div className={styles.vitalTop}>
                                             <span className={styles.vitalLabel}>{label}</span>
-                                            <span className={styles.vitalStatus}>Awaiting first reading</span>
+                                            <span className={styles.vitalStatus}>Log reading</span>
                                         </div>
-                                        <div className={styles.vitalValueRow}>
-                                            <Icon size={18} className={styles.vitalIcon} />
-                                            <div className={styles.vitalValueWrap}>
-                                                <strong className={styles.vitalValue}>—</strong>
-                                                <span className={styles.vitalUnit}>{unit}</span>
-                                            </div>
+                                    <div className={styles.vitalValueRow}>
+                                        <Icon size={18} className={styles.vitalIcon} />
+                                        <div className={styles.vitalValueWrap}>
+                                            <strong className={styles.vitalValue}>{scheduleTimeLabel}</strong>
+                                            {unit && <span className={styles.vitalUnit}>{unit}</span>}
                                         </div>
-                                        <span className={styles.vitalUpdated}>
-                                            Frequency: every {vital.frequencyValue} {vital.frequencyUnit}
-                                        </span>
+                                    </div>
+                                    <span className={styles.vitalUpdated}>{statusLabel}</span>
                                     </article>
                                 )
                             })
@@ -580,7 +640,12 @@ const CaregiverMedicationMonitorPage = () => {
                         <button type="button" className={styles.modalCancelBtn} onClick={closeMedicationModal}>
                             Cancel
                         </button>
-                        <button type="button" className={styles.modalSaveBtn} onClick={handleMedicationLogSubmit}>
+                        <button
+                            type="button"
+                            className={styles.modalSaveBtn}
+                            disabled={isSavingMedication || !medicationLogForm.takenTime || !medicationLogForm.route}
+                            onClick={handleMedicationLogSubmit}
+                        >
                             {isSavingMedication ? 'Saving...' : 'Save Log'}
                         </button>
                     </div>
@@ -662,8 +727,7 @@ const CaregiverMedicationMonitorPage = () => {
                                         }))
                                     }
                                 >
-                                    <option value="oral">Oral (Tablet)</option>
-                                    <option value="oral">Oral (Liquid)</option>
+                                    <option value="oral">Oral</option>
                                     <option value="injection">Injection</option>
                                     <option value="IV">IV</option>
                                     <option value="inhalation">Inhalation</option>
@@ -699,7 +763,19 @@ const CaregiverMedicationMonitorPage = () => {
                         <button type="button" className={styles.modalCancelBtn} onClick={closeVitalModal}>
                             Cancel
                         </button>
-                        <button type="button" className={styles.modalSaveBtn} onClick={handleVitalLogSubmit}>
+                        <button
+                            type="button"
+                            className={styles.modalSaveBtn}
+                            disabled={
+                                isSavingVital ||
+                                !vitalLogForm.vitalType ||
+                                !vitalLogForm.recordedAt ||
+                                (isBloodPressure
+                                    ? !vitalLogForm.systolic || !vitalLogForm.diastolic
+                                    : !vitalLogForm.value)
+                            }
+                            onClick={handleVitalLogSubmit}
+                        >
                             {isSavingVital ? 'Saving...' : 'Save Reading'}
                         </button>
                     </div>
@@ -713,10 +789,10 @@ const CaregiverMedicationMonitorPage = () => {
                             value={vitalLogForm.vitalType}
                             onChange={(e) => handleVitalTypeChange(e.target.value)}
                         >
-                            {vitalPlans.length > 0 ? (
-                                vitalPlans.map((vital) => (
-                                    <option key={vital.type} value={vital.type}>
-                                        {labelMap[vital.type] || vital.type}
+                            {scheduleCards.length > 0 ? (
+                                scheduleCards.map(({ type }) => (
+                                    <option key={type} value={type}>
+                                        {labelMap[type] || type}
                                     </option>
                                 ))
                             ) : (
@@ -811,7 +887,12 @@ const CaregiverMedicationMonitorPage = () => {
                         <button type="button" className={styles.modalCancelBtn} onClick={closeSymptomModal}>
                             Cancel
                         </button>
-                        <button type="button" className={styles.modalSaveBtn} onClick={handleSymptomLogSubmit}>
+                        <button
+                            type="button"
+                            className={styles.modalSaveBtn}
+                            disabled={isSavingSymptom || !symptomLogForm.symptom || !symptomLogForm.onsetTime}
+                            onClick={handleSymptomLogSubmit}
+                        >
                             {isSavingSymptom ? 'Saving...' : 'Save Log'}
                         </button>
                     </div>

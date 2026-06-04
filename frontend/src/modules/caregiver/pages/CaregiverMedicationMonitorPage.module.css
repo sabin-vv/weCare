@@ -795,6 +795,12 @@
     box-shadow: 0 14px 24px rgba(37, 136, 255, 0.24);
 }
 
+.modalSaveBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 .symptomModalBody {
     display: flex;
     flex-direction: column;
