@@ -18,6 +18,7 @@ export class AlertRepository extends BaseRepository<AlertDocument> implements IA
                 patientId: { $in: patientIds.map((id) => new Types.ObjectId(id)) },
                 ...filter,
             })
+            .populate({ path: 'patientId', populate: { path: 'userId', model: 'User', select: 'name' } })
             .sort({ severity: -1, triggeredAt: -1 })
     }
 }
