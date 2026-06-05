@@ -2,6 +2,7 @@ import { Types } from 'mongoose'
 import { inject, injectable } from 'tsyringe'
 
 import { TOKENS } from '../../../container/tokens'
+import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { PrescriptionModel } from '../../prescription/models/prescription.model'
 import { IMedicationRepository } from '../interfaces/medication.repository.interface'
@@ -14,6 +15,7 @@ export class MedicationService implements IMedicationService {
     constructor(
         @inject(TOKENS.IMedicationRepository) private _medicationRepo: IMedicationRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IAlertService) private _alertService: IAlertService,
     ) {}
 
     async generateDailySchedule(date: Date): Promise<{ created: number; skipped: number } | undefined> {
@@ -140,8 +142,16 @@ export class MedicationService implements IMedicationService {
             priority: 'critical',
         }).lean()
 
-        const criticalAlerts = missedSchedules.length
+        for (const schedule of missedSchedules) {
+            await this._alertService.createAlert({
+                patientId: schedule.patientId,
+                scheduleId: schedule._id,
+                type: 'missed_medication',
+                severity: 'critical',
+                triggerReason: `${schedule.medicineName} (${schedule.dosage}) was not administered within the allowed time window`,
+            })
+        }
 
-        return { updatedCount: updateResult.modifiedCount, criticalAlerts }
+        return { updatedCount: updateResult.modifiedCount, criticalAlerts: missedSchedules.length }
     }
 }
