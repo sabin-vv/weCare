@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
 import { IMedicationLogRepository } from '../../medication/interfaces/medicationLog.repository.interface'
@@ -34,6 +35,7 @@ export class CaregiverService implements ICaregiverService {
         @inject(TOKENS.IMedicationRepository) private _medicationRepo: IMedicationRepository,
         @inject(TOKENS.IMedicationLogRepository) private _medicationLogRepo: IMedicationLogRepository,
         @inject(TOKENS.IVitalRepository) private _vitalRepo: IVitalRepository,
+        @inject(TOKENS.IAlertService) private _alertService: IAlertService,
     ) {}
 
     async createProfile(userId: string, dto: CreateCaregiverProfileDTO): Promise<Partial<CaregiverProfileResponse>> {
@@ -153,10 +155,7 @@ export class CaregiverService implements ICaregiverService {
         return items
     }
 
-    async getPatientVitalSchedules(
-        caregiverId: Types.ObjectId,
-        patientId: string,
-    ): Promise<VitalScheduleDTO[]> {
+    async getPatientVitalSchedules(caregiverId: Types.ObjectId, patientId: string): Promise<VitalScheduleDTO[]> {
         const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
         if (!caregiver) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
@@ -273,6 +272,17 @@ export class CaregiverService implements ICaregiverService {
             }
 
             updatedScheduleId = updatedSchedule._id.toString()
+
+            const alertData = this._checkVitalThresholds(dto.vitalType, recordedValue)
+            if (alertData) {
+                await this._alertService.createAlert({
+                    patientId: patient._id,
+                    scheduleId: updatedSchedule._id,
+                    type: 'critical_vital',
+                    severity: 'critical',
+                    triggerReason: alertData,
+                })
+            }
         }
 
         return {
@@ -295,6 +305,16 @@ export class CaregiverService implements ICaregiverService {
             onsetTime,
             observations: dto.observations,
         })
+
+        if (dto.severity === 'severe' || dto.severity === 'critical') {
+            await this._alertService.createAlert({
+                patientId: patient._id,
+                scheduleId: log._id,
+                type: 'critical_symptom',
+                severity: dto.severity === 'critical' ? 'critical' : 'high',
+                triggerReason: `Symptom reported: ${dto.symptom} (severity: ${dto.severity})`,
+            })
+        }
 
         return {
             _id: log._id.toString(),
@@ -402,6 +422,42 @@ export class CaregiverService implements ICaregiverService {
                 return '%'
             default:
                 return ''
+        }
+    }
+
+    private _checkVitalThresholds(
+        vitalType: LogVitalReadingDTO['vitalType'],
+        recordedValue: { systolic?: number; diastolic?: number; value?: number; unit?: string },
+    ): string | null {
+        switch (vitalType) {
+            case 'blood_pressure': {
+                const sys = recordedValue.systolic
+                const dia = recordedValue.diastolic
+                if (sys && sys >= 170) return `Critical blood pressure: systolic ${sys} mmHg`
+                if (dia && dia >= 100) return `Critical blood pressure: diastolic ${dia} mmHg`
+                return null
+            }
+            case 'spo2': {
+                const val = recordedValue.value
+                if (val !== undefined && val < 90) return `Critical SpO2 level: ${val}%`
+                return null
+            }
+            case 'heart_rate': {
+                const val = recordedValue.value
+                if (val !== undefined && (val < 40 || val > 140)) {
+                    return `Critical heart rate: ${val} BPM`
+                }
+                return null
+            }
+            case 'blood_sugar': {
+                const val = recordedValue.value
+                if (val !== undefined && (val < 54 || val > 300)) {
+                    return `Critical blood sugar: ${val} mg/dL`
+                }
+                return null
+            }
+            default:
+                return null
         }
     }
 }
