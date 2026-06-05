@@ -1,5 +1,6 @@
 import type { RouteObject } from 'react-router-dom'
 
+import AlertPage from '../pages/AlertPage'
 import AvailabilityPage from '../pages/AvailabilityPage'
 import DoctorAppointmentsPage from '../pages/DoctorAppointmentsPage'
 import DoctorDashboard from '../pages/DoctorDashboard'
@@ -56,6 +57,14 @@ export const DoctorRoutes: RouteObject[] = [
         element: (
             <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
                 <PatientViewPage />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/doctor/alerts',
+        element: (
+            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
+                <AlertPage />
             </ProtectedRoute>
         ),
     },
