@@ -408,3 +408,56 @@ export interface CaregiverOption {
     phoneNumber: string
     profileImage: string
 }
+
+export type AlertSeverity = 'medium' | 'high' | 'critical'
+
+export type AlertType = 'missed_medication' | 'critical_vital' | 'critical_symptom'
+
+export type AlertStatus = 'open' | 'acknowledged'
+
+export interface AlertData {
+    _id: string
+    patientId: {
+        _id: string
+        userId: {
+            _id: string
+            name: string
+        }
+        patientId: string
+    }
+    scheduleId?: string
+    type: AlertType
+    severity: AlertSeverity
+    triggerReason: string
+    status: AlertStatus
+    acknowledgeBy?: string
+    acknowledgeAt?: string
+    acknowledgeNote?: string
+    triggeredAt: string
+}
+
+export interface AlertsResponse {
+    success: boolean
+    data: AlertData[]
+}
+
+export interface AcknowledgeResponse {
+    success: boolean
+    data: AlertData
+    message: string
+}
+
+export interface AlertCardProps {
+    patientName: string
+    message: string
+    timestamp: string
+
+    severity: AlertSeverity
+    status: AlertStatus
+
+    icon: React.ReactNode
+
+    acknowledgedBy?: string
+
+    onAcknowledge?: () => void
+}
