@@ -25,3 +25,5 @@ export const SUBSCRIPTIONS_API = '/subscriptions'
 export const MEDICATIONS_API = '/medications'
 
 export const REMINDERS_API = '/reminders'
+
+export const ALERTS_API = '/alerts'
