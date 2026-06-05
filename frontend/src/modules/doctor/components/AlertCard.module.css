@@ -1,0 +1,163 @@
+.card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 20px 0;
+    padding: 1.25rem;
+    border-radius: 16px;
+
+    background: #fff;
+    border: 1px solid #e5e7eb;
+
+    min-height: 110px;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.icon {
+    width: 56px;
+    height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f3f4f6;
+    flex-shrink: 0;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.badge {
+    padding: 0.15rem 0.5rem;
+
+    border-radius: 6px;
+
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.message {
+    font-size: 1rem;
+    font-weight: 500;
+
+    color: #64748b;
+}
+
+.time {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+}
+
+.action button {
+    border: none;
+    outline: none;
+
+    cursor: pointer;
+
+    padding: 0.85rem 1.5rem;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+    font-size: 0.95rem;
+
+    transition: all 0.2s ease;
+}
+
+.action button:hover {
+    transform: translateY(-1px);
+}
+
+.acknowledged {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    color: #16a34a;
+}
+
+.acknowledged span {
+    margin-top: 0.3rem;
+
+    font-size: 0.8rem;
+    font-weight: 500;
+
+    color: #94a3b8;
+}
+
+.critical {
+    border-left: 5px solid #ef4444;
+}
+
+.critical .action button {
+    background: #ef4444;
+    color: white;
+}
+
+.high {
+    border-left: 5px solid #f97316;
+}
+
+.high .action button {
+    background: #f97316;
+    color: white;
+}
+
+.warning {
+    border-left: 5px solid #f59e0b;
+}
+
+.warning .action button {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.info {
+    border-left: 5px solid #3b82f6;
+}
+
+.info .action button {
+    background: #f3f4f6;
+    color: #111827;
+}
