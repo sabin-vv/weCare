@@ -34,4 +34,6 @@ export const TOKENS = {
     IReminderService: Symbol('IReminderService'),
     IAlertRepository: Symbol('IAlertRepository'),
     IAlertService: Symbol('IAlertService'),
+    ICaregiverActivityRepository: Symbol('ICaregiverActivityRepository'),
+    ICaregiverActivityService: Symbol('ICaregiverActivityService'),
 }
