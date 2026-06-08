@@ -23,6 +23,8 @@ import {
     toPatientResponseDTO,
 } from '../mapper/patient.mapper'
 import {
+    CareTeamMemberDTO,
+    CareTeamResponseDTO,
     ClinicalStatus,
     ListPatientMapper,
     ListPatientsResponse,
@@ -175,6 +177,46 @@ export class PatientService implements IPatientService {
         }
 
         return toPatientProfileResponseDTO(user, patient)
+    }
+
+    async getCareTeam(userId: string): Promise<CareTeamResponseDTO> {
+        const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
+        if (!patient) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient profile not found')
+        }
+
+        let doctor: CareTeamMemberDTO | null = null
+        if (patient.primaryDoctorId) {
+            const doctorDoc = await this._doctorRepo.findById(patient.primaryDoctorId.toString())
+            if (doctorDoc) {
+                const doctorUser = await this._userRepo.findById(doctorDoc.userId.toString())
+                doctor = {
+                    id: doctorDoc._id.toString(),
+                    name: doctorUser ? `Dr. ${doctorUser.name}` : 'Doctor',
+                    role: 'doctor',
+                    specialization: doctorDoc.specializations?.map((s) => (typeof s === 'string' ? s : s.name)) || [],
+                    profileImage: doctorDoc.profileImage,
+                    isActive: doctorDoc.isActive,
+                }
+            }
+        }
+
+        let caregiver: CareTeamMemberDTO | null = null
+        if (patient.caregiverId) {
+            const caregiverDoc = await this._caregiverRepo.findById(patient.caregiverId.toString())
+            if (caregiverDoc) {
+                const caregiverUser = await this._userRepo.findById(caregiverDoc.userId.toString())
+                caregiver = {
+                    id: caregiverDoc._id.toString(),
+                    name: caregiverUser?.name || 'Caregiver',
+                    role: 'caregiver',
+                    profileImage: caregiverDoc.profileImage,
+                    isActive: caregiverDoc.isActive,
+                }
+            }
+        }
+
+        return { doctor, caregiver }
     }
 
     async updateProfile(userId: string, dto: UpdatePatientSettingsDTO): Promise<PatientProfileResponseDTO> {
@@ -374,7 +416,7 @@ export class PatientService implements IPatientService {
         }
 
         const patient = await this._patientRepo.updateById(patientId, {
-            caregiverId: new Types.ObjectId(caregiverId),
+            caregiverId: new Types.ObjectId(caregiver._id),
         })
 
         if (!patient) {
