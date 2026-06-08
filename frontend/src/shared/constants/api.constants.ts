@@ -27,3 +27,5 @@ export const MEDICATIONS_API = '/medications'
 export const REMINDERS_API = '/reminders'
 
 export const ALERTS_API = '/alerts'
+
+export const CAREGIVER_ACTIVITY_API = '/caregiver-activity'
