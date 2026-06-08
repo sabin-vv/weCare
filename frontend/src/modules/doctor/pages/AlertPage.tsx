@@ -1,6 +1,6 @@
+import { AlertTriangle, Heart, Pill, Loader2, Inbox } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { AlertTriangle, Heart, Pill, Loader2, Inbox } from 'lucide-react'
 
 import { getAlerts, acknowledgeAlert } from '../api/alert.api'
 import { AlertCard } from '../components/AlertCard'
@@ -18,16 +18,9 @@ const ALERT_ICONS = {
     critical_symptom: <AlertTriangle size={24} />,
 } as const
 
-const ALERT_TYPE_LABELS = {
-    missed_medication: 'Missed Medication',
-    critical_vital: 'Critical Vital',
-    critical_symptom: 'Critical Symptom',
-} as const
-
 const AlertPage = () => {
     const [alerts, setAlerts] = useState<AlertData[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [acknowledgingId, setAcknowledgingId] = useState<string | null>(null)
 
     const fetchAlerts = async () => {
         setIsLoading(true)
@@ -46,15 +39,12 @@ const AlertPage = () => {
     }, [])
 
     const handleAcknowledge = async (alertId: string) => {
-        setAcknowledgingId(alertId)
         try {
             await acknowledgeAlert(alertId)
             toast.success('Alert acknowledged')
             setAlerts((prev) => prev.filter((a) => a._id !== alertId))
         } catch (error) {
             toast.error(getErrorMessage(error))
-        } finally {
-            setAcknowledgingId(null)
         }
     }
 
@@ -97,11 +87,7 @@ const AlertPage = () => {
                                 severity={alert.severity}
                                 status={alert.status}
                                 icon={ALERT_ICONS[alert.type] ?? <AlertTriangle size={24} />}
-                                onAcknowledge={
-                                    alert.status === 'open'
-                                        ? () => handleAcknowledge(alert._id)
-                                        : undefined
-                                }
+                                onAcknowledge={alert.status === 'open' ? () => handleAcknowledge(alert._id) : undefined}
                                 acknowledgedBy={
                                     alert.status === 'acknowledged'
                                         ? alert.acknowledgeAt
