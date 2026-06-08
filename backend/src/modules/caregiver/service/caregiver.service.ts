@@ -6,6 +6,7 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
+import { ICaregiverActivityService } from '../../caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
 import { IMedicationLogRepository } from '../../medication/interfaces/medicationLog.repository.interface'
 import { MedicationScheduleDTO } from '../../medication/types/medication.type'
@@ -36,6 +37,7 @@ export class CaregiverService implements ICaregiverService {
         @inject(TOKENS.IMedicationLogRepository) private _medicationLogRepo: IMedicationLogRepository,
         @inject(TOKENS.IVitalRepository) private _vitalRepo: IVitalRepository,
         @inject(TOKENS.IAlertService) private _alertService: IAlertService,
+        @inject(TOKENS.ICaregiverActivityService) private _activityService: ICaregiverActivityService,
     ) {}
 
     async createProfile(userId: string, dto: CreateCaregiverProfileDTO): Promise<Partial<CaregiverProfileResponse>> {
@@ -234,6 +236,15 @@ export class CaregiverService implements ICaregiverService {
             observations: dto.observations ?? '',
         })
 
+        const medActivityType = dto.status === 'skipped' ? 'medication_missed' : 'medication_administered'
+        await this._activityService.logActivity({
+            caregiverId: caregiver.userId,
+            patientId: patient._id,
+            activityType: medActivityType,
+            referenceId: schedule._id,
+            description: `${schedule.medicineName} | ${schedule.dosage} | ${normalizedRoute}`,
+        })
+
         return this._toMedicationScheduleDTO(updated)
     }
 
@@ -285,6 +296,19 @@ export class CaregiverService implements ICaregiverService {
             }
         }
 
+        const vitalDesc =
+            dto.vitalType === 'blood_pressure'
+                ? `${dto.vitalType} | systolic: ${dto.systolic}, diastolic: ${dto.diastolic}`
+                : `${dto.vitalType} | ${dto.value} ${this._getVitalUnit(dto.vitalType)}`
+
+        await this._activityService.logActivity({
+            caregiverId: caregiver.userId,
+            patientId: patient._id,
+            activityType: 'vital_recorded',
+            referenceId: schedule?._id,
+            description: vitalDesc,
+        })
+
         return {
             vitalId: updatedScheduleId ?? '',
             vitalType: dto.vitalType,
@@ -315,6 +339,14 @@ export class CaregiverService implements ICaregiverService {
                 triggerReason: `Symptom reported: ${dto.symptom} (severity: ${dto.severity})`,
             })
         }
+
+        await this._activityService.logActivity({
+            caregiverId: caregiver.userId,
+            patientId: patient._id,
+            activityType: 'symptom_logged',
+            referenceId: log._id,
+            description: `${dto.symptom} | severity: ${dto.severity}`,
+        })
 
         return {
             _id: log._id.toString(),
