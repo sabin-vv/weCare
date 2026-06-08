@@ -9,6 +9,7 @@ import { createAppointmentRoutes } from './modules/appointment/routes/appointmen
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
 import { createCaregiverActivityRoutes } from './modules/caregiverActivity/routes/caregiverActivity.route'
+import { createFeedbackRoutes } from './modules/feedback/routes/feedback.route'
 import { createDoctorRoutes } from './modules/doctor/routes/doctor.route'
 import { createMedicationRoutes } from './modules/medication/routes/medication.route'
 import { createMedicationLogRoutes } from './modules/medication/routes/medicationLog.route'
@@ -65,6 +66,8 @@ app.use('/api/reminders', createReminderRoutes())
 app.use('/api/alerts', createAlertRoutes())
 
 app.use('/api/caregiver-activity', createCaregiverActivityRoutes())
+
+app.use('/api/feedback', createFeedbackRoutes())
 
 app.use('/api/uploads', createUploadsRoutes())
 

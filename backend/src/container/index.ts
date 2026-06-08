@@ -28,6 +28,10 @@ import { ICaregiverActivityRepository } from '../modules/caregiverActivity/inter
 import { ICaregiverActivityService } from '../modules/caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { CaregiverActivityRepository } from '../modules/caregiverActivity/repository/caregiverActivity.repository'
 import { CaregiverActivityService } from '../modules/caregiverActivity/service/caregiverActivity.service'
+import { IFeedbackRepository } from '../modules/feedback/interfaces/feedback.repository.interface'
+import { IFeedbackService } from '../modules/feedback/interfaces/feedback.service.interface'
+import { FeedbackRepository } from '../modules/feedback/repository/feedback.repository'
+import { FeedbackService } from '../modules/feedback/service/feedback.service'
 import { IAvailabilityNotificationService } from '../modules/doctor/interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../modules/doctor/interfaces/doctor.repository.interface'
 import { IDoctorService } from '../modules/doctor/interfaces/doctor.service.interface'
@@ -142,4 +146,11 @@ container.register<ICaregiverActivityRepository>(TOKENS.ICaregiverActivityReposi
 })
 container.register<ICaregiverActivityService>(TOKENS.ICaregiverActivityService, {
     useClass: CaregiverActivityService,
+})
+
+container.register<IFeedbackRepository>(TOKENS.IFeedbackRepository, {
+    useClass: FeedbackRepository,
+})
+container.register<IFeedbackService>(TOKENS.IFeedbackService, {
+    useClass: FeedbackService,
 })

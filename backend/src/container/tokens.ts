@@ -36,4 +36,6 @@ export const TOKENS = {
     IAlertService: Symbol('IAlertService'),
     ICaregiverActivityRepository: Symbol('ICaregiverActivityRepository'),
     ICaregiverActivityService: Symbol('ICaregiverActivityService'),
+    IFeedbackRepository: Symbol('IFeedbackRepository'),
+    IFeedbackService: Symbol('IFeedbackService'),
 }
