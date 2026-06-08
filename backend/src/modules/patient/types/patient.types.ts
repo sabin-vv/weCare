@@ -142,3 +142,17 @@ export interface PatientResponseDTO {
     profileImage?: string
     isActive: boolean
 }
+
+export interface CareTeamMemberDTO {
+    id: string
+    name: string
+    role: 'doctor' | 'caregiver'
+    specialization?: string[]
+    profileImage?: string
+    isActive: boolean
+}
+
+export interface CareTeamResponseDTO {
+    doctor: CareTeamMemberDTO | null
+    caregiver: CareTeamMemberDTO | null
+}
