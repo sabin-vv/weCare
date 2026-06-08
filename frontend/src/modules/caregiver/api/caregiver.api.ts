@@ -1,6 +1,7 @@
 import type {
     CaregiverProfileResponse,
     CreateReminderDTO,
+    CaregiverActivityLogResponse,
     MedicationSchedule,
     PatientSummary,
     RemindersResponse,
@@ -9,7 +10,9 @@ import type {
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
-import { CAREGIVERS_API, REMINDERS_API } from '@/shared/constants/api.constants'
+import { CAREGIVER_ACTIVITY_API, CAREGIVERS_API, REMINDERS_API } from '@/shared/constants/api.constants'
+
+export type { PatientSummary } from '../types/caregiver.types'
 
 export const createCaregiverProfile = async (formData: FormData): Promise<ApiInterface> => {
     const res = await api.post(`${CAREGIVERS_API}/profile`, formData)
@@ -129,4 +132,11 @@ export const markReminderDone = async (reminderId: string): Promise<void> => {
 
 export const deleteReminder = async (reminderId: string): Promise<void> => {
     await api.delete(`${REMINDERS_API}/${reminderId}`)
+}
+
+export const getCaregiverActivityLogs = async (page = 1, limit = 8): Promise<CaregiverActivityLogResponse> => {
+    const res = await api.get<{ success: boolean; data: CaregiverActivityLogResponse }>(CAREGIVER_ACTIVITY_API, {
+        params: { page, limit },
+    })
+    return res.data.data
 }
