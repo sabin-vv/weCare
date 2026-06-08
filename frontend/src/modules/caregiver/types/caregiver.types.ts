@@ -178,3 +178,33 @@ export interface PatientSummary {
     clinicalStatus: string
     profileImage?: string
 }
+
+export type CaregiverActivityType =
+    | 'medication_administered'
+    | 'medication_missed'
+    | 'vital_recorded'
+    | 'symptom_logged'
+
+export interface CaregiverActivityLogItem {
+    id: string
+    caregiverId: string
+    patientId: string
+    patientName: string
+    activityType: CaregiverActivityType
+    referenceId?: string
+    description?: string
+    createdAt: string
+    updatedAt: string
+}
+
+export interface CaregiverActivityLogPagination {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+}
+
+export interface CaregiverActivityLogResponse {
+    data: CaregiverActivityLogItem[]
+    pagination: CaregiverActivityLogPagination
+}
