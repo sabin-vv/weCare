@@ -128,6 +128,21 @@ export class PatientController {
         })
     }
 
+    getCareTeam = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const result = await this._patientService.getCareTeam(userId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: result,
+            message: 'Care team fetched successfully',
+        })
+    }
+
     updateClinicalStatus = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
 
