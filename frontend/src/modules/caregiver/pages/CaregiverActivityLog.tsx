@@ -3,11 +3,16 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { getCaregiverActivityLogs } from '../api/caregiver.api'
-import type { CaregiverActivityLogItem, CaregiverActivityType } from '../types/caregiver.types'
+import type {
+    CaregiverActivityLogItem,
+    CaregiverActivityLogPagination,
+    CaregiverActivityType,
+} from '../types/caregiver.types'
 
 import styles from './CaregiverActivityLog.module.css'
 
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import Pagination from '@/shared/components/Pagination/Pagination'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const activityMeta: Record<
@@ -70,13 +75,22 @@ const splitDescription = (description?: string) => {
 
 const CaregiverActivityLog = () => {
     const [activities, setActivities] = useState<CaregiverActivityLogItem[]>([])
+    const [pagination, setPagination] = useState<CaregiverActivityLogPagination>({
+        page: 1,
+        limit: 8,
+        totalCount: 0,
+        totalPages: 1,
+    })
+    const [page, setPage] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const fetchActivityLogs = async () => {
+            setIsLoading(true)
             try {
-                const result = await getCaregiverActivityLogs()
+                const result = await getCaregiverActivityLogs(page)
                 setActivities(result.data)
+                setPagination(result.pagination)
             } catch (err) {
                 toast.error(getErrorMessage(err))
             } finally {
@@ -85,7 +99,7 @@ const CaregiverActivityLog = () => {
         }
 
         fetchActivityLogs()
-    }, [])
+    }, [page])
 
     if (isLoading) {
         return (
@@ -104,7 +118,7 @@ const CaregiverActivityLog = () => {
                     <div>
                         <span className={styles.eyebrow}>Care History</span>
                     </div>
-                    <span className={styles.count}>{activities.length} records</span>
+                    <span className={styles.count}>{pagination.totalCount} records</span>
                 </div>
 
                 {activities.length === 0 ? (
@@ -154,6 +168,16 @@ const CaregiverActivityLog = () => {
                             )
                         })}
                     </div>
+                )}
+
+                {pagination.totalPages > 1 && (
+                    <Pagination
+                        currentPage={page}
+                        totalPages={pagination.totalPages}
+                        onPageChange={setPage}
+                        totalCount={pagination.totalCount}
+                        limit={pagination.limit}
+                    />
                 )}
             </section>
         </MainWrapper>
