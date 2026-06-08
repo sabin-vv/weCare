@@ -16,13 +16,7 @@ const caregiverActivityLogSchema = new Schema<CaregiverActivityLogDocument>(
         },
         activityType: {
             type: String,
-            enum: [
-                'medication_administered',
-                'medication_missed',
-                'vital_recorded',
-                'symptom_logged',
-                'reminder_completed',
-            ],
+            enum: ['medication_administered', 'medication_missed', 'vital_recorded', 'symptom_logged'],
             required: true,
         },
         referenceId: {
