@@ -205,6 +205,31 @@ export interface SubscriptionData {
     } | null
 }
 
+export interface CareTeamMember {
+    id: string
+    name: string
+    role: 'doctor' | 'caregiver'
+    specialization?: string[]
+    profileImage?: string
+    isActive: boolean
+    myRating?: number
+    myComment?: string
+    email?: string
+    mobile?: string
+}
+
+export interface CareTeamResponse {
+    doctor: CareTeamMember | null
+    caregiver: CareTeamMember | null
+}
+
+export interface CreateFeedbackDTO {
+    targetId: string
+    targetRole: 'doctor' | 'caregiver'
+    rating: number
+    comment?: string
+}
+
 export interface SubscriptionResponse {
     success: boolean
     message: string
@@ -264,4 +289,20 @@ export interface CreateSubscriptionResponse {
               walletBalance: number
               subscriptionConfirmed: true
           }
+}
+
+export interface Profiledata {
+    name: string
+    role: string
+    profileImage?: string
+    specialization?: string[]
+    status: boolean
+    rating?: number
+    email?: string
+    mobile?: string
+}
+
+export interface FeedbackProfileCardProps {
+    profile: Profiledata
+    onFeedback?: () => void
 }
