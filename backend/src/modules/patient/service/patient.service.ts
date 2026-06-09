@@ -6,6 +6,7 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
+import { IFeedbackRepository } from '../../feedback/interfaces/feedback.repository.interface'
 import { toUserEntity } from '../../auth/mapper/auth.mapper'
 import { UserDocument, UserRole } from '../../auth/types/auth.types'
 import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
@@ -67,6 +68,7 @@ export class PatientService implements IPatientService {
         @inject(TOKENS.IVitalRepository) private _vitalRepo: IVitalRepository,
         @inject(TOKENS.IPrescriptionRepository) private _prescriptionRepo: IPrescriptionRepository,
         @inject(TOKENS.IMedicationRepository) private _medicationRepo: IMedicationRepository,
+        @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
     ) {}
 
     private transitionClinicalStatus(currentStatus: ClinicalStatus, nextStatus: ClinicalStatus): boolean {
@@ -190,6 +192,11 @@ export class PatientService implements IPatientService {
             const doctorDoc = await this._doctorRepo.findById(patient.primaryDoctorId.toString())
             if (doctorDoc) {
                 const doctorUser = await this._userRepo.findById(doctorDoc.userId.toString())
+                const doctorFeedback = await this._feedbackRepo.findOneByPatientAndTarget(
+                    patient._id.toString(),
+                    doctorDoc._id.toString(),
+                    'doctor',
+                )
                 doctor = {
                     id: doctorDoc._id.toString(),
                     name: doctorUser ? `Dr. ${doctorUser.name}` : 'Doctor',
@@ -197,6 +204,10 @@ export class PatientService implements IPatientService {
                     specialization: doctorDoc.specializations?.map((s) => (typeof s === 'string' ? s : s.name)) || [],
                     profileImage: doctorDoc.profileImage,
                     isActive: doctorDoc.isActive,
+                    myRating: doctorFeedback?.rating,
+                    myComment: doctorFeedback?.comment,
+                    email: doctorUser?.email,
+                    mobile: doctorUser?.mobile,
                 }
             }
         }
@@ -206,12 +217,21 @@ export class PatientService implements IPatientService {
             const caregiverDoc = await this._caregiverRepo.findById(patient.caregiverId.toString())
             if (caregiverDoc) {
                 const caregiverUser = await this._userRepo.findById(caregiverDoc.userId.toString())
+                const caregiverFeedback = await this._feedbackRepo.findOneByPatientAndTarget(
+                    patient._id.toString(),
+                    caregiverDoc._id.toString(),
+                    'caregiver',
+                )
                 caregiver = {
                     id: caregiverDoc._id.toString(),
                     name: caregiverUser?.name || 'Caregiver',
                     role: 'caregiver',
                     profileImage: caregiverDoc.profileImage,
                     isActive: caregiverDoc.isActive,
+                    myRating: caregiverFeedback?.rating,
+                    myComment: caregiverFeedback?.comment,
+                    email: caregiverUser?.email,
+                    mobile: caregiverUser?.mobile,
                 }
             }
         }
