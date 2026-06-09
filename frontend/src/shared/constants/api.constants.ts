@@ -29,3 +29,5 @@ export const REMINDERS_API = '/reminders'
 export const ALERTS_API = '/alerts'
 
 export const CAREGIVER_ACTIVITY_API = '/caregiver-activity'
+
+export const FEEDBACK_API = '/feedback'
