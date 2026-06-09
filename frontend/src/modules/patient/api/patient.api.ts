@@ -15,6 +15,8 @@ import type {
     RetryPaymentResponse,
     VitalSchedule,
     CreateSubscriptionResponse,
+    CareTeamResponse,
+    CreateFeedbackDTO,
 } from '../types/patient.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
@@ -22,6 +24,7 @@ import { api } from '@/services/api'
 import {
     APPOINTMENT_API,
     DOCTORS_API,
+    FEEDBACK_API,
     MEDICATIONS_API,
     PATIENTS_API,
     PAYMENTS_API,
@@ -143,5 +146,15 @@ export const getPatientVitalSchedules = async (): Promise<VitalSchedule[]> => {
     const response = await api.get<{ success: boolean; message: string; data: VitalSchedule[] }>(
         `${VITALS_API}/schedules/me`,
     )
+    return response.data.data
+}
+
+export const getCareTeam = async (): Promise<{ doctor: CareTeamResponse['doctor']; caregiver: CareTeamResponse['caregiver'] }> => {
+    const response = await api.get<{ success: boolean; data: CareTeamResponse }>(`${PATIENTS_API}/me/care-team`)
+    return response.data.data
+}
+
+export const createFeedback = async (data: CreateFeedbackDTO): Promise<{ id: string }> => {
+    const response = await api.post<{ success: boolean; data: { id: string } }>(FEEDBACK_API, data)
     return response.data.data
 }
