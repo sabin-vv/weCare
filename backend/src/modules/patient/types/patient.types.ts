@@ -150,6 +150,10 @@ export interface CareTeamMemberDTO {
     specialization?: string[]
     profileImage?: string
     isActive: boolean
+    myRating?: number
+    myComment?: string
+    email?: string
+    mobile?: string
 }
 
 export interface CareTeamResponseDTO {
