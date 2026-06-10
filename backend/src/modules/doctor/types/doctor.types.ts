@@ -35,7 +35,7 @@ export interface CancelledAppointmentSummary {
 
 export interface NotificationFailure {
     appointmentId: string
-    channel: 'email' | 'sms'
+    channel: 'email'
     reason: string
 }
 

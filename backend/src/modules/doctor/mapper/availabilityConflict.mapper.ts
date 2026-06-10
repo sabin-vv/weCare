@@ -35,7 +35,6 @@ export const toAvailabilityCancellationNotificationPayload = (
         appointmentId: appointment._id.toString(),
         patientName: appointment.patientId.name,
         patientEmail: appointment.patientId.email,
-        patientMobile: appointment.patientId.mobile,
         doctorName,
         appointmentDate: toDateLabel(appointment.appointmentDate),
         slotStart: appointment.slotStart,

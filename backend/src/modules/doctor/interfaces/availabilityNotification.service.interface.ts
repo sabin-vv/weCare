@@ -2,7 +2,6 @@ export interface AvailabilityCancellationNotificationPayload {
     appointmentId: string
     patientName: string
     patientEmail: string
-    patientMobile: string
     doctorName: string
     appointmentDate: string
     slotStart: string
@@ -11,7 +10,7 @@ export interface AvailabilityCancellationNotificationPayload {
 }
 
 export interface AvailabilityCancellationNotificationFailure {
-    channel: 'email' | 'sms'
+    channel: 'email'
     reason: string
 }
 
