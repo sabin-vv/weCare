@@ -10,6 +10,7 @@ import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
 import { createCaregiverActivityRoutes } from './modules/caregiverActivity/routes/caregiverActivity.route'
 import { createFeedbackRoutes } from './modules/feedback/routes/feedback.route'
+import { createNotificationRoutes } from './modules/notification/routes/notification.route'
 import { createDoctorRoutes } from './modules/doctor/routes/doctor.route'
 import { createMedicationRoutes } from './modules/medication/routes/medication.route'
 import { createMedicationLogRoutes } from './modules/medication/routes/medicationLog.route'
@@ -70,6 +71,8 @@ app.use('/api/caregiver-activity', createCaregiverActivityRoutes())
 app.use('/api/feedback', createFeedbackRoutes())
 
 app.use('/api/uploads', createUploadsRoutes())
+
+app.use('/api/notifications', createNotificationRoutes())
 
 app.use('/api/admin', createAdminRoutes())
 
