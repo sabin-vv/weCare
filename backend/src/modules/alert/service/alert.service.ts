@@ -4,6 +4,8 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { getIO } from '../../../core/socket'
+import { SOCKET_EVENTS } from '../../../core/socket/events'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IAlertRepository } from '../interfaces/alert.repository.interface'
@@ -73,14 +75,37 @@ export class AlertService implements IAlertService {
             throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to acknowledge alert')
         }
 
+        getIO().to(`user:${userId}`).emit(SOCKET_EVENTS.ALERT_ACKNOWLEDGED, updated)
+
         return updated
     }
 
     async createAlert(data: Partial<AlertDocument>): Promise<AlertDocument> {
-        return this._alertRepo.create({
+        const alert = await this._alertRepo.create({
             ...data,
             triggeredAt: new Date(),
             status: 'open',
         })
+
+        await this.emitNewAlert(alert)
+
+        return alert
+    }
+
+    private async emitNewAlert(alert: AlertDocument): Promise<void> {
+        try {
+            const patient = await this._patientRepo.findById(alert.patientId.toString())
+            if (!patient?.primaryDoctorId) return
+
+            const doctor = await this._doctorRepo.findById(patient.primaryDoctorId.toString())
+            if (!doctor?.userId) return
+
+            const populated = await this._alertRepo.findById(alert._id.toString())
+            if (populated) {
+                getIO().to(`user:${doctor.userId.toString()}`).emit(SOCKET_EVENTS.NEW_ALERT, populated)
+            }
+        } catch {
+            // socket emit failures should not break alert creation
+        }
     }
 }
