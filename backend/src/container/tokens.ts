@@ -38,4 +38,6 @@ export const TOKENS = {
     ICaregiverActivityService: Symbol('ICaregiverActivityService'),
     IFeedbackRepository: Symbol('IFeedbackRepository'),
     IFeedbackService: Symbol('IFeedbackService'),
+    INotificationRepository: Symbol('INotificationRepository'),
+    INotificationService: Symbol('INotificationService'),
 }
