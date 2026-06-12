@@ -465,7 +465,7 @@ export class PatientService implements IPatientService {
         const caregiverPayload: CreateNotificationPayload = {
             recipientId: caregiver.userId.toString(),
             recipientRole: 'caregiver',
-            type: 'caregiver_assigned',
+            type: 'patient_assigned',
             title: 'Patient Assigned',
             message: `You have been assigned to care for ${patientName}.`,
             metadata: { patientId: patient._id.toString() },
