@@ -12,6 +12,8 @@ import { UserDocument, UserRole } from '../../auth/types/auth.types'
 import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPrescriptionRepository } from '../../prescription/interfaces/prescription.repository.interface'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
 import { IPatientRepository } from '../interfaces/patient.repository.interface'
@@ -69,6 +71,7 @@ export class PatientService implements IPatientService {
         @inject(TOKENS.IPrescriptionRepository) private _prescriptionRepo: IPrescriptionRepository,
         @inject(TOKENS.IMedicationRepository) private _medicationRepo: IMedicationRepository,
         @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
+        @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
     ) {}
 
     private transitionClinicalStatus(currentStatus: ClinicalStatus, nextStatus: ClinicalStatus): boolean {
@@ -442,6 +445,19 @@ export class PatientService implements IPatientService {
         if (!patient) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
+
+        const caregiverUser = await this._userRepo.findById(caregiver.userId.toString())
+        const caregiverName = caregiverUser?.name ?? 'A caregiver'
+
+        const payload: CreateNotificationPayload = {
+            recipientId: patient.userId.toString(),
+            recipientRole: 'patient',
+            type: 'caregiver_assigned',
+            title: 'Caregiver Assigned',
+            message: `Caregiver ${caregiverName} has been assigned to you.`,
+            metadata: { caregiverId: caregiver._id.toString() },
+        }
+        await this._notificationService.createNotification(payload).catch(() => null)
 
         return await this.buildPatientDetails(doctor._id.toString(), patient)
     }
