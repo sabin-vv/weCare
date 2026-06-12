@@ -21,6 +21,8 @@ import {
 import { toAppointmentListResponseDTO, toDoctorAppointmentRowDTO } from '../mapper/appointment.mapper'
 import { AppointmentDocument, AppointmentResponseDTO, DoctorAppointmentsResponseDTO } from '../types/appointment.types'
 import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 
 @injectable()
 export class AppointmentService implements IAppointmentService {
@@ -33,6 +35,7 @@ export class AppointmentService implements IAppointmentService {
         @inject(TOKENS.IPaymentRepository) private _paymentRepo: IPaymentRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
         @inject(TOKENS.IWalletService) private _walletService: IWalletService,
+        @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
     ) {
         this.razorpay = new Razorpay({
             key_id: env.RAZORPAY_KEY_ID,
@@ -219,6 +222,16 @@ export class AppointmentService implements IAppointmentService {
                 primaryDoctorId: new Types.ObjectId(dto.doctorId),
             })
 
+            const confirmedPayload: CreateNotificationPayload = {
+                recipientId: dto.patientId,
+                recipientRole: 'patient',
+                type: 'appointment_confirmed',
+                title: 'Appointment Confirmed',
+                message: `Your appointment with Dr. ${doctorName} on ${new Date(dto.appointmentDate).toLocaleDateString()} at ${dto.slotStart} has been confirmed.`,
+                metadata: { appointmentId: appointment._id.toString() },
+            }
+            await this._notificationService.createNotification(confirmedPayload).catch(() => null)
+
             return {
                 paymentMethod: 'wallet',
                 paymentId: payment._id.toString(),
@@ -358,6 +371,22 @@ export class AppointmentService implements IAppointmentService {
         }
 
         const cancelled = await this._appointmentRepo.cancelAppointment(id, reason, appointment.patientId.toString())
+
+        if (cancelled) {
+            const doctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
+            const doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+
+            const cancelPayload: CreateNotificationPayload = {
+                recipientId: appointment.patientId.toString(),
+                recipientRole: 'patient',
+                type: 'appointment_cancelled',
+                title: 'Appointment Cancelled',
+                message: `Your appointment with Dr. ${doctorName} on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${appointment.slotStart} has been cancelled.`,
+                metadata: { appointmentId: id, reason },
+            }
+            await this._notificationService.createNotification(cancelPayload).catch(() => null)
+        }
+
         return { appointment: cancelled, refundAmount }
     }
 
@@ -455,6 +484,19 @@ export class AppointmentService implements IAppointmentService {
                     paidAt: new Date(),
                 })
             }
+
+            const retryDoctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
+            const retryDoctorName = (retryDoctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+
+            const retryConfirmedPayload: CreateNotificationPayload = {
+                recipientId: dto.patientId,
+                recipientRole: 'patient',
+                type: 'appointment_confirmed',
+                title: 'Appointment Confirmed',
+                message: `Your appointment with Dr. ${retryDoctorName} on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${appointment.slotStart} has been confirmed.`,
+                metadata: { appointmentId },
+            }
+            await this._notificationService.createNotification(retryConfirmedPayload).catch(() => null)
 
             return {
                 paymentMethod: 'wallet',

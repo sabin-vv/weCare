@@ -8,6 +8,8 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPrescriptionRepository } from '../interfaces/prescription.repository.interface'
 import { IPrescriptionService } from '../interfaces/prescription.service.interface'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { PrescriptionDocument } from '../types/prescription.types'
 import { CreatePrescriptionDTO, UpdatePrescriptionStatusDTO } from '../validator/prescription.schema'
 
@@ -17,6 +19,7 @@ export class PrescriptionService implements IPrescriptionService {
         @inject(TOKENS.IPrescriptionRepository) private _prescriptionRepo: IPrescriptionRepository,
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
     ) {}
 
     async createPrescription(doctorUserId: string, dto: CreatePrescriptionDTO): Promise<PrescriptionDocument> {
@@ -55,7 +58,7 @@ export class PrescriptionService implements IPrescriptionService {
 
         const prescriptionEndDate = new Date(Math.max(...medications.map((m) => m.endDate!.getTime())))
 
-        return await this._prescriptionRepo.create({
+        const prescription = await this._prescriptionRepo.create({
             patientId: patient._id,
             prescribedBy: doctor._id,
             medications,
@@ -64,6 +67,24 @@ export class PrescriptionService implements IPrescriptionService {
             prescribedAt,
             endDate: prescriptionEndDate,
         })
+
+        const doctorUser = await this._doctorRepo.findByIdWithUser(doctor._id.toString()).catch(() => null)
+        const doctorName = (doctorUser?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+
+        const createPayload: CreateNotificationPayload = {
+            recipientId: patient.userId.toString(),
+            recipientRole: 'patient',
+            type: 'prescription_updated',
+            title: 'New Prescription Added',
+            message: `Dr. ${doctorName} has added a new prescription with ${medications.length} medication(s).`,
+            metadata: {
+                prescriptionId: prescription._id.toString(),
+                type: 'created',
+            },
+        }
+        await this._notificationService.createNotification(createPayload).catch(() => null)
+
+        return prescription
     }
 
     async getPatientPrescriptions(patientId: string, status?: string): Promise<PrescriptionDocument[]> {
@@ -79,11 +100,7 @@ export class PrescriptionService implements IPrescriptionService {
         return await this._prescriptionRepo.findByPatientId(patientId)
     }
 
-    async updatePrescriptionStatus(
-        doctorUserId: string,
-        prescriptionId: string,
-        dto: UpdatePrescriptionStatusDTO,
-    ): Promise<PrescriptionDocument> {
+    async updatePrescriptionStatus(doctorUserId: string, prescriptionId: string, dto: UpdatePrescriptionStatusDTO): Promise<PrescriptionDocument> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorUserId))
         if (!doctor) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')

@@ -6,7 +6,10 @@ import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
+import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPaymentRepository } from '../interfaces/payment.repository.interface'
 import { IPaymentService } from '../interfaces/payment.service.interface'
 import { PaymentDocument } from '../types/payment.types'
@@ -18,6 +21,8 @@ export class PaymentService implements IPaymentService {
         @inject(TOKENS.IAppointmentRepository) private _appointmentRepo: IAppointmentRepository,
         @inject(TOKENS.IPaymentRepository) private _paymentRepo: IPaymentRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
+        @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
     ) {}
     async verifyPayment(dto: VerifyPaymentDTO): Promise<PaymentDocument> {
         const secret = env.RAZORPAY_KEY_SECRET
@@ -53,6 +58,19 @@ export class PaymentService implements IPaymentService {
             const appointment = await this._appointmentRepo.findById(payment.appointmentId.toString())
             if (appointment) {
                 await this._patientRepo.updateByUserId(payment.patientId, { primaryDoctorId: appointment.doctorId })
+
+                const doctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
+                const doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+
+                const paymentConfirmedPayload: CreateNotificationPayload = {
+                    recipientId: payment.patientId.toString(),
+                    recipientRole: 'patient',
+                    type: 'appointment_confirmed',
+                    title: 'Appointment Confirmed',
+                    message: `Your appointment with Dr. ${doctorName} on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${appointment.slotStart} has been confirmed.`,
+                    metadata: { appointmentId: appointment._id.toString() },
+                }
+                await this._notificationService.createNotification(paymentConfirmedPayload).catch(() => null)
             }
         }
 
