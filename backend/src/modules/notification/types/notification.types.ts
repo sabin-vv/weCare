@@ -22,6 +22,7 @@ export const NOTIFICATION_TYPES = [
     'symptom_check_reminder',
     'doctor_verification_request',
     'caregiver_assigned',
+    'patient_assigned',
     'caregiver_verification_request',
     'payment_failed',
     'system_error',

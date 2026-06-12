@@ -459,6 +459,19 @@ export class PatientService implements IPatientService {
         }
         await this._notificationService.createNotification(payload).catch(() => null)
 
+        const patientUser = await this._userRepo.findById(patient.userId.toString())
+        const patientName = patientUser?.name ?? 'A patient'
+
+        const caregiverPayload: CreateNotificationPayload = {
+            recipientId: caregiver.userId.toString(),
+            recipientRole: 'caregiver',
+            type: 'caregiver_assigned',
+            title: 'Patient Assigned',
+            message: `You have been assigned to care for ${patientName}.`,
+            metadata: { patientId: patient._id.toString() },
+        }
+        await this._notificationService.createNotification(caregiverPayload).catch(() => null)
+
         return await this.buildPatientDetails(doctor._id.toString(), patient)
     }
 
