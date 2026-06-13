@@ -31,3 +31,5 @@ export const ALERTS_API = '/alerts'
 export const CAREGIVER_ACTIVITY_API = '/caregiver-activity'
 
 export const FEEDBACK_API = '/feedback'
+
+export const NOTIFICATIONS_API = '/notifications'
