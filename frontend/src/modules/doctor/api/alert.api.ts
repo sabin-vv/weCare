@@ -1,7 +1,7 @@
+import type { AlertData, AlertsResponse, AcknowledgeResponse } from '../types/doctor.types'
+
 import { api } from '@/services/api'
 import { ALERTS_API } from '@/shared/constants/api.constants'
-
-import type { AlertData, AlertsResponse, AcknowledgeResponse } from '../types/doctor.types'
 
 export const getAlerts = async (
     filters?: { type?: string; severity?: string; status?: string },
