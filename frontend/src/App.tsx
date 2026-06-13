@@ -4,14 +4,17 @@ import { RouterProvider } from 'react-router-dom'
 import { router } from './router'
 import { AuthProvider } from './shared/context/AuthContext'
 import { PlatformProvider } from './shared/context/PlatformContext'
+import { SocketProvider } from './shared/context/SocketContext'
 
 function App() {
     return (
         <AuthProvider>
-            <PlatformProvider>
-                <Toaster position="top-center" />
-                <RouterProvider router={router} />
-            </PlatformProvider>
+            <SocketProvider>
+                <PlatformProvider>
+                    <Toaster position="top-center" />
+                    <RouterProvider router={router} />
+                </PlatformProvider>
+            </SocketProvider>
         </AuthProvider>
     )
 }
