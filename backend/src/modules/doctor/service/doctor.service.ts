@@ -6,6 +6,8 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IAvailabilityNotificationService } from '../interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
@@ -94,6 +96,8 @@ export class DoctorService implements IDoctorService {
         @inject(TOKENS.IPaymentRepository) private _paymentRepo: IPaymentRepository,
         @inject(TOKENS.IAvailabilityNotificationService)
         private _availabilityNotificationService: IAvailabilityNotificationService,
+        @inject(TOKENS.INotificationService)
+        private _notificationService: INotificationService,
     ) {}
 
     async createProfile(userId: string, dto: DoctorDTO) {
@@ -106,6 +110,21 @@ export class DoctorService implements IDoctorService {
 
         await this._doctorRepo.create(doctorData)
         await this._userRepo.update(userId, { isProfileComplete: true })
+
+        const user = await this._userRepo.findById(userId)
+        const admins = await this._userRepo.findAll({ role: 'admin' })
+
+        for (const admin of admins) {
+            const payload: CreateNotificationPayload = {
+                recipientId: admin._id.toString(),
+                recipientRole: 'admin',
+                type: 'doctor_verification_request',
+                title: 'New Doctor Verification Request',
+                message: `Doctor ${user?.name ?? 'Unknown'} has submitted their profile for verification.`,
+                metadata: { doctorId: userId },
+            }
+            await this._notificationService.createNotification(payload).catch(() => null)
+        }
     }
 
     async getProfile(userId: string): Promise<DoctorProfileResponse> {
