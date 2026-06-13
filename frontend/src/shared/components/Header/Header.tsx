@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import Button from '../Button/Button'
+import NotificationDropdown from '../NotificationDropdown/NotificationDropdown'
 
 import styles from './Header.module.css'
 import type { HeaderProps, NavLink, RoleRoute } from './Header.types'
@@ -11,14 +12,18 @@ import { env } from '@/config/env'
 import LogoutButton from '@/shared/components/LogoutButton/LogoutButton'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
+import { useNotifications } from '@/shared/hooks/useNotifications'
 
-const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }: HeaderProps) => {
+const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading, trailing }: HeaderProps) => {
     const navigate = useNavigate()
     const { user } = useAuth()
     const { settings } = usePlatform()
     const baseUrl = env.AWS_BASE_URL
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isNotifOpen, setIsNotifOpen] = useState(false)
     const menuRef = useRef<HTMLDivElement>(null)
+    const notifRef = useRef<HTMLDivElement>(null)
+    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications()
 
     const isAuthenticated = !!user
 
@@ -31,19 +36,15 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
 
     const roleRoutes: RoleRoute = {
         doctor: {
-            notification: '/doctor/notification',
             settings: '/doctor/settings',
         },
         caregiver: {
-            notification: '/caregiver/notification',
             settings: '/caregiver/settings',
         },
         patient: {
-            notification: '/notification',
             settings: '/settings',
         },
         admin: {
-            notification: '/admin/notification',
             settings: '/admin/settings',
         },
     }
@@ -54,6 +55,9 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsMenuOpen(false)
+            }
+            if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+                setIsNotifOpen(false)
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
@@ -71,7 +75,7 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
                 {leading}
                 <img
                     src={`${baseUrl}${settings?.platformLogo}`}
-                    alt="logo"
+                    alt='logo'
                     className={styles.logo}
                     onClick={() => navigate('/')}
                 />
@@ -89,14 +93,23 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
             </nav>
 
             <div className={styles.right}>
+                {trailing}
                 {isAuthenticated ? (
                     <>
-                        <BellRing
-                            className={styles.icon}
-                            onClick={() => {
-                                navigate(currentRoutes?.notification || '/')
-                            }}
-                        />
+                        <div className={styles.notifWrapper} ref={notifRef}>
+                            <BellRing className={styles.icon} onClick={() => setIsNotifOpen((prev) => !prev)} />
+                            {unreadCount > 0 && (
+                                <span className={styles.notifBadge}>{unreadCount > 9 ? '9+' : unreadCount}</span>
+                            )}
+                            {isNotifOpen && (
+                                <NotificationDropdown
+                                    notifications={notifications}
+                                    unreadCount={unreadCount}
+                                    onMarkAsRead={markAsRead}
+                                    onMarkAllAsRead={markAllAsRead}
+                                />
+                            )}
+                        </div>
                         <Settings
                             className={styles.icon}
                             onClick={() => {
@@ -118,7 +131,7 @@ const Header = ({ titlePrefix = '', subtitle, navLinks = [], children, leading }
                                 {user?.profileImage ? (
                                     <img
                                         src={`${baseUrl}${user?.profileImage}`}
-                                        alt="/profile"
+                                        alt='/profile'
                                         className={styles.profileImg}
                                     />
                                 ) : (

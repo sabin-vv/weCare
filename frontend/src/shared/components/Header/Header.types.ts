@@ -11,10 +11,10 @@ export interface HeaderProps {
     navLinks?: NavLink[]
     children?: ReactNode
     leading?: ReactNode
+    trailing?: ReactNode
 }
 
 export interface navLinkRight {
-    notification: string
     settings: string
 }
 
