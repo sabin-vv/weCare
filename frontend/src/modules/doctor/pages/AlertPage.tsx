@@ -10,6 +10,7 @@ import styles from './AlertPage.module.css'
 
 import DoctorLayout from '@/layout/DoctorLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import { useSocket } from '@/shared/context/SocketContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const ALERT_ICONS = {
@@ -21,6 +22,7 @@ const ALERT_ICONS = {
 const AlertPage = () => {
     const [alerts, setAlerts] = useState<AlertData[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const { socket } = useSocket()
 
     const fetchAlerts = async () => {
         setIsLoading(true)
@@ -37,6 +39,26 @@ const AlertPage = () => {
     useEffect(() => {
         fetchAlerts()
     }, [])
+
+    useEffect(() => {
+        if (!socket) return
+
+        const handleNewAlert = (alert: AlertData) => {
+            setAlerts((prev) => [alert, ...prev])
+        }
+
+        const handleAcknowledged = (alert: AlertData) => {
+            setAlerts((prev) => prev.filter((a) => a._id !== alert._id))
+        }
+
+        socket.on('new_alert', handleNewAlert)
+        socket.on('alert_acknowledged', handleAcknowledged)
+
+        return () => {
+            socket.off('new_alert', handleNewAlert)
+            socket.off('alert_acknowledged', handleAcknowledged)
+        }
+    }, [socket])
 
     const handleAcknowledge = async (alertId: string) => {
         try {
