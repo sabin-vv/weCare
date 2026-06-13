@@ -87,6 +87,15 @@ export class PaymentService implements IPaymentService {
         }
 
         if (!updatedPayment) {
+            const failedPayload: CreateNotificationPayload = {
+                recipientId: payment.patientId.toString(),
+                recipientRole: 'patient',
+                type: 'payment_failed',
+                title: 'Payment Failed',
+                message: 'Your payment could not be processed. Please try again.',
+                metadata: { appointmentId: payment.appointmentId?.toString() },
+            }
+            await this._notificationService.createNotification(failedPayload).catch(() => null)
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Payment update failed')
         }
 
