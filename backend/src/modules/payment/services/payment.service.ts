@@ -71,6 +71,18 @@ export class PaymentService implements IPaymentService {
                     metadata: { appointmentId: appointment._id.toString() },
                 }
                 await this._notificationService.createNotification(paymentConfirmedPayload).catch(() => null)
+
+                if (doctor) {
+                    const doctorPayload: CreateNotificationPayload = {
+                        recipientId: (doctor.userId as unknown as { _id: string })._id.toString(),
+                        recipientRole: 'doctor',
+                        type: 'appointment_booked',
+                        title: 'New Appointment Booked',
+                        message: `A patient has booked an appointment with you on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${appointment.slotStart}.`,
+                        metadata: { appointmentId: appointment._id.toString() },
+                    }
+                    await this._notificationService.createNotification(doctorPayload).catch(() => null)
+                }
             }
         }
 
