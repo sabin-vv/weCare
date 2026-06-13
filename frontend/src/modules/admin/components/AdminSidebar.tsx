@@ -4,15 +4,19 @@ import { NavLink } from 'react-router-dom'
 import styles from './AdminSidebar.module.css'
 
 import { usePendingCount } from '@/shared/context/PendingCountContext'
+import { usePlatform } from '@/shared/context/PlatformContext'
+import { env } from '@/config/env'
 
 const AdminSidebar = () => {
     const { doctorCount, caregiverCount } = usePendingCount()
+    const { settings } = usePlatform()
+    const baseUrl = env.AWS_BASE_URL
 
     return (
         <aside className={styles.sidebar}>
             <div className={styles.header}>
                 <div className={styles.logoWrapper}>
-                    <img src="/logo" alt="logo" />
+                    <img src={`${baseUrl}${settings?.platformIcon}`} alt="/logo" />
                 </div>
                 <div className={styles.headerText}>
                     <h2 className={styles.title}>Admin Portal</h2>
