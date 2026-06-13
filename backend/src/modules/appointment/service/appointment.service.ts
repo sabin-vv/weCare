@@ -232,6 +232,18 @@ export class AppointmentService implements IAppointmentService {
             }
             await this._notificationService.createNotification(confirmedPayload).catch(() => null)
 
+            if (doctor) {
+                const doctorPayload: CreateNotificationPayload = {
+                    recipientId: (doctor.userId as unknown as { _id: string })._id.toString(),
+                    recipientRole: 'doctor',
+                    type: 'appointment_booked',
+                    title: 'New Appointment Booked',
+                    message: `A patient has booked an appointment with you on ${new Date(dto.appointmentDate).toLocaleDateString()} at ${dto.slotStart}.`,
+                    metadata: { appointmentId: appointment._id.toString() },
+                }
+                await this._notificationService.createNotification(doctorPayload).catch(() => null)
+            }
+
             return {
                 paymentMethod: 'wallet',
                 paymentId: payment._id.toString(),
@@ -485,7 +497,9 @@ export class AppointmentService implements IAppointmentService {
                 })
             }
 
-            const retryDoctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
+            const retryDoctor = await this._doctorRepo
+                .findByIdWithUser(appointment.doctorId.toString())
+                .catch(() => null)
             const retryDoctorName = (retryDoctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
 
             const retryConfirmedPayload: CreateNotificationPayload = {
@@ -497,6 +511,18 @@ export class AppointmentService implements IAppointmentService {
                 metadata: { appointmentId },
             }
             await this._notificationService.createNotification(retryConfirmedPayload).catch(() => null)
+
+            if (retryDoctor) {
+                const doctorPayload: CreateNotificationPayload = {
+                    recipientId: (retryDoctor.userId as unknown as { _id: string })._id.toString(),
+                    recipientRole: 'doctor',
+                    type: 'appointment_booked',
+                    title: 'New Appointment Booked',
+                    message: `A patient has booked an appointment with you on ${new Date(appointment.appointmentDate).toLocaleDateString()} at ${appointment.slotStart}.`,
+                    metadata: { appointmentId },
+                }
+                await this._notificationService.createNotification(doctorPayload).catch(() => null)
+            }
 
             return {
                 paymentMethod: 'wallet',
