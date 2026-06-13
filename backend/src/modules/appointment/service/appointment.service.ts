@@ -268,6 +268,17 @@ export class AppointmentService implements IAppointmentService {
             if (appointment) {
                 await this._appointmentRepo.delete(appointment._id.toString()).catch(() => null)
             }
+
+            const failedPayload: CreateNotificationPayload = {
+                recipientId: dto.patientId,
+                recipientRole: 'patient',
+                type: 'payment_failed',
+                title: 'Payment Failed',
+                message: 'Your wallet payment could not be processed. Please check your balance and try again.',
+                metadata: { appointmentId: appointment?._id?.toString() },
+            }
+            await this._notificationService.createNotification(failedPayload).catch(() => null)
+
             throw error
         }
     }
@@ -478,23 +489,38 @@ export class AppointmentService implements IAppointmentService {
         const totalAmount = appointment.consultationFee + (settings.platformFee ?? 0)
 
         if (dto.paymentMethod === 'wallet') {
-            const wallet = await this._walletService.debit(
-                dto.patientId,
-                totalAmount,
-                `Consultation payment for appointment ${appointmentId}`,
-                appointmentId,
-            )
+            let wallet: { balance: number }
 
-            await this._appointmentRepo.update(appointmentId, { status: 'confirmed', confirmedAt: new Date() })
-            await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
-                primaryDoctorId: appointment.doctorId as Types.ObjectId,
-            })
+            try {
+                wallet = await this._walletService.debit(
+                    dto.patientId,
+                    totalAmount,
+                    `Consultation payment for appointment ${appointmentId}`,
+                    appointmentId,
+                )
 
-            if (appointment.paymentId) {
-                await this._paymentRepo.updateById(appointment.paymentId.toString(), {
-                    status: 'success',
-                    paidAt: new Date(),
+                await this._appointmentRepo.update(appointmentId, { status: 'confirmed', confirmedAt: new Date() })
+                await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
+                    primaryDoctorId: appointment.doctorId as Types.ObjectId,
                 })
+
+                if (appointment.paymentId) {
+                    await this._paymentRepo.updateById(appointment.paymentId.toString(), {
+                        status: 'success',
+                        paidAt: new Date(),
+                    })
+                }
+            } catch (error) {
+                const failedPayload: CreateNotificationPayload = {
+                    recipientId: dto.patientId,
+                    recipientRole: 'patient',
+                    type: 'payment_failed',
+                    title: 'Payment Failed',
+                    message: 'Your wallet payment could not be processed. Please check your balance and try again.',
+                    metadata: { appointmentId },
+                }
+                await this._notificationService.createNotification(failedPayload).catch(() => null)
+                throw error
             }
 
             const retryDoctor = await this._doctorRepo
