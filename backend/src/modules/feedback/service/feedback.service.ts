@@ -4,6 +4,10 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
+import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IFeedbackRepository } from '../interfaces/feedback.repository.interface'
 import { IFeedbackService } from '../interfaces/feedback.service.interface'
@@ -24,6 +28,9 @@ export class FeedbackService implements IFeedbackService {
     constructor(
         @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+        @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
+        @inject(TOKENS.ICaregiverRepository) private _caregiverRepo: ICaregiverRepository,
     ) {}
 
     async submitFeedback(userId: string, dto: CreateFeedbackDTO): Promise<FeedbackResponse> {
@@ -56,6 +63,22 @@ export class FeedbackService implements IFeedbackService {
             rating: dto.rating,
             comment: dto.comment,
         })
+
+        const targetUserId = dto.targetRole === 'doctor'
+            ? (await this._doctorRepo.findById(dto.targetId.toString()))?.userId
+            : (await this._caregiverRepo.findById(dto.targetId.toString()))?.userId
+
+        if (targetUserId) {
+            const payload: CreateNotificationPayload = {
+                recipientId: targetUserId.toString(),
+                recipientRole: dto.targetRole,
+                type: 'feedback_received',
+                title: 'New Feedback Received',
+                message: `A user gave you a ${dto.rating}-star rating.`,
+                metadata: { feedbackId: feedback._id.toString(), rating: dto.rating },
+            }
+            await this._notificationService.createNotification(payload).catch(() => null)
+        }
 
         return toFeedbackResponse(feedback)
     }
