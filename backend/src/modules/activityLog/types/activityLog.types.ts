@@ -54,6 +54,7 @@ export const ACTIVITY_ACTIONS = [
     'prescription_updated',
     'prescription_discontinued',
     'feedback_submitted',
+    'feedback_updated',
     'alert_triggered',
     'alert_acknowledged',
     'subscription_activated',
