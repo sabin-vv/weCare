@@ -8,6 +8,7 @@ import { IAppointmentRepository } from '../../appointment/interfaces/appointment
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IAvailabilityNotificationService } from '../interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
@@ -98,6 +99,8 @@ export class DoctorService implements IDoctorService {
         private _availabilityNotificationService: IAvailabilityNotificationService,
         @inject(TOKENS.INotificationService)
         private _notificationService: INotificationService,
+        @inject(TOKENS.IActivityLogService)
+        private _activityLogService: IActivityLogService,
     ) {}
 
     async createProfile(userId: string, dto: DoctorDTO) {
@@ -112,6 +115,9 @@ export class DoctorService implements IDoctorService {
         await this._userRepo.update(userId, { isProfileComplete: true })
 
         const user = await this._userRepo.findById(userId)
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+        }
         const admins = await this._userRepo.findAll({ role: 'admin' })
 
         for (const admin of admins) {
@@ -125,6 +131,16 @@ export class DoctorService implements IDoctorService {
             }
             await this._notificationService.createNotification(payload).catch(() => null)
         }
+
+        await this._activityLogService.logActivity({
+            performedBy: userId,
+            performedByRole: 'doctor',
+            category: 'verification',
+            action: 'doctor_profile_created',
+            targetId: userId,
+            targetType: 'doctor',
+            description: `Profile created for ${user?.name}`,
+        })
     }
 
     async getProfile(userId: string): Promise<DoctorProfileResponse> {
