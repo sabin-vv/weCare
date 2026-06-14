@@ -25,6 +25,10 @@ export class PatientRepository extends BaseRepository<PatientDocument> implement
         return this.model.findOne({ userId })
     }
 
+    async findUserByUserId(userId: Types.ObjectId): Promise<PatientDocument | null> {
+        return this.model.findOne({ userId }).populate('userId')
+    }
+
     async updateById(id: string, data: Partial<PatientDocument>): Promise<PatientDocument | null> {
         if (!Types.ObjectId.isValid(id)) return null
         return this.model.findByIdAndUpdate(id, data, { returnDocument: 'after' })
