@@ -80,6 +80,10 @@ import { IWalletRepository } from '../modules/wallet/interfaces/wallet.repositor
 import { IWalletService } from '../modules/wallet/interfaces/wallet.service.interface'
 import { WalletRepository } from '../modules/wallet/repository/wallet.repository'
 import { WalletService } from '../modules/wallet/services/wallet.service'
+import { IActivityLogRepository } from '../modules/activityLog/interfaces/activityLog.repository.interface'
+import { IActivityLogService } from '../modules/activityLog/interfaces/activityLog.service.interface'
+import { ActivityLogRepository } from '../modules/activityLog/repository/activityLog.repository'
+import { ActivityLogService } from '../modules/activityLog/service/activityLog.service'
 import { INotificationRepository } from '../modules/notification/interfaces/notification.repository.interface'
 import { INotificationService } from '../modules/notification/interfaces/notification.service.interface'
 import { NotificationRepository } from '../modules/notification/repository/notification.repository'
@@ -157,6 +161,13 @@ container.register<IFeedbackRepository>(TOKENS.IFeedbackRepository, {
 })
 container.register<IFeedbackService>(TOKENS.IFeedbackService, {
     useClass: FeedbackService,
+})
+
+container.register<IActivityLogRepository>(TOKENS.IActivityLogRepository, {
+    useClass: ActivityLogRepository,
+})
+container.register<IActivityLogService>(TOKENS.IActivityLogService, {
+    useClass: ActivityLogService,
 })
 
 container.register<INotificationRepository>(TOKENS.INotificationRepository, {
