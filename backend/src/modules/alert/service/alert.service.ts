@@ -10,6 +10,7 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IAlertRepository } from '../interfaces/alert.repository.interface'
 import { IAlertService } from '../interfaces/alert.service.interface'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { AlertDocument } from '../types/alert.types'
 
 @injectable()
@@ -18,6 +19,7 @@ export class AlertService implements IAlertService {
         @inject(TOKENS.IAlertRepository) private _alertRepo: IAlertRepository,
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {}
 
     async getAlerts(
@@ -75,7 +77,16 @@ export class AlertService implements IAlertService {
             throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to acknowledge alert')
         }
 
-        getIO().to(`user:${userId}`).emit(SOCKET_EVENTS.ALERT_ACKNOWLEDGED, updated)
+        await this._activityLogService.logActivity({
+            performedBy: userId,
+            performedByRole: 'doctor',
+            category: 'alert',
+            action: 'alert_acknowledged',
+            patientId: alert.patientId.toString(),
+            targetId: alertId,
+            targetType: 'alert',
+            description: `Alert acknowledged by doctor: ${alert.severity} ${alert.type.replace(/_/g, ' ')}${note ? ` - ${note}` : ''}`,
+        })
 
         return updated
     }
@@ -88,6 +99,16 @@ export class AlertService implements IAlertService {
         })
 
         await this.emitNewAlert(alert)
+
+        await this._activityLogService.logActivity({
+            performedByRole: 'system',
+            category: 'alert',
+            action: 'alert_triggered',
+            patientId: alert.patientId.toString(),
+            targetId: alert._id.toString(),
+            targetType: 'alert',
+            description: `${alert.severity} ${alert.type.replace(/_/g, ' ')} - ${alert.triggerReason}`,
+        })
 
         return alert
     }
@@ -104,8 +125,8 @@ export class AlertService implements IAlertService {
             if (populated) {
                 getIO().to(`user:${doctor.userId.toString()}`).emit(SOCKET_EVENTS.NEW_ALERT, populated)
             }
-        } catch {
-            // socket emit failures should not break alert creation
+        } catch (error) {
+            console.error('Failed to emit new alert notification', error)
         }
     }
 }
