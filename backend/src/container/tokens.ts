@@ -40,4 +40,6 @@ export const TOKENS = {
     IFeedbackService: Symbol('IFeedbackService'),
     INotificationRepository: Symbol('INotificationRepository'),
     INotificationService: Symbol('INotificationService'),
+    IActivityLogRepository: Symbol('IActivityLogRepository'),
+    IActivityLogService: Symbol('IActivityLogService'),
 }
