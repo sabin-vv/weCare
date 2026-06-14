@@ -3,6 +3,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAdminRepository } from '../interfaces/admin.repository.interface'
 import { IAdminService } from '../interfaces/admin.service.interface'
 import {
@@ -23,16 +24,21 @@ import {
     RecentDoctorsResponse,
     UsersResponse,
 } from '../types/admin.types'
+import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 
 @injectable()
 export class AdminService implements IAdminService {
-    constructor(@inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository) {}
+    constructor(
+        @inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
+        @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
+    ) {}
 
     async getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse> {
         const result = await this._adminRepo.getPendingDoctors(page, limit, search)
         return {
             ...result,
-            doctors: result.doctors.map(toPendingDoctorDTO)
+            doctors: result.doctors.map(toPendingDoctorDTO),
         }
     }
 
@@ -40,7 +46,7 @@ export class AdminService implements IAdminService {
         const result = await this._adminRepo.getRecentDoctorVerifications(limit)
         return {
             ...result,
-            doctors: result.doctors.map(toRecentDoctorDTO)
+            doctors: result.doctors.map(toRecentDoctorDTO),
         }
     }
 
@@ -53,7 +59,25 @@ export class AdminService implements IAdminService {
         if (status !== 'verified' && status !== 'rejected') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid verification status')
         }
-        return this._adminRepo.verifyDoctor(doctorId, status, adminId, reason)
+
+        const user = await this._userRepo.findById(doctorId)
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+        }
+        const result = await this._adminRepo.verifyDoctor(doctorId, status, adminId, reason)
+        await this._activityLogService.logActivity({
+            performedBy: adminId,
+            performedByRole: 'admin',
+            category: 'verification',
+            action: status === 'verified' ? 'doctor_verified' : 'doctor_rejected',
+            targetId: doctorId,
+            targetType: 'doctor',
+            description:
+                status === 'verified'
+                    ? `Dr. ${user.name} Verification Approved`
+                    : `Dr. ${user.name} Verification Rejected`,
+        })
+        return result
     }
 
     async verifySpecialization(
@@ -69,7 +93,7 @@ export class AdminService implements IAdminService {
         const result = await this._adminRepo.getPendingCaregivers(page, limit, search)
         return {
             ...result,
-            caregivers: result.caregivers.map(toPendingCaregiverDTO)
+            caregivers: result.caregivers.map(toPendingCaregiverDTO),
         }
     }
 
@@ -77,7 +101,7 @@ export class AdminService implements IAdminService {
         const result = await this._adminRepo.getRecentCaregiverVerifications(limit)
         return {
             ...result,
-            caregivers: result.caregivers.map(toRecentCaregiverDTO)
+            caregivers: result.caregivers.map(toRecentCaregiverDTO),
         }
     }
 
@@ -89,7 +113,24 @@ export class AdminService implements IAdminService {
         if (status !== 'verified' && status !== 'rejected') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid verification status')
         }
-        return this._adminRepo.verifyCaregiver(caregiverId, status, adminId)
+        const result = await this._adminRepo.verifyCaregiver(caregiverId, status, adminId)
+        const user = await this._userRepo.findById(caregiverId)
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+        }
+        await this._activityLogService.logActivity({
+            performedBy: adminId,
+            performedByRole: 'admin',
+            category: 'verification',
+            action: status === 'verified' ? 'caregiver_verified' : 'caregiver_rejected',
+            targetId: caregiverId,
+            targetType: 'caregiver',
+            description:
+                status === 'verified'
+                    ? `Caregiver ${user.name} Verification Approved`
+                    : `Caregiver ${user.name} Verification Rejected`,
+        })
+        return result
     }
 
     async getPendingCount(): Promise<PendingCountResponse> {
@@ -110,7 +151,7 @@ export class AdminService implements IAdminService {
         const result = await this._adminRepo.getUsers(role, search, page, limit)
         return {
             ...result,
-            users: result.users.map(toAdminUserProfileDTO)
+            users: result.users.map(toAdminUserProfileDTO),
         }
     }
 
@@ -118,7 +159,21 @@ export class AdminService implements IAdminService {
         if (typeof isActive !== 'boolean') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'isActive must be boolean')
         }
-        return this._adminRepo.toggleUserStatus(userId, isActive)
+
+        const result = await this._adminRepo.toggleUserStatus(userId, isActive)
+        const user = await this._userRepo.findById(userId)
+        if (!user) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+        }
+        await this._activityLogService.logActivity({
+            performedByRole: 'admin',
+            category: 'user_management',
+            action: isActive ? 'user_enabled' : 'user_disabled',
+            targetId: userId,
+            targetType: 'user',
+            description: `${user.role} ${user.name}'s account is ${isActive ? 'enabled' : 'disabled'}`,
+        })
+        return result
     }
 
     async getPlatformSettings(): Promise<PlatformSettings> {
@@ -128,6 +183,13 @@ export class AdminService implements IAdminService {
 
     async updatePlatformSettings(settings: Partial<PlatformSettings>): Promise<PlatformSettings> {
         const updated = await this._adminRepo.updatePlatformSettings(settings)
+        await this._activityLogService.logActivity({
+            performedByRole: 'admin',
+            category: 'platform_settings',
+            action: 'settings_updated',
+            targetType: 'platform_setting',
+            description: 'Platform settings updated',
+        })
         return toPlatformSettingsDTO(updated)
     }
 }
