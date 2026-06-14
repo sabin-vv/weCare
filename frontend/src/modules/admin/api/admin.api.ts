@@ -1,13 +1,15 @@
 import type { PresignUploadParams, PresignUploadResponse } from '../../auth/api/auth.api.types'
 import type {
+    ActivityLogsResponse,
     PendingCaregiversResponse,
     PendingDoctorsResponse,
     PlatformSettings,
     RecentCaregiversResponse,
-} from '../interfaces/admin.interface'
+} from '../types/admin.types'
 
 import { api } from '@/services/api'
 import { ADMIN_API, UPLOADS_API } from '@/shared/constants/api.constants'
+import type { ActivityLogFilters } from '../types/admin.types'
 
 export const getPendingDoctors = async (
     page: number,
@@ -92,6 +94,23 @@ export const getUsers = async (role: string, search: string, page: number, limit
     const res = await api.get(`${ADMIN_API}/users`, {
         params: { role, search, page, limit },
     })
+    return res.data
+}
+
+export const getActivityLogs = async (
+    page: number = 1,
+    limit: number = 20,
+    filters: ActivityLogFilters = {},
+): Promise<ActivityLogsResponse> => {
+    const params: Record<string, string | number> = { page, limit }
+    if (filters.category) params.category = filters.category
+    if (filters.performedByRole) params.performedByRole = filters.performedByRole
+    if (filters.targetType) params.targetType = filters.targetType
+    if (filters.search) params.search = filters.search
+    if (filters.startDate) params.startDate = filters.startDate
+    if (filters.endDate) params.endDate = filters.endDate
+
+    const res = await api.get('/activity-logs', { params })
     return res.data
 }
 
