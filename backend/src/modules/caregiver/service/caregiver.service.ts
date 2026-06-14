@@ -8,6 +8,7 @@ import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { ICaregiverActivityService } from '../../caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
 import { IMedicationLogRepository } from '../../medication/interfaces/medicationLog.repository.interface'
@@ -41,6 +42,7 @@ export class CaregiverService implements ICaregiverService {
         @inject(TOKENS.IAlertService) private _alertService: IAlertService,
         @inject(TOKENS.ICaregiverActivityService) private _activityService: ICaregiverActivityService,
         @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {}
 
     async createProfile(userId: string, dto: CreateCaregiverProfileDTO): Promise<Partial<CaregiverProfileResponse>> {
@@ -67,6 +69,16 @@ export class CaregiverService implements ICaregiverService {
             }
             await this._notificationService.createNotification(payload).catch(() => null)
         }
+
+        await this._activityLogService.logActivity({
+            performedBy: userId,
+            performedByRole: 'caregiver',
+            category: 'verification',
+            action: 'caregiver_profile_created',
+            targetId: userId,
+            targetType: 'caregiver',
+            description: `Profile created for ${user?.name}`,
+        })
 
         return toCaregiverProfileEntity(caregiver)
     }
