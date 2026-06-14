@@ -14,6 +14,7 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IPrescriptionRepository } from '../../prescription/interfaces/prescription.repository.interface'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
 import { IPatientRepository } from '../interfaces/patient.repository.interface'
@@ -72,6 +73,7 @@ export class PatientService implements IPatientService {
         @inject(TOKENS.IMedicationRepository) private _medicationRepo: IMedicationRepository,
         @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
         @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {}
 
     private transitionClinicalStatus(currentStatus: ClinicalStatus, nextStatus: ClinicalStatus): boolean {
@@ -471,6 +473,17 @@ export class PatientService implements IPatientService {
             metadata: { patientId: patient._id.toString() },
         }
         await this._notificationService.createNotification(caregiverPayload).catch(() => null)
+
+        await this._activityLogService.logActivity({
+            performedBy: doctorId,
+            performedByRole: 'doctor',
+            category: 'user_management',
+            action: 'caregiver_assigned',
+            targetId: caregiver._id.toString(),
+            targetType: 'caregiver',
+            patientId: patient._id.toString(),
+            description: `Caregiver ${caregiverName} assigned to patient ${patientName}`,
+        })
 
         return await this.buildPatientDetails(doctor._id.toString(), patient)
     }
