@@ -6,6 +6,7 @@ import { errorMiddleware } from './core/middleware/errorMiddleware'
 import { createAdminRoutes } from './modules/admin/routes/admin.route'
 import { createAlertRoutes } from './modules/alert/routes/alert.route'
 import { createAppointmentRoutes } from './modules/appointment/routes/appointment.route'
+import { createActivityLogRoutes } from './modules/activityLog/routes/activityLog.routes'
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
 import { createCaregiverActivityRoutes } from './modules/caregiverActivity/routes/caregiverActivity.route'
@@ -73,6 +74,8 @@ app.use('/api/feedback', createFeedbackRoutes())
 app.use('/api/uploads', createUploadsRoutes())
 
 app.use('/api/notifications', createNotificationRoutes())
+
+app.use('/api/activity-logs', createActivityLogRoutes())
 
 app.use('/api/admin', createAdminRoutes())
 
