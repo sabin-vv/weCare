@@ -23,6 +23,7 @@ import { AppointmentDocument, AppointmentResponseDTO, DoctorAppointmentsResponse
 import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 
 @injectable()
 export class AppointmentService implements IAppointmentService {
@@ -36,6 +37,7 @@ export class AppointmentService implements IAppointmentService {
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
         @inject(TOKENS.IWalletService) private _walletService: IWalletService,
         @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {
         this.razorpay = new Razorpay({
             key_id: env.RAZORPAY_KEY_ID,
@@ -127,10 +129,22 @@ export class AppointmentService implements IAppointmentService {
         consultationFee: number,
         platformFee: number,
         totalAmount: number,
+        doctorName: string,
     ): Promise<RazorpayAppointmentResponse> {
         const expiredAt = new Date(Date.now() + 10 * 60 * 1000)
 
         const appointment = await this.createBaseAppointment(dto, consultationFee, 'pending_payment', expiredAt)
+
+        await this._activityLogService.logActivity({
+            performedBy: dto.patientId,
+            performedByRole: 'patient',
+            category: 'appointment',
+            action: 'appointment_booked',
+            targetId: appointment._id.toString(),
+            targetType: 'appointment',
+            description: `Booked Appointment with Dr. ${doctorName} via Razorpay `,
+        })
+
         const payment = await this.createBasePayment(
             dto,
             appointment._id as Types.ObjectId,
@@ -192,6 +206,16 @@ export class AppointmentService implements IAppointmentService {
             const doctor = await this._doctorRepo.findByIdWithUser(dto.doctorId)
             doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
 
+            await this._activityLogService.logActivity({
+                performedBy: dto.patientId,
+                performedByRole: 'patient',
+                category: 'appointment',
+                action: 'appointment_booked',
+                targetId: appointment._id.toString(),
+                targetType: 'appointment',
+                description: `Booked Appointment with Dr. ${doctorName} via wallet`,
+            })
+
             const wallet = await this._walletService.debit(
                 dto.patientId,
                 totalAmount,
@@ -208,6 +232,16 @@ export class AppointmentService implements IAppointmentService {
                 throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to finalize wallet payment')
             }
 
+            await this._activityLogService.logActivity({
+                performedBy: dto.patientId,
+                performedByRole: 'patient',
+                category: 'payment',
+                action: 'payment_success',
+                targetId: payment._id.toString(),
+                targetType: 'payment',
+                description: `Appointment Payment completed via wallet`,
+            })
+
             const confirmedAppointment = await this._appointmentRepo.update(appointment._id.toString(), {
                 paymentId: payment._id,
                 status: 'confirmed',
@@ -220,6 +254,16 @@ export class AppointmentService implements IAppointmentService {
 
             await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
                 primaryDoctorId: new Types.ObjectId(dto.doctorId),
+            })
+
+            await this._activityLogService.logActivity({
+                performedBy: dto.patientId,
+                performedByRole: 'patient',
+                category: 'appointment',
+                action: 'appointment_confirmed',
+                targetId: appointment._id.toString(),
+                targetType: 'appointment',
+                description: `Appointment with Dr. ${doctorName} confirmed`,
             })
 
             const confirmedPayload: CreateNotificationPayload = {
@@ -290,7 +334,14 @@ export class AppointmentService implements IAppointmentService {
             return await this.createWalletAppointment(dto, doctor.consultationFee, settings.platformFee, totalAmount)
         }
 
-        return await this.createRazorpayAppointment(dto, doctor.consultationFee, settings.platformFee, totalAmount)
+        const doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+        return await this.createRazorpayAppointment(
+            dto,
+            doctor.consultationFee,
+            settings.platformFee,
+            totalAmount,
+            doctorName,
+        )
     }
 
     async getPatientAppointments(patientId: string): Promise<AppointmentResponseDTO[]> {
@@ -359,6 +410,7 @@ export class AppointmentService implements IAppointmentService {
             },
         }
     }
+
     async cancelAppointment(
         id: string,
         reason: string,
@@ -385,17 +437,17 @@ export class AppointmentService implements IAppointmentService {
             refundAmount = Math.floor(appointment.consultationFee * 0.5)
         }
 
-        if (refundAmount > 0 && appointment.paymentId) {
-            const payment = await this._paymentRepo.findById(appointment.paymentId.toString())
-            if (payment && payment.status === 'success') {
-                await this._walletService.credit(appointment.patientId.toString(), refundAmount, reason, id)
-                await this._paymentRepo.updateById(payment._id.toString(), { status: 'refunded' })
-            }
-        }
-
         const cancelled = await this._appointmentRepo.cancelAppointment(id, reason, appointment.patientId.toString())
 
         if (cancelled) {
+            if (refundAmount > 0 && appointment.paymentId) {
+                const payment = await this._paymentRepo.findById(appointment.paymentId.toString())
+                if (payment && payment.status === 'success') {
+                    await this._walletService.credit(appointment.patientId.toString(), refundAmount, reason, id)
+                    await this._paymentRepo.updateById(payment._id.toString(), { status: 'refunded' })
+                }
+            }
+
             const doctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
             const doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
 
@@ -408,6 +460,28 @@ export class AppointmentService implements IAppointmentService {
                 metadata: { appointmentId: id, reason },
             }
             await this._notificationService.createNotification(cancelPayload).catch(() => null)
+
+            await this._activityLogService.logActivity({
+                performedBy: appointment.patientId.toString(),
+                performedByRole: 'patient',
+                category: 'appointment',
+                action: 'appointment_cancelled',
+                targetId: id,
+                targetType: 'appointment',
+                description: `Cancelled appointment with Dr. ${doctorName}. Reason: ${reason}`,
+            })
+
+            if (refundAmount > 0) {
+                await this._activityLogService.logActivity({
+                    performedBy: appointment.patientId.toString(),
+                    performedByRole: 'patient',
+                    category: 'payment',
+                    action: 'payment_refunded',
+                    targetId: id,
+                    targetType: 'payment',
+                    description: `Refund of ₹${refundAmount} processed `,
+                })
+            }
         }
 
         return { appointment: cancelled, refundAmount }
@@ -465,6 +539,19 @@ export class AppointmentService implements IAppointmentService {
         }
 
         await this._appointmentRepo.update(appointment._id.toString(), { status: 'completed' })
+
+        const patientExists = await this._patientRepo.findUserByUserId(appointment.patientId as Types.ObjectId)
+        const patientName = (patientExists?.userId as unknown as { name: string })?.name
+
+        await this._activityLogService.logActivity({
+            performedBy: (doctor.userId as unknown as { _id: string })._id.toString(),
+            performedByRole: 'doctor',
+            category: 'appointment',
+            action: 'appointment_completed',
+            targetId: appointment._id.toString(),
+            targetType: 'appointment',
+            description: `Appointment completed for patient ${patientName} by Dr. ${(doctor.userId as unknown as { name?: string }).name}`,
+        })
     }
 
     async retryPayment(
@@ -509,6 +596,19 @@ export class AppointmentService implements IAppointmentService {
                         status: 'success',
                         paidAt: new Date(),
                     })
+
+                    const patientExists = await this._patientRepo.findUserByUserId(appointment.patientId as Types.ObjectId)
+                    const patientName = (patientExists?.userId as unknown as { name: string })?.name
+
+                    await this._activityLogService.logActivity({
+                        performedBy: dto.patientId,
+                        performedByRole: 'patient',
+                        category: 'payment',
+                        action: 'payment_success',
+                        targetId: appointment.paymentId.toString(),
+                        targetType: 'payment',
+                        description: `Wallet payment completed for appointment ${patientName}`,
+                    })
                 }
             } catch (error) {
                 const failedPayload: CreateNotificationPayload = {
@@ -537,6 +637,16 @@ export class AppointmentService implements IAppointmentService {
                 metadata: { appointmentId },
             }
             await this._notificationService.createNotification(retryConfirmedPayload).catch(() => null)
+
+            await this._activityLogService.logActivity({
+                performedBy: dto.patientId,
+                performedByRole: 'patient',
+                category: 'appointment',
+                action: 'appointment_confirmed',
+                targetId: appointmentId,
+                targetType: 'appointment',
+                description: `Confirmed via wallet retry for Dr. ${retryDoctorName}`,
+            })
 
             if (retryDoctor) {
                 const doctorPayload: CreateNotificationPayload = {
