@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router-dom'
 
 import AdminLayout from '../components/AdminLayout'
+import ActivityLogsPage from '../pages/ActivityLogsPage'
 import AdminDashboard from '../pages/AdminDashboard'
 import AdminLoginPage from '../pages/AdminLoginPage'
 import AdminSettings from '../pages/AdminSettings'
@@ -43,6 +44,10 @@ export const AdminRoutes: RouteObject[] = [
             {
                 path: 'settings',
                 element: <AdminSettings />,
+            },
+            {
+                path: 'activity-logs',
+                element: <ActivityLogsPage />,
             },
         ],
     },
