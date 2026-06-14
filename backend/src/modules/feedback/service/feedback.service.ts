@@ -8,6 +8,7 @@ import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repos
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IFeedbackRepository } from '../interfaces/feedback.repository.interface'
 import { IFeedbackService } from '../interfaces/feedback.service.interface'
@@ -31,6 +32,7 @@ export class FeedbackService implements IFeedbackService {
         @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.ICaregiverRepository) private _caregiverRepo: ICaregiverRepository,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {}
 
     async submitFeedback(userId: string, dto: CreateFeedbackDTO): Promise<FeedbackResponse> {
@@ -53,6 +55,17 @@ export class FeedbackService implements IFeedbackService {
             if (!updated) {
                 throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update feedback')
             }
+
+            await this._activityLogService.logActivity({
+                performedBy: userId,
+                performedByRole: 'patient',
+                category: 'feedback',
+                action: 'feedback_updated',
+                targetId: dto.targetId.toString(),
+                targetType: dto.targetRole,
+                description: `Feedback updated: ${dto.rating}-star rating for ${dto.targetRole}`,
+            })
+
             return toFeedbackResponse(updated)
         }
 
@@ -64,9 +77,20 @@ export class FeedbackService implements IFeedbackService {
             comment: dto.comment,
         })
 
-        const targetUserId = dto.targetRole === 'doctor'
-            ? (await this._doctorRepo.findById(dto.targetId.toString()))?.userId
-            : (await this._caregiverRepo.findById(dto.targetId.toString()))?.userId
+        await this._activityLogService.logActivity({
+            performedBy: userId,
+            performedByRole: 'patient',
+            category: 'feedback',
+            action: 'feedback_submitted',
+            targetId: dto.targetId.toString(),
+            targetType: dto.targetRole,
+            description: `Feedback submitted: ${dto.rating}-star rating for ${dto.targetRole}`,
+        })
+
+        const targetUserId =
+            dto.targetRole === 'doctor'
+                ? (await this._doctorRepo.findById(dto.targetId.toString()))?.userId
+                : (await this._caregiverRepo.findById(dto.targetId.toString()))?.userId
 
         if (targetUserId) {
             const payload: CreateNotificationPayload = {
