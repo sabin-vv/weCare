@@ -9,9 +9,11 @@ import { IPatientRepository } from '../../patient/interfaces/patient.repository.
 import { IPrescriptionRepository } from '../interfaces/prescription.repository.interface'
 import { IPrescriptionService } from '../interfaces/prescription.service.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { PrescriptionDocument } from '../types/prescription.types'
 import { CreatePrescriptionDTO, UpdatePrescriptionStatusDTO } from '../validator/prescription.schema'
+import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 
 @injectable()
 export class PrescriptionService implements IPrescriptionService {
@@ -19,7 +21,9 @@ export class PrescriptionService implements IPrescriptionService {
         @inject(TOKENS.IPrescriptionRepository) private _prescriptionRepo: IPrescriptionRepository,
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IUserRepository) private _userRepo: IUserRepository,
         @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {}
 
     async createPrescription(doctorUserId: string, dto: CreatePrescriptionDTO): Promise<PrescriptionDocument> {
@@ -84,6 +88,19 @@ export class PrescriptionService implements IPrescriptionService {
         }
         await this._notificationService.createNotification(createPayload).catch(() => null)
 
+        const user = await this._userRepo.findById(patient.userId.toString())
+        const patientName = user?.name ?? 'Unknown Patient'
+
+        await this._activityLogService.logActivity({
+            performedBy: doctorUserId,
+            performedByRole: 'doctor',
+            category: 'prescription',
+            action: 'prescription_created',
+            targetId: prescription._id.toString(),
+            targetType: 'prescription',
+            description: `Prescription created for ${patientName}: ${medications.map((m) => `${m.name} (${m.dosage})`).join(', ')}`,
+        })
+
         return prescription
     }
 
@@ -94,13 +111,20 @@ export class PrescriptionService implements IPrescriptionService {
         }
 
         if (status) {
-            return await this._prescriptionRepo.findByPatientIdAndStatus(patientId, status as PrescriptionDocument['status'])
+            return await this._prescriptionRepo.findByPatientIdAndStatus(
+                patientId,
+                status as PrescriptionDocument['status'],
+            )
         }
 
         return await this._prescriptionRepo.findByPatientId(patientId)
     }
 
-    async updatePrescriptionStatus(doctorUserId: string, prescriptionId: string, dto: UpdatePrescriptionStatusDTO): Promise<PrescriptionDocument> {
+    async updatePrescriptionStatus(
+        doctorUserId: string,
+        prescriptionId: string,
+        dto: UpdatePrescriptionStatusDTO,
+    ): Promise<PrescriptionDocument> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorUserId))
         if (!doctor) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
@@ -120,6 +144,35 @@ export class PrescriptionService implements IPrescriptionService {
 
         if (!updated) {
             throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update prescription status')
+        }
+
+        const presPatient = await this._patientRepo.findById(prescription.patientId.toString())
+        let presPatientName = 'Unknown Patient'
+        if (presPatient) {
+            const presUser = await this._userRepo.findById(presPatient.userId.toString())
+            presPatientName = presUser?.name ?? 'Unknown Patient'
+        }
+
+        if (dto.status === 'discontinued') {
+            await this._activityLogService.logActivity({
+                performedBy: doctorUserId,
+                performedByRole: 'doctor',
+                category: 'prescription',
+                action: 'prescription_discontinued',
+                targetId: prescriptionId,
+                targetType: 'prescription',
+                description: `Prescription discontinued for ${presPatientName}: ${prescription.medications.map((m) => `${m.name} (${m.dosage})`).join(', ')}`,
+            })
+        } else {
+            await this._activityLogService.logActivity({
+                performedBy: doctorUserId,
+                performedByRole: 'doctor',
+                category: 'prescription',
+                action: 'prescription_updated',
+                targetId: prescriptionId,
+                targetType: 'prescription',
+                description: `Prescription ${dto.status} for ${presPatientName}: ${prescription.medications.map((m) => `${m.name} (${m.dosage})`).join(', ')}`,
+            })
         }
 
         return updated
