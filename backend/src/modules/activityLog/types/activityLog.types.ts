@@ -12,6 +12,7 @@ export const ACTIVITY_CATEGORIES = [
     'prescription',
     'feedback',
     'alert',
+    'subscription',
     'system',
 ] as const
 export type ActivityCategory = (typeof ACTIVITY_CATEGORIES)[number]
@@ -27,6 +28,7 @@ export const TARGET_TYPES = [
     'platform_setting',
     'alert',
     'feedback',
+    'subscription',
 ] as const
 export type TargetType = (typeof TARGET_TYPES)[number]
 
