@@ -28,12 +28,13 @@ export class SubscriptionController {
 
     createSubscription = async (req: Request, res: Response) => {
         const userId = req.user?.userId
-        if (!userId) {
+        const role = req.user?.role
+        if (!userId || !role) {
             throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
         }
 
         const dto = createSubscriptionSchema.parse(req.body)
-        const result = await this._subscriptionService.createSubscription(userId, dto)
+        const result = await this._subscriptionService.createSubscription(userId, role, dto)
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
@@ -44,11 +45,12 @@ export class SubscriptionController {
 
     verifySubscriptionPayment = async (req: Request, res: Response) => {
         const userId = req.user?.userId
-        if (!userId) {
+        const role = req.user?.role
+        if (!userId || !role) {
             throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
         }
 
-        const subscription = await this._subscriptionService.verifySubscriptionPayment(req.body)
+        const subscription = await this._subscriptionService.verifySubscriptionPayment(userId, role, req.body)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
@@ -59,12 +61,13 @@ export class SubscriptionController {
 
     cancelSubscription = async (req: Request, res: Response) => {
         const userId = req.user?.userId
-        if (!userId) {
+        const role = req.user?.role
+        if (!userId || !role) {
             throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
         }
 
         const { subscriptionId } = req.params as { subscriptionId: string }
-        await this._subscriptionService.cancelSubscription(subscriptionId)
+        await this._subscriptionService.cancelSubscription(subscriptionId, userId, role)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
