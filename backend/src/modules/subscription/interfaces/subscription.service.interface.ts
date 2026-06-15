@@ -27,8 +27,13 @@ export interface ISubscriptionService {
     getMySubscription(userId: string): Promise<SubscriptionDTO | null>
     createSubscription(
         userId: string,
+        role: string,
         dto: CreateSubscriptionDTO,
     ): Promise<CreateSubscriptionResult | WalletSubscriptionResult>
-    verifySubscriptionPayment(dto: VerifySubscriptionPaymentDTO): Promise<SubscriptionDTO>
-    cancelSubscription(subscriptionId: string): Promise<void>
+    verifySubscriptionPayment(
+        userId: string,
+        role: string,
+        dto: VerifySubscriptionPaymentDTO,
+    ): Promise<SubscriptionDTO>
+    cancelSubscription(subscriptionId: string, performedBy: string, performedByRole: string): Promise<void>
 }
