@@ -7,6 +7,8 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
+import type { ActorRole } from '../../activityLog/types/activityLog.types'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
@@ -31,6 +33,7 @@ export class SubscriptionService implements ISubscriptionService {
         @inject(TOKENS.IPaymentRepository) private _paymentRepo: IPaymentRepository,
         @inject(TOKENS.IWalletService) private _walletService: IWalletService,
         @inject(TOKENS.IAdminRepository) private _adminRepo: IAdminRepository,
+        @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
     ) {
         this.razorpay = new Razorpay({
             key_id: env.RAZORPAY_KEY_ID,
@@ -60,6 +63,7 @@ export class SubscriptionService implements ISubscriptionService {
 
     async createSubscription(
         userId: string,
+        role: string,
         dto: CreateSubscriptionDTO,
     ): Promise<CreateSubscriptionResult | WalletSubscriptionResult> {
         const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
@@ -125,6 +129,18 @@ export class SubscriptionService implements ISubscriptionService {
                 paymentStatus: 'paid',
             })
 
+            const patientUser = await this._userRepo.findById(userId)
+            await this._activityLogService.logActivity({
+                performedBy: userId,
+                performedByRole: role as ActorRole,
+                category: 'subscription',
+                action: 'subscription_activated',
+                patientId: patient._id.toString(),
+                targetId: subscription._id.toString(),
+                targetType: 'subscription',
+                description: `${patientUser?.name || 'Unknown'} subscribed via wallet`,
+            })
+
             return {
                 subscriptionId: subscription._id.toString(),
                 paymentId: payment._id.toString(),
@@ -161,7 +177,11 @@ export class SubscriptionService implements ISubscriptionService {
         }
     }
 
-    async verifySubscriptionPayment(dto: VerifySubscriptionPaymentDTO): Promise<SubscriptionDTO> {
+    async verifySubscriptionPayment(
+        userId: string,
+        role: string,
+        dto: VerifySubscriptionPaymentDTO,
+    ): Promise<SubscriptionDTO> {
         const secret = env.RAZORPAY_KEY_SECRET
         const body = dto.razorpayOrderId + '|' + dto.razorpayPaymentId
 
@@ -192,6 +212,18 @@ export class SubscriptionService implements ISubscriptionService {
             paymentStatus: 'paid',
         })
 
+        const patientUser = await this._userRepo.findById(userId)
+        await this._activityLogService.logActivity({
+            performedBy: userId,
+            performedByRole: role as ActorRole,
+            category: 'subscription',
+            action: 'subscription_activated',
+            patientId: payment.patientId?.toString(),
+            targetId: payment.subscriptionId!.toString(),
+            targetType: 'subscription',
+            description: `${patientUser?.name || 'Unknown'} subscribed via Razorpay`,
+        })
+
         const subscription = await this._subscriptionRepo.findById(payment.subscriptionId!.toString())
         if (!subscription) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Subscription not found')
@@ -205,11 +237,28 @@ export class SubscriptionService implements ISubscriptionService {
         return toSubscriptionDTO(subscription, caregiver ?? undefined, caregiverUser ?? undefined)
     }
 
-    async cancelSubscription(subscriptionId: string): Promise<void> {
+    async cancelSubscription(subscriptionId: string, performedBy: string, performedByRole: string): Promise<void> {
+        const subscription = await this._subscriptionRepo.findById(subscriptionId)
+        if (!subscription) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Subscription not found')
+        }
+
         await this._subscriptionRepo.updateById(subscriptionId, { status: 'cancelled' })
         const payment = await this._paymentRepo.findBySubscriptionId(subscriptionId)
         if (payment) {
             await this._paymentRepo.updateById(payment._id.toString(), { status: 'failed' })
         }
+
+        const cancellingUser = await this._userRepo.findById(performedBy)
+        await this._activityLogService.logActivity({
+            performedBy,
+            performedByRole: performedByRole as ActorRole,
+            category: 'subscription',
+            action: 'subscription_cancelled',
+            patientId: subscription.patientId.toString(),
+            targetId: subscriptionId,
+            targetType: 'subscription',
+            description: `Subscription cancelled by ${cancellingUser?.name || 'Unknown'} (${performedByRole})`,
+        })
     }
 }
