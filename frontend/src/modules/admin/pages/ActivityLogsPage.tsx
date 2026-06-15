@@ -26,6 +26,10 @@ const CATEGORY_OPTIONS = [
     { value: 'appointment', label: 'Appointment' },
     { value: 'payment', label: 'Payment' },
     { value: 'platform_settings', label: 'Platform Settings' },
+    { value: 'prescription', label: 'Prescription' },
+    { value: 'feedback', label: 'Feedback' },
+    { value: 'alert', label: 'Alert' },
+    { value: 'subscription', label: 'Subscription' },
     { value: 'system', label: 'System' },
 ]
 
@@ -39,6 +43,9 @@ const TARGET_TYPE_OPTIONS = [
     { value: 'payment', label: 'Payment' },
     { value: 'prescription', label: 'Prescription' },
     { value: 'platform_setting', label: 'Platform Setting' },
+    { value: 'alert', label: 'Alert' },
+    { value: 'feedback', label: 'Feedback' },
+    { value: 'subscription', label: 'Subscription' },
 ]
 
 const formatTimestamp = (iso: string) => {
