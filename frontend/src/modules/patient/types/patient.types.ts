@@ -11,6 +11,7 @@ export interface Specialist {
 
 export interface PatientProfileData {
     id: string
+    patientMongoId: string
     name: string
     email: string
     mobile: string
@@ -19,7 +20,7 @@ export interface PatientProfileData {
     gender: string
     conditions: string[]
     profileImage?: string
-    caregiver?: string
+    caregiverId?: string
     isActive: boolean
 }
 
@@ -218,10 +219,7 @@ export interface CareTeamMember {
     mobile?: string
 }
 
-export interface CareTeamResponse {
-    doctor: CareTeamMember | null
-    caregiver: CareTeamMember | null
-}
+export type CareTeamResponse = CareTeamMember[]
 
 export interface CreateFeedbackDTO {
     targetId: string
@@ -253,6 +251,31 @@ export interface MedicationSchedule {
     priority: 'low' | 'medium' | 'high' | 'critical'
     status: 'pending' | 'administered' | 'missed' | 'skipped' | 'cancelled'
     administeredAt?: string
+}
+
+export interface Prescription {
+    _id: string
+    prescribedBy: {
+        _id: string
+        userId: {
+            name: string
+            email: string
+        }
+    }
+    medications: {
+        name: string
+        dosage: string
+        route: string
+        frequency: string
+        priority?: string
+        duration?: number
+        durationUnit?: string
+        instructions?: string
+    }[]
+    note?: string
+    status: string
+    prescribedAt: string
+    endDate?: string
 }
 
 export interface VitalSchedule {
