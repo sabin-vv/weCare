@@ -1,6 +1,6 @@
 import { Document, Types } from 'mongoose'
 
-export type ActivityType = 'medication_administered' | 'medication_missed' | 'vital_recorded' | 'symptom_logged'
+export type ActivityType = 'medication_administered' | 'medication_missed' | 'vital_recorded' | 'vital_missed' | 'symptom_logged'
 
 export interface CaregiverActivityLogDocument extends Document {
     caregiverId: Types.ObjectId
