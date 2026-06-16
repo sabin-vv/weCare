@@ -13,7 +13,10 @@ export class PrescriptionRepository extends BaseRepository<PrescriptionDocument>
     }
 
     async findByPatientId(patientId: string): Promise<PrescriptionDocument[]> {
-        return await this.model.find({ patientId }).sort({ prescribedAt: -1, createdAt: -1 })
+        return await this.model
+            .find({ patientId })
+            .sort({ prescribedAt: -1, createdAt: -1 })
+            .populate({ path: 'prescribedBy', populate: { path: 'userId', select: 'name email' } })
     }
 
     async updateStatus(
@@ -24,7 +27,10 @@ export class PrescriptionRepository extends BaseRepository<PrescriptionDocument>
     }
 
     async findByPatientIdAndStatus(patientId: string, status: PrescriptionStatus): Promise<PrescriptionDocument[]> {
-        return await this.model.find({ patientId, status }).sort({ prescribedAt: -1, createdAt: -1 })
+        return await this.model
+            .find({ patientId, status })
+            .sort({ prescribedAt: -1, createdAt: -1 })
+            .populate({ path: 'prescribedBy', populate: { path: 'userId', select: 'name email' } })
     }
     async pausePrescription(patientId: string) {
         return await this.model.updateMany(
