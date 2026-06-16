@@ -307,106 +307,151 @@
     margin-bottom: 20px;
 }
 
-.sectionTitle {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 12px;
+.summaryCards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
-.vitalSection {
-    margin-bottom: 20px;
-}
-
-.vitalScroll {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scrollbar-width: thin;
-    scrollbar-color: #d1d5db transparent;
-}
-
-.vitalScroll::-webkit-scrollbar {
-    height: 6px;
-}
-
-.vitalScroll::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.vitalScroll::-webkit-scrollbar-thumb {
-    background: #d1d5db;
-    border-radius: 3px;
-}
-
-.vitalCard {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
+.summaryCard {
     background: #ffffff;
     border: 1px solid #ececec;
     border-radius: 12px;
-    padding: 20px 24px;
+    padding: 20px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    min-width: 130px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
-.vitalIcon {
-    color: #be185d;
+.summaryIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
 }
 
-.vitalInfo {
+.summaryIconAppointments {
+    background: #eef2ff;
+    color: #6366f1;
+}
+
+.summaryIconMedications {
+    background: #f0fdf4;
+    color: #22c55e;
+}
+
+.summaryIconPrescriptions {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.summaryIconAlerts {
+    background: #fff7ed;
+    color: #f97316;
+}
+
+.summaryInfo {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 
-.vitalName {
+.summaryValue {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1;
+}
+
+.summaryLabel {
     font-size: 12px;
-    font-weight: 600;
-    color: #7c3aed;
-    white-space: nowrap;
-}
-
-.vitalTime {
-    font-size: 11px;
     color: #6b7280;
+    font-weight: 500;
 }
 
-.vitalStatus {
-    font-size: 10px;
+.vitalGroupList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.vitalGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vitalGroupHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 999px;
+    color: #374151;
+}
+
+.vitalGroupIcon {
+    color: #7c3aed;
+}
+
+.vitalGroupLabel {
+    font-size: 16px;
+    font-weight: 600;
     text-transform: capitalize;
 }
 
-.vitalStatus.pending {
-    background: #fef3c7;
-    color: #92400e;
+.vitalGroupItems {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.vitalStatus.recorded {
-    background: #dcfce7;
+.vitalGroupItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    padding: 6px 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px solid #f3f4f6;
+}
+
+.vitalGroupItemTime {
+    font-weight: 500;
+    color: #374151;
+}
+
+.vitalStatusRecorded {
     color: #16a34a;
 }
 
-.vitalStatus.missed {
-    background: #fee2e2;
+.vitalStatusPending {
+    color: #92400e;
+}
+
+.vitalStatusMissed {
     color: #dc2626;
 }
 
-.vitalStatus.skipped,
-.vitalStatus.cancelled {
-    background: #f3f4f6;
-    color: #6b7280;
+.vitalGroupItemRecorded {
+    background: #dcfce7;
+    border-color: #86efac;
+}
+
+.vitalGroupItemPending {
+    background: #fef3c7;
+    border-color: #fbbf24;
+}
+
+.vitalGroupItemMissed {
+    background: #fecaca;
+    border-color: #f87171;
 }
 .showDate {
     font-size: 12px;
@@ -417,7 +462,7 @@
 
 .medicationList {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 12px;
 }
 
@@ -496,6 +541,317 @@
     color: #9ca3af;
 }
 
+.prescriptionList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.prescriptionCard {
+    background: #fff;
+    border: 1px solid #ececec;
+    border-left: 4px solid #22c55e;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.prescriptionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prescriptionStatus {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    text-transform: capitalize;
+}
+
+.prescriptionStatus.active {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.prescriptionStatus.on_hold {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.prescriptionStatus.discontinued {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.prescriptionStatus.completed {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.prescriptionDate {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.prescriptionBody {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.prescriptionDoctor {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.prescriptionMeds {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.prescriptionNote {
+    font-size: 12px;
+    color: #9ca3af;
+    font-style: italic;
+    padding: 8px 10px;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
 .scheduleSection {
     margin-bottom: 20px;
+}
+
+.subscriptionBanner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.leftSection {
+    flex: 1;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.title {
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.description {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.rightSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.priceContainer {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.price {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.duration {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.payButton {
+    padding: 10px 32px;
+    background: #ffffff;
+    color: #667eea;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.careTeamList {
+    display: flex;
+    gap: 10px;
+}
+
+.careTeamCard {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #f3f4f6;
+}
+
+.careTeamLeft {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.careTeamAvatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: #4338ca;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.careTeamInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.careTeamName {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.careTeamRole {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.careTeamSpecialty {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.careTeamRating {
+    font-size: 13px;
+    color: #f59e0b;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.careTeamProvideRating {
+    font-size: 13px;
+    color: #3b82f6;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+.notificationList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.notificationItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #f9fafb;
+    border: 1px solid #f3f4f6;
+    transition: background 0.2s;
+}
+
+.notificationItem.unread {
+    background: #f0f4ff;
+    border-color: #dbeafe;
+}
+
+.notificationDot {
+    width: 12px;
+    flex-shrink: 0;
+    padding-top: 4px;
+}
+
+.unreadDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+}
+
+.notificationContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.notificationTitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.notificationMessage {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notificationTime {
+    font-size: 11px;
+    color: #9ca3af;
+    flex-shrink: 0;
+    padding-top: 2px;
+}
+
+.emptyText {
+    font-size: 14px;
+    color: #9ca3af;
+    text-align: center;
+    padding: 16px;
+}
+
+@media (max-width: 768px) {
+    .summaryCards {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
