@@ -11,6 +11,7 @@ import InputField from '@/shared/components/InputField/InputField'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { Section } from '@/shared/components/Section/Section'
 
 const priorityLabels: Record<string, string> = {
     critical: 'Critical',
@@ -42,8 +43,8 @@ const CaregiverReminders = () => {
         try {
             const [result, patientList] = await Promise.all([getReminders(), getMyPatients()])
             setData(result)
-            setPatients(patientList)
-            if (patientList.length === 1) {
+            setPatients(patientList.map((p) => ({ _id: p._id, userName: p.userName })))
+            if (patientList.length >= 1) {
                 const pid = patientList[0]._id
                 setCreateForm((f) => (f.patientId ? f : { ...f, patientId: pid }))
             }
@@ -135,7 +136,7 @@ const CaregiverReminders = () => {
 
     const createReminderForm = (
         <div className={styles.modalBody}>
-            {patients.length === 1 && <InputField label="Patient" value={patients[0].userName} readOnly />}
+            {patients.length >= 1 && <InputField label="Patient" value={patients[0].userName} readOnly />}
 
             <InputField
                 label="Title *"
@@ -190,16 +191,6 @@ const CaregiverReminders = () => {
     return (
         <MainWrapper title="Reminders">
             <section className={styles.page}>
-                <div className={styles.pageHeader}>
-                    <div>
-                        <h2 className={styles.pageTitle}>Care tasks</h2>
-                    </div>
-                    <button type="button" className={styles.createBtn} onClick={() => setIsCreateModalOpen(true)}>
-                        <Plus size={16} />
-                        Create
-                    </button>
-                </div>
-
                 <div className={styles.pageInner}>
                     <div className={styles.mainContent}>
                         {data && (
@@ -234,11 +225,19 @@ const CaregiverReminders = () => {
                                     </div>
                                 </div>
 
-                                <div className={styles.section}>
-                                    <h3 className={styles.sectionTitle}>
-                                        {sorted.length > 0 ? `Reminders (${sorted.length})` : 'No Reminders'}
-                                    </h3>
-
+                                <Section
+                                    title="Reminders"
+                                    actions={
+                                        <button
+                                            type="button"
+                                            className={styles.createBtn}
+                                            onClick={() => setIsCreateModalOpen(true)}
+                                        >
+                                            <Plus size={16} />
+                                            Create
+                                        </button>
+                                    }
+                                >
                                     {sorted.length === 0 ? (
                                         <div className={styles.emptyState}>
                                             <div className={styles.emptyIcon}>
@@ -247,79 +246,117 @@ const CaregiverReminders = () => {
                                             <p className={styles.emptyText}>All caught up! No reminders.</p>
                                         </div>
                                     ) : (
-                                        sorted.map((reminder) => (
-                                            <article key={reminder._id} className={styles.reminderCard}>
-                                                <div className={styles.reminderLeft}>
-                                                    <span
-                                                        className={`${styles.reminderBadge} ${reminder.status === 'missed' ? styles.reminderBadgeMissed : reminder.status === 'completed' ? styles.reminderBadgeCompleted : styles.reminderBadgePending}`}
-                                                    />
-                                                    <div className={styles.reminderTime}>
-                                                        <span className={styles.reminderTimeValue}>
-                                                            {formatTime(reminder.scheduleTime)}
-                                                        </span>
-                                                        <span className={styles.reminderDateLabel}>
-                                                            {formatDate(reminder.scheduleTime)}
-                                                        </span>
+                                        (() => {
+                                            const missedItems = sorted.filter((r) => r.status === 'missed')
+                                            const pendingItems = sorted.filter((r) => r.status === 'pending')
+                                            const completedItems = sorted.filter((r) => r.status === 'completed')
+
+                                            const renderReminderCard = (reminder: ReminderItem) => (
+                                                <article key={reminder._id} className={styles.reminderCard}>
+                                                    <div className={styles.reminderLeft}>
+                                                        <span
+                                                            className={`${styles.reminderBadge} ${reminder.status === 'missed' ? styles.reminderBadgeMissed : reminder.status === 'completed' ? styles.reminderBadgeCompleted : styles.reminderBadgePending}`}
+                                                        />
+                                                        <div className={styles.reminderTime}>
+                                                            <span className={styles.reminderTimeValue}>
+                                                                {formatTime(reminder.scheduleTime)}
+                                                            </span>
+                                                            <span className={styles.reminderDateLabel}>
+                                                                {formatDate(reminder.scheduleTime)}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className={styles.reminderBody}>
-                                                    <h4 className={styles.reminderTitle}>{reminder.title}</h4>
-                                                    {reminder.description && (
-                                                        <span className={styles.reminderSub}>
-                                                            {reminder.description}
-                                                        </span>
-                                                    )}
-                                                    <div className={styles.reminderMeta}>
-                                                        {reminder.patientName && (
-                                                            <>
-                                                                <span className={styles.patientNameLabel}>
-                                                                    {reminder.patientName}
-                                                                </span>
-                                                                <span>·</span>
-                                                            </>
+                                                    <div className={styles.reminderBody}>
+                                                        <h4 className={styles.reminderTitle}>{reminder.title}</h4>
+                                                        {reminder.description && (
+                                                            <span className={styles.reminderSub}>
+                                                                {reminder.description}
+                                                            </span>
                                                         )}
-                                                        <span
-                                                            className={`${styles.priorityBadge} ${styles[`priority${priorityLabels[reminder.priority]}`]}`}
-                                                        >
-                                                            {priorityLabels[reminder.priority]}
-                                                        </span>
-                                                        <span>·</span>
-                                                        <span
-                                                            className={`${styles.statusLabel} ${reminder.status === 'missed' ? styles.statusMissed : reminder.status === 'completed' ? styles.statusCompleted : styles.statusPending}`}
-                                                        >
-                                                            {reminder.status.charAt(0).toUpperCase() +
-                                                                reminder.status.slice(1)}
-                                                        </span>
-                                                        <span>·</span>
-                                                        <span className={styles.sourceLabel}>{reminder.source}</span>
+                                                        <div className={styles.reminderMeta}>
+                                                            {reminder.patientName && (
+                                                                <>
+                                                                    <span className={styles.patientNameLabel}>
+                                                                        {reminder.patientName}
+                                                                    </span>
+                                                                    <span>·</span>
+                                                                </>
+                                                            )}
+                                                            <span
+                                                                className={`${styles.priorityBadge} ${styles[`priority${priorityLabels[reminder.priority]}`]}`}
+                                                            >
+                                                                {priorityLabels[reminder.priority]}
+                                                            </span>
+                                                            <span>·</span>
+                                                            <span
+                                                                className={`${styles.statusLabel} ${reminder.status === 'missed' ? styles.statusMissed : reminder.status === 'completed' ? styles.statusCompleted : styles.statusPending}`}
+                                                            >
+                                                                {reminder.status.charAt(0).toUpperCase() +
+                                                                    reminder.status.slice(1)}
+                                                            </span>
+                                                            <span>·</span>
+                                                            <span className={styles.sourceLabel}>
+                                                                {reminder.source}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div className={styles.reminderActions}>
-                                                    {reminder.source === 'custom' && reminder.status === 'pending' && (
-                                                        <>
-                                                            <button
-                                                                type="button"
-                                                                className={styles.actionBtn}
-                                                                onClick={() => handleMarkDone(reminder._id)}
-                                                                title="Mark as done"
-                                                            >
-                                                                <CheckCheck size={16} />
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                className={styles.actionBtnDanger}
-                                                                onClick={() => handleDelete(reminder._id)}
-                                                                title="Delete reminder"
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </button>
-                                                        </>
+                                                    <div className={styles.reminderActions}>
+                                                        {reminder.source === 'custom' &&
+                                                            reminder.status === 'pending' && (
+                                                                <>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={styles.actionBtn}
+                                                                        onClick={() => handleMarkDone(reminder._id)}
+                                                                        title="Mark as done"
+                                                                    >
+                                                                        <CheckCheck size={16} />
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        className={styles.actionBtnDanger}
+                                                                        onClick={() => handleDelete(reminder._id)}
+                                                                        title="Delete reminder"
+                                                                    >
+                                                                        <Trash2 size={16} />
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                    </div>
+                                                </article>
+                                            )
+
+                                            return (
+                                                <>
+                                                    {missedItems.length > 0 && (
+                                                        <div className={styles.categoryGroup}>
+                                                            <h4 className={styles.categoryTitle}>Missed ({missedItems.length})</h4>
+                                                            <div className={styles.categoryCards}>
+                                                                {missedItems.map(renderReminderCard)}
+                                                            </div>
+                                                        </div>
                                                     )}
-                                                </div>
-                                            </article>
-                                        ))
+                                                    {pendingItems.length > 0 && (
+                                                        <div className={styles.categoryGroup}>
+                                                            <h4 className={styles.categoryTitle}>Pending ({pendingItems.length})</h4>
+                                                            <div className={styles.categoryCards}>
+                                                                {pendingItems.map(renderReminderCard)}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {completedItems.length > 0 && (
+                                                        <div className={styles.categoryGroup}>
+                                                            <h4 className={styles.categoryTitle}>Completed ({completedItems.length})</h4>
+                                                            <div className={styles.categoryCards}>
+                                                                {completedItems.map(renderReminderCard)}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )
+                                        })()
                                     )}
-                                </div>
+                                </Section>
                             </>
                         )}
                     </div>

@@ -86,6 +86,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
+    margin-bottom: 24px;
 }
 
 .statCard {
@@ -374,6 +375,33 @@
     margin: 0;
 }
 
+.categoryGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.categoryCards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.categoryGroup + .categoryGroup {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.categoryTitle {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin: 0 0 4px 0;
+}
+
 .loadingContainer {
     display: flex;
     justify-content: center;
@@ -390,8 +418,6 @@
     animation: spin 0.8s linear infinite;
 }
 
-/* Layout */
-
 .pageInner {
     display: flex;
     gap: 24px;
@@ -405,8 +431,6 @@
     flex-direction: column;
     gap: 24px;
 }
-
-/* Side Panel */
 
 .sidePanel {
     width: 380px;
@@ -435,8 +459,6 @@
     margin-top: 16px;
     border-top: 1px solid #e2e8f0;
 }
-
-/* Form controls */
 
 .modalFooter {
     display: flex;
@@ -484,7 +506,7 @@
 .modalBody {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 }
 
 .modalLabel {
