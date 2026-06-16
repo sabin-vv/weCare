@@ -8,6 +8,12 @@
     box-shadow: 0 24px 70px rgba(15, 23, 42, 0.06);
 }
 
+.patientWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
 .patientCard {
     width: 100%;
     background: #ffffff;

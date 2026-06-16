@@ -7,10 +7,14 @@ import styles from './CaregiverPatients.module.css'
 
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { env } from '@/config/env'
+import { Section } from '@/shared/components/Section/Section'
 
 const CaregiverPatients = () => {
     const [patients, setPatients] = useState<PatientSummary[]>([])
     const [isLoading, setIsLoading] = useState(true)
+
+    const baseUrl = env.AWS_BASE_URL
 
     useEffect(() => {
         const fetchPatients = async () => {
@@ -63,68 +67,70 @@ const CaregiverPatients = () => {
 
     return (
         <MainWrapper title="My Patients">
-            <section className={styles.page}>
+            <Section>
                 {patients.length === 0 ? (
                     <p className={styles.emptyText}>No patients assigned to you yet.</p>
                 ) : (
-                    patients.map((patient) => (
-                        <div key={patient._id} className={styles.patientCard}>
-                            <div className={styles.cardLeft}>
-                                <div className={styles.avatar}>
-                                    {patient.profileImage ? (
-                                        <img src={patient.profileImage} alt={patient.userName} />
-                                    ) : (
-                                        <span>{patient.userName.charAt(0).toUpperCase()}</span>
-                                    )}
-                                </div>
-
-                                <div className={styles.patientInfo}>
-                                    <div className={styles.nameRow}>
-                                        <h3 className={styles.patientName}>{patient.userName}</h3>
-                                        <span
-                                            className={`${styles.riskBadge} ${styles[`risk${getRiskLabel(patient.riskLevel)}`]}`}
-                                        >
-                                            {getRiskLabel(patient.riskLevel)}
-                                        </span>
+                    <div className={styles.patientWrapper}>
+                        {patients.map((patient) => (
+                            <div key={patient._id} className={styles.patientCard}>
+                                <div className={styles.cardLeft}>
+                                    <div className={styles.avatar}>
+                                        {patient.profileImage ? (
+                                            <img src={`${baseUrl}${patient.profileImage}`} alt={patient.userName} />
+                                        ) : (
+                                            <span>{patient.userName.charAt(0).toUpperCase()}</span>
+                                        )}
                                     </div>
 
-                                    <div className={styles.metaRow}>
-                                        <span className={styles.metaItem}>
-                                            {calculateAge(patient.dateOfBirth)} years
-                                        </span>
-                                        <span className={styles.metaDot}>•</span>
-                                        <span className={styles.metaItem}>{patient.gender}</span>
-                                        <span className={styles.metaDot}>•</span>
-                                        <span className={styles.metaItem}>ID: #{patient.patientId}</span>
-                                    </div>
-
-                                    {patient.conditions.length > 0 && (
-                                        <div className={styles.conditionRow}>
-                                            <span className={styles.conditionLabel}>Conditions:</span>
-                                            <span className={styles.conditionTags}>
-                                                {patient.conditions.map((condition) => (
-                                                    <span key={condition} className={styles.conditionTag}>
-                                                        {condition}
-                                                    </span>
-                                                ))}
+                                    <div className={styles.patientInfo}>
+                                        <div className={styles.nameRow}>
+                                            <h3 className={styles.patientName}>{patient.userName}</h3>
+                                            <span
+                                                className={`${styles.riskBadge} ${styles[`risk${getRiskLabel(patient.riskLevel)}`]}`}
+                                            >
+                                                {getRiskLabel(patient.riskLevel)}
                                             </span>
                                         </div>
-                                    )}
+
+                                        <div className={styles.metaRow}>
+                                            <span className={styles.metaItem}>
+                                                {calculateAge(patient.dateOfBirth)} years
+                                            </span>
+                                            <span className={styles.metaDot}>•</span>
+                                            <span className={styles.metaItem}>{patient.gender}</span>
+                                            <span className={styles.metaDot}>•</span>
+                                            <span className={styles.metaItem}>ID: #{patient.patientId}</span>
+                                        </div>
+
+                                        {patient.conditions.length > 0 && (
+                                            <div className={styles.conditionRow}>
+                                                <span className={styles.conditionLabel}>Conditions:</span>
+                                                <span className={styles.conditionTags}>
+                                                    {patient.conditions.map((condition) => (
+                                                        <span key={condition} className={styles.conditionTag}>
+                                                            {condition}
+                                                        </span>
+                                                    ))}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={styles.cardRight}>
+                                    <a
+                                        href={`/caregiver/patients/${patient._id}/medication-monitor`}
+                                        className={styles.viewBtn}
+                                    >
+                                        View Patient
+                                    </a>
                                 </div>
                             </div>
-
-                            <div className={styles.cardRight}>
-                                <a
-                                    href={`/caregiver/patients/${patient._id}/medication-monitor`}
-                                    className={styles.viewBtn}
-                                >
-                                    View Patient
-                                </a>
-                            </div>
-                        </div>
-                    ))
+                        ))}
+                    </div>
                 )}
-            </section>
+            </Section>
         </MainWrapper>
     )
 }
