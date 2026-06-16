@@ -80,7 +80,7 @@ export class PrescriptionService implements IPrescriptionService {
             recipientRole: 'patient',
             type: 'prescription_updated',
             title: 'New Prescription Added',
-            message: `Dr. ${doctorName} has added a new prescription with ${medications.length} medication(s).`,
+            message: `Dr. ${doctorName} has added a new prescription ${dto.medications.map((m) => m.name).join(', ')}`,
             metadata: {
                 prescriptionId: prescription._id.toString(),
                 type: 'created',
