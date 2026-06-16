@@ -34,68 +34,90 @@ export class ReminderService implements IReminderService {
 
         const caregiverId = caregiver._id as Types.ObjectId
 
+        const todayStart = new Date()
+        todayStart.setHours(0, 0, 0, 0)
+        const todayEnd = new Date()
+        todayEnd.setHours(23, 59, 59, 999)
+
         const [medicationSchedules, vitalSchedules, customReminders] = await Promise.all([
             SystemGeneratedScheduleModel.find({
                 caregiverId,
+                scheduleDate: { $gte: todayStart, $lte: todayEnd },
                 status: { $in: ['pending', 'missed'] },
             })
-                .populate('patientId', 'userId')
+                .populate({ path: 'patientId', populate: { path: 'userId', select: 'name' } })
                 .sort({ scheduleTime: 1 })
                 .lean(),
 
             vitalScheduleModel
                 .find({
                     caregiverId,
+                    scheduleDate: { $gte: todayStart, $lte: todayEnd },
                     status: { $in: ['pending', 'missed'] },
                 })
-                .populate('patientId', 'userId')
+                .populate({ path: 'patientId', populate: { path: 'userId', select: 'name' } })
                 .sort({ scheduleTime: 1 })
                 .lean(),
 
             this._reminderRepo.findByCaregiverId(caregiverId.toString()),
         ])
 
+        const getPatientInfo = (p: unknown) => {
+            const patient = p as { _id: Types.ObjectId; patientId: string; userId?: { name: string } } | null | undefined
+            return patient
+                ? { patientId: patient._id.toString(), patientName: patient.userId?.name || `Patient #${patient.patientId}` }
+                : { patientId: undefined, patientName: undefined }
+        }
+
         const systemReminders: ReminderItem[] = [
-            ...medicationSchedules.map((schedule) => ({
-                _id: (schedule._id as Types.ObjectId).toString(),
-                source: 'medication' as const,
-                title: `${schedule.medicineName} ${schedule.dosage}`,
-                description: `Route: ${schedule.route}`,
-                scheduleTime: schedule.scheduleTime,
-                priority: schedule.priority as ReminderItem['priority'],
-                status: schedule.status === 'missed' ? ('missed' as const) : ('pending' as const),
-            })),
-            ...vitalSchedules.map((schedule) => ({
-                _id: (schedule._id as Types.ObjectId).toString(),
-                source: 'vital' as const,
-                title: `Vital Check - ${schedule.vitalType}`,
-                scheduleTime: schedule.scheduleTime,
-                priority: schedule.priority as ReminderItem['priority'],
-                status: schedule.status === 'missed' ? ('missed' as const) : ('pending' as const),
-            })),
+            ...medicationSchedules.map((schedule) => {
+                const { patientId, patientName } = getPatientInfo(schedule.patientId)
+                return {
+                    _id: (schedule._id as Types.ObjectId).toString(),
+                    source: 'medication' as const,
+                    title: `${schedule.medicineName} ${schedule.dosage}`,
+                    description: `Route: ${schedule.route}`,
+                    patientId,
+                    patientName,
+                    scheduleTime: schedule.scheduleTime,
+                    priority: schedule.priority as ReminderItem['priority'],
+                    status: schedule.status === 'missed' ? ('missed' as const) : ('pending' as const),
+                }
+            }),
+            ...vitalSchedules.map((schedule) => {
+                const { patientId, patientName } = getPatientInfo(schedule.patientId)
+                return {
+                    _id: (schedule._id as Types.ObjectId).toString(),
+                    source: 'vital' as const,
+                    title: `Vital Check - ${schedule.vitalType}`,
+                    patientId,
+                    patientName,
+                    scheduleTime: schedule.scheduleTime,
+                    priority: schedule.priority as ReminderItem['priority'],
+                    status: schedule.status === 'missed' ? ('missed' as const) : ('pending' as const),
+                }
+            }),
         ]
 
         const customItems: ReminderItem[] = await Promise.all(
-            customReminders
-                .filter((r) => r.status === 'pending')
-                .map(async (r) => {
-                    let patientName: string | undefined
-                    if (r.patientId) {
-                        const patient = await this._patientRepo.findById(r.patientId.toString())
-                        patientName = patient ? `Patient #${patient.patientId}` : undefined
-                    }
-                    return {
-                        _id: r._id.toString(),
-                        source: 'custom' as ReminderItem['source'],
-                        title: r.title,
-                        description: r.description || undefined,
-                        patientId: r.patientId?.toString(),
-                        patientName,
-                        scheduleTime: r.scheduleTime,
-                        priority: r.priority,
-                        status: r.status,
-                    } as ReminderItem
-                }),
+            customReminders.map(async (r) => {
+                let patientName: string | undefined
+                if (r.patientId) {
+                    const patient = await this._patientRepo.findById(r.patientId.toString())
+                    patientName = patient ? `Patient #${patient.patientId}` : undefined
+                }
+                return {
+                    _id: r._id.toString(),
+                    source: 'custom' as ReminderItem['source'],
+                    title: r.title,
+                    description: r.description || undefined,
+                    patientId: r.patientId?.toString(),
+                    patientName,
+                    scheduleTime: r.scheduleTime,
+                    priority: r.priority,
+                    status: r.status,
+                } as ReminderItem
+            }),
         )
 
         const allReminders = [...systemReminders, ...customItems].sort(
