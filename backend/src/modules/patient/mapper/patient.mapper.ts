@@ -43,6 +43,7 @@ export const toPatientProfileResponseDTO = (
 ): PatientProfileResponseDTO => {
     return {
         id: user._id.toString(),
+        patientMongoId: patient._id.toString(),
         name: user.name,
         email: user.email,
         mobile: user.mobile,
