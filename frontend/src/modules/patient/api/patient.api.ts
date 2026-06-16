@@ -8,6 +8,7 @@ import type {
     MedicationSchedule,
     PatientProfileData,
     PatientProfileResponse,
+    Prescription,
     Specialist,
     SubscriptionData,
     UpdatePatientProfileData,
@@ -15,19 +16,21 @@ import type {
     RetryPaymentResponse,
     VitalSchedule,
     CreateSubscriptionResponse,
-    CareTeamResponse,
     CreateFeedbackDTO,
+    CareTeamMember,
 } from '../types/patient.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
 import {
+    ALERTS_API,
     APPOINTMENT_API,
     DOCTORS_API,
     FEEDBACK_API,
     MEDICATIONS_API,
     PATIENTS_API,
     PAYMENTS_API,
+    PRESCRIPTIONS_API,
     SUBSCRIPTIONS_API,
     VITALS_API,
     WALLET_API,
@@ -142,6 +145,11 @@ export const getPatientMedications = async (): Promise<MedicationSchedule[]> => 
     return response.data.data
 }
 
+export const getMyAlertCount = async (): Promise<number> => {
+    const response = await api.get<{ success: boolean; data: { count: number } }>(`${ALERTS_API}/me/count`)
+    return response.data.data.count
+}
+
 export const getPatientVitalSchedules = async (): Promise<VitalSchedule[]> => {
     const response = await api.get<{ success: boolean; message: string; data: VitalSchedule[] }>(
         `${VITALS_API}/schedules/me`,
@@ -149,9 +157,20 @@ export const getPatientVitalSchedules = async (): Promise<VitalSchedule[]> => {
     return response.data.data
 }
 
-export const getCareTeam = async (): Promise<{ doctor: CareTeamResponse['doctor']; caregiver: CareTeamResponse['caregiver'] }> => {
-    const response = await api.get<{ success: boolean; data: CareTeamResponse }>(`${PATIENTS_API}/me/care-team`)
+export const getPatientPrescriptions = async (patientId: string): Promise<Prescription[]> => {
+    const response = await api.get<{ success: boolean; data: Prescription[] }>(
+        `${PRESCRIPTIONS_API}/patient/${patientId}`,
+    )
     return response.data.data
+}
+
+export const getCareTeam = async (): Promise<CareTeamMember[]> => {
+    const response = await api.get<{
+        success: boolean
+        data: { doctor: CareTeamMember | null; caregiver: CareTeamMember | null }
+    }>(`${PATIENTS_API}/me/care-team`)
+    const { doctor, caregiver } = response.data.data
+    return [doctor, caregiver].filter((m): m is CareTeamMember => m !== null)
 }
 
 export const createFeedback = async (data: CreateFeedbackDTO): Promise<{ id: string }> => {
