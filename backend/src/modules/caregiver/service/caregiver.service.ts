@@ -145,7 +145,7 @@ export class CaregiverService implements ICaregiverService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
-        if (patient.caregiverId?.toString() !== caregiver.userId.toString()) {
+        if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
         }
 
@@ -175,7 +175,7 @@ export class CaregiverService implements ICaregiverService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
-        if (patient.caregiverId?.toString() !== caregiver.userId.toString()) {
+        if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
         }
 
@@ -198,7 +198,7 @@ export class CaregiverService implements ICaregiverService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
-        if (patient.caregiverId?.toString() !== caregiver.userId.toString()) {
+        if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
         }
 
@@ -234,7 +234,7 @@ export class CaregiverService implements ICaregiverService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Medication schedule not found')
         }
 
-        if (schedule.caregiverId.toString() !== caregiver.userId.toString()) {
+        if (schedule.caregiverId.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this medication schedule')
         }
 
@@ -286,7 +286,7 @@ export class CaregiverService implements ICaregiverService {
         const { caregiver, patient } = await this._getAssignedCaregiverAndPatient(caregiverId, patientId)
         const schedule = await this._vitalRepo.findLoggableVitalScheduleByPatientAndType(patient._id, dto.vitalType)
 
-        if (schedule && schedule.caregiverId?.toString() !== caregiver.userId.toString()) {
+        if (schedule && schedule.caregiverId?.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this vital schedule')
         }
 
@@ -399,7 +399,7 @@ export class CaregiverService implements ICaregiverService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
         }
 
-        if (patient.caregiverId?.toString() !== caregiver.userId.toString()) {
+        if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
         }
 
