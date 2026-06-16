@@ -19,6 +19,14 @@ export class AlertController {
         res.status(HTTP_STATUS.OK).json({ success: true, data: alerts })
     }
 
+    getMyAlertCount = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+
+        const count = await this._alertService.getPatientAlertCount(userId)
+        res.status(HTTP_STATUS.OK).json({ success: true, data: { count } })
+    }
+
     acknowledgeAlert = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')

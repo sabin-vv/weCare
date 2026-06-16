@@ -13,6 +13,7 @@ export const createAlertRoutes = () => {
     router.use(requireAuth)
 
     router.get('/', alertController.getAlerts)
+    router.get('/me/count', alertController.getMyAlertCount)
     router.patch('/:alertId/acknowledge', validate(acknowledgeAlertSchema), alertController.acknowledgeAlert)
 
     return router
