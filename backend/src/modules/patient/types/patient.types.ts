@@ -30,6 +30,7 @@ export interface PatientEntity {
 
 export interface PatientProfileResponseDTO {
     id: string
+    patientMongoId: string
     name: string
     email: string
     mobile: string
