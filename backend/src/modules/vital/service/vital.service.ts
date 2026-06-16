@@ -6,6 +6,7 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
+import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { IVitalService } from '../interfaces/vital.service.interface'
 import { VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
@@ -17,6 +18,7 @@ export class VitalService implements IVitalService {
         @inject(TOKENS.IVitalRepository) private _vitalRepo: IVitalRepository,
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IAlertService) private _alertService: IAlertService,
     ) {}
 
     private async resolveDoctorAndPlan(doctorId: string, planId: string) {
@@ -177,6 +179,33 @@ export class VitalService implements IVitalService {
             recordedValue: schedule.recordedValue,
             recordedAt: schedule.recordedAt?.toISOString(),
         }))
+    }
+
+    async markOverdueVitalsAsMissed(): Promise<{ updatedCount: number; criticalAlerts: number }> {
+        const now = new Date()
+        const graceMinutes = 60
+        const threshold = new Date(now.getTime() - graceMinutes * 60 * 1000)
+
+        const vitalSchedules = await this._vitalRepo.findOverduePendingSchedules(threshold)
+        if (vitalSchedules.length === 0) {
+            return { updatedCount: 0, criticalAlerts: 0 }
+        }
+
+        const ids = vitalSchedules.map((s) => s._id)
+        await this._vitalRepo.markSchedulesAsMissed(ids)
+
+        const criticalSchedules = vitalSchedules.filter((s) => s.priority === 'critical')
+        for (const schedule of criticalSchedules) {
+            await this._alertService.createAlert({
+                patientId: schedule.patientId,
+                scheduleId: schedule._id,
+                type: 'critical_vital',
+                severity: 'critical',
+                triggerReason: `${schedule.vitalType.replace(/_/g, ' ')} reading was not recorded within the allowed time window`,
+            })
+        }
+
+        return { updatedCount: vitalSchedules.length, criticalAlerts: criticalSchedules.length }
     }
 
     private calculateScheduleTimes(frequencyValue: number, frequencyUnit: string): string[] {
