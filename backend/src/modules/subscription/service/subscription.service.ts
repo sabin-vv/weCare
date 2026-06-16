@@ -81,7 +81,7 @@ export class SubscriptionService implements ISubscriptionService {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'No caregiver assigned to this patient')
         }
 
-        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(caregiverId))
+        const caregiver = await this._caregiverRepo.findById(caregiverId)
         if (!caregiver) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
         }
