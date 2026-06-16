@@ -29,7 +29,8 @@ export interface IVitalRepository {
         vitalType: VitalType,
     ): Promise<VitalScheduleDocument | null>
     findLatestRecordedSchedulesByPatientId(patientId: Types.ObjectId): Promise<VitalScheduleDocument[]>
-
+    findOverduePendingSchedules(threshold: Date): Promise<VitalScheduleDocument[]>
+    markSchedulesAsMissed(ids: Types.ObjectId[]): Promise<void>
     pauseVitalPlanByPatientId(patientId: string, reason: string): Promise<void>
     cancelPendingSchedulesByPatient(patientId: string, reason: string): Promise<void>
     completeVitalPlanByPatientId(patientId: string): Promise<void>
