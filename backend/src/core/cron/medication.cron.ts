@@ -1,6 +1,7 @@
 import cron from 'node-cron'
 import { container } from 'tsyringe'
 
+import { logger } from '../../core/logger/logger'
 import { MedicationService } from '../../modules/medication/service/medication.service'
 
 export const startMedicationCron = () => {
@@ -10,9 +11,10 @@ export const startMedicationCron = () => {
             today.setHours(0, 0, 0, 0)
 
             const medicationService = container.resolve(MedicationService)
-            await medicationService.generateDailySchedule(today)
+            const result = await medicationService.generateDailySchedule(today)
+            logger.info({ result }, 'Medication daily schedule cron completed')
         } catch (error) {
-            console.error('Medication cron failed:', error)
+            logger.error(error, 'Medication cron failed')
         }
     })
 }
