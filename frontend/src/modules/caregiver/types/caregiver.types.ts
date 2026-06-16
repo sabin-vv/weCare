@@ -103,11 +103,7 @@ export interface SymptomLogFormState {
 
 export type ReminderSource = 'medication' | 'vital' | 'custom'
 
-export interface PatientOption {
-    _id: string
-    patientId: string
-    userName: string
-}
+export interface PatientOption extends Pick<PatientSummary, '_id' | 'userName'> {}
 
 export interface ReminderItem {
     _id: string
@@ -165,7 +161,7 @@ export interface VitalScheduleItem {
     recordedNotes?: string
 }
 
-export interface PatientSummary {
+export interface PatientSummary extends ApiInterface {
     _id: string
     patientId: string
     userName: string
