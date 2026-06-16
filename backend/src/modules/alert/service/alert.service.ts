@@ -91,6 +91,14 @@ export class AlertService implements IAlertService {
         return updated
     }
 
+    async getPatientAlertCount(userId: string): Promise<number> {
+        const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
+        if (!patient) return 0
+
+        const alerts = await this._alertRepo.findByPatientId(patient._id.toString(), { status: 'open' })
+        return alerts.length
+    }
+
     async createAlert(data: Partial<AlertDocument>): Promise<AlertDocument> {
         const alert = await this._alertRepo.create({
             ...data,
