@@ -7,6 +7,7 @@ import { AppError } from '../../../core/errors/AppError'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IAlertService } from '../../alert/interfaces/alert.service.interface'
+import { ICaregiverActivityService } from '../../caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { IVitalService } from '../interfaces/vital.service.interface'
 import { VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
@@ -19,6 +20,7 @@ export class VitalService implements IVitalService {
         @inject(TOKENS.IDoctorRepository) private _doctorRepo: IDoctorRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
         @inject(TOKENS.IAlertService) private _alertService: IAlertService,
+        @inject(TOKENS.ICaregiverActivityService) private _activityService: ICaregiverActivityService,
     ) {}
 
     private async resolveDoctorAndPlan(doctorId: string, planId: string) {
@@ -193,6 +195,17 @@ export class VitalService implements IVitalService {
 
         const ids = vitalSchedules.map((s) => s._id)
         await this._vitalRepo.markSchedulesAsMissed(ids)
+
+        for (const schedule of vitalSchedules) {
+            if (!schedule.caregiverId) continue
+            await this._activityService.logActivity({
+                caregiverId: schedule.caregiverId,
+                patientId: schedule.patientId,
+                activityType: 'vital_missed',
+                referenceId: schedule._id,
+                description: `${schedule.vitalType.replace(/_/g, ' ')} reading was not recorded within the allowed time window`,
+            })
+        }
 
         const criticalSchedules = vitalSchedules.filter((s) => s.priority === 'critical')
         for (const schedule of criticalSchedules) {

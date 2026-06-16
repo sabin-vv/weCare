@@ -5,6 +5,7 @@ import { TOKENS } from '../../../container/tokens'
 import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { PrescriptionModel } from '../../prescription/models/prescription.model'
+import { ICaregiverActivityService } from '../../caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { IMedicationRepository } from '../interfaces/medication.repository.interface'
 import { IMedicationService } from '../interfaces/medication.service.interface'
 import { SystemGeneratedScheduleModel } from '../models/medicationSchedule.model'
@@ -16,6 +17,7 @@ export class MedicationService implements IMedicationService {
         @inject(TOKENS.IMedicationRepository) private _medicationRepo: IMedicationRepository,
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
         @inject(TOKENS.IAlertService) private _alertService: IAlertService,
+        @inject(TOKENS.ICaregiverActivityService) private _activityService: ICaregiverActivityService,
     ) {}
 
     async generateDailySchedule(date: Date): Promise<{ created: number; skipped: number } | undefined> {
@@ -134,15 +136,25 @@ export class MedicationService implements IMedicationService {
             return { updatedCount: 0, criticalAlerts: 0 }
         }
 
-        const missedSchedules = await SystemGeneratedScheduleModel.find({
+        const recentlyMissed = await SystemGeneratedScheduleModel.find({
             status: 'missed',
             missedAt: {
                 $gte: new Date(now.getTime() - 10 * 60 * 1000),
             },
-            priority: 'critical',
         }).lean()
 
-        for (const schedule of missedSchedules) {
+        for (const schedule of recentlyMissed) {
+            await this._activityService.logActivity({
+                caregiverId: schedule.caregiverId,
+                patientId: schedule.patientId,
+                activityType: 'medication_missed',
+                referenceId: schedule._id,
+                description: `${schedule.medicineName} (${schedule.dosage}) was not administered within the allowed time window`,
+            })
+        }
+
+        const criticalSchedules = recentlyMissed.filter((s) => s.priority === 'critical')
+        for (const schedule of criticalSchedules) {
             await this._alertService.createAlert({
                 patientId: schedule.patientId,
                 scheduleId: schedule._id,
@@ -152,6 +164,6 @@ export class MedicationService implements IMedicationService {
             })
         }
 
-        return { updatedCount: updateResult.modifiedCount, criticalAlerts: missedSchedules.length }
+        return { updatedCount: updateResult.modifiedCount, criticalAlerts: criticalSchedules.length }
     }
 }
