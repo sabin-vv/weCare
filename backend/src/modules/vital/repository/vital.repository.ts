@@ -120,6 +120,22 @@ export class VitalRepository implements IVitalRepository {
             ]) as unknown as VitalScheduleDocument[]
     }
 
+    async findOverduePendingSchedules(threshold: Date): Promise<VitalScheduleDocument[]> {
+        return vitalScheduleModel
+            .find({
+                status: 'pending',
+                scheduleTime: { $lt: threshold },
+            })
+            .lean() as unknown as VitalScheduleDocument[]
+    }
+
+    async markSchedulesAsMissed(ids: Types.ObjectId[]): Promise<void> {
+        await vitalScheduleModel.updateMany(
+            { _id: { $in: ids } },
+            { $set: { status: 'missed' } },
+        )
+    }
+
     async pauseVitalPlanByPatientId(patientId: string, reason: string): Promise<void> {
         await vitalPlanModel.updateMany(
             {
