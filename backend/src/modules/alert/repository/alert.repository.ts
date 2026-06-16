@@ -12,6 +12,15 @@ export class AlertRepository extends BaseRepository<AlertDocument> implements IA
         super(alertModel)
     }
 
+    async findByPatientId(patientId: string, filter: Record<string, unknown> = {}): Promise<AlertDocument[]> {
+        return this.model
+            .find({
+                patientId: new Types.ObjectId(patientId),
+                ...filter,
+            })
+            .sort({ severity: -1, triggeredAt: -1 })
+    }
+
     async findByPatientIds(patientIds: string[], filter: Record<string, unknown> = {}): Promise<AlertDocument[]> {
         return this.model
             .find({
