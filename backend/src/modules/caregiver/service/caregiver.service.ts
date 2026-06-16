@@ -268,11 +268,11 @@ export class CaregiverService implements ICaregiverService {
 
         const medActivityType = dto.status === 'skipped' ? 'medication_missed' : 'medication_administered'
         await this._activityService.logActivity({
-            caregiverId: caregiver.userId,
+            caregiverId: caregiver._id,
             patientId: patient._id,
             activityType: medActivityType,
             referenceId: schedule._id,
-            description: `${schedule.medicineName} | ${schedule.dosage} | ${normalizedRoute}`,
+            description: `${schedule.medicineName} - ${schedule.dosage} `,
         })
 
         return this._toMedicationScheduleDTO(updated)
@@ -328,11 +328,11 @@ export class CaregiverService implements ICaregiverService {
 
         const vitalDesc =
             dto.vitalType === 'blood_pressure'
-                ? `${dto.vitalType} | systolic: ${dto.systolic}, diastolic: ${dto.diastolic}`
-                : `${dto.vitalType} | ${dto.value} ${this._getVitalUnit(dto.vitalType)}`
+                ? `Blood Pressure: ${dto.systolic}/${dto.diastolic} mmHg`
+                : `${dto.vitalType}: ${dto.value} ${this._getVitalUnit(dto.vitalType)}`
 
         await this._activityService.logActivity({
-            caregiverId: caregiver.userId,
+            caregiverId: caregiver._id,
             patientId: patient._id,
             activityType: 'vital_recorded',
             referenceId: schedule?._id,
@@ -371,11 +371,11 @@ export class CaregiverService implements ICaregiverService {
         }
 
         await this._activityService.logActivity({
-            caregiverId: caregiver.userId,
+            caregiverId: caregiver._id,
             patientId: patient._id,
             activityType: 'symptom_logged',
             referenceId: log._id,
-            description: `${dto.symptom} | severity: ${dto.severity}`,
+            description: `${dto.symptom} (${dto.severity})`,
         })
 
         return {
