@@ -68,7 +68,7 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
         const caregiver = await this.model.findById(caregiverId).lean()
         if (!caregiver) return []
 
-        const patients = await PatientModel.find({ caregiverId: caregiver.userId }).lean()
+        const patients = await PatientModel.find({ caregiverId: caregiver._id }).lean()
 
         if (patients.length === 0) return []
 
