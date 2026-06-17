@@ -205,3 +205,35 @@ export interface CaregiverActivityLogResponse {
     data: CaregiverActivityLogItem[]
     pagination: CaregiverActivityLogPagination
 }
+
+export interface PrescriptionMedication {
+    name: string
+    dosage: string
+    route: string
+    frequency: string
+    scheduleTimes: string[]
+    priority?: string
+    instructions?: string
+    duration: number
+    durationUnit: string
+    endDate?: string
+}
+
+export interface PrescriptionItem {
+    _id: string
+    medications: PrescriptionMedication[]
+    note?: string
+    status: 'active' | 'on_hold' | 'discontinued' | 'amended' | 'completed'
+    prescribedAt: string
+    endDate?: string
+    createdAt: string
+    updatedAt: string
+}
+
+export interface VitalPlanItem {
+    type: 'blood_sugar' | 'blood_pressure' | 'spo2' | 'heart_rate'
+    frequencyValue: number
+    frequencyUnit: 'hours' | 'days' | 'weeks'
+    durationValue: number
+    durationUnit: 'hours' | 'days' | 'weeks' | 'months'
+}

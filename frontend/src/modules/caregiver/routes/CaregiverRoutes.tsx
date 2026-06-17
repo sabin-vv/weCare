@@ -2,7 +2,6 @@ import type { RouteObject } from 'react-router-dom'
 
 import CaregiverActivityLog from '../pages/CaregiverActivityLog'
 import CaregiverDashboard from '../pages/CaregiverDashboard'
-import CaregiverMedicationMonitorPage from '../pages/CaregiverMedicationMonitorPage'
 import CaregiverPatients from '../pages/CaregiverPatients'
 import CaregiverReminders from '../pages/CaregiverReminders'
 import CaregiverSettings from '../pages/CaregiverSettings'
@@ -10,6 +9,7 @@ import CaregiverSettings from '../pages/CaregiverSettings'
 import CaregiverLayout from '@/layout/CaregiverLayout'
 import { Role } from '@/modules/auth/types/auth.types'
 import ProtectedRoute from '@/shared/components/ProtectedRoute/ProtectedRoute'
+import PrescriptionPage from '../pages/PrescriptionPage'
 
 export const CaregiverRoutes: RouteObject[] = [
     {
@@ -29,8 +29,8 @@ export const CaregiverRoutes: RouteObject[] = [
                 element: <CaregiverPatients />,
             },
             {
-                path: 'patients/:patientId/medication-monitor',
-                element: <CaregiverMedicationMonitorPage />,
+                path: 'patients/:patientId/prescription',
+                element: <PrescriptionPage />,
             },
             {
                 path: 'reminders',

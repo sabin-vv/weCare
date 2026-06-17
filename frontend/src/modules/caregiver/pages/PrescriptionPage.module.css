@@ -1,0 +1,260 @@
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #5f55ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.emptyText {
+    color: #8091a5;
+    font-size: 14px;
+    text-align: center;
+    padding: 40px 0;
+}
+
+.section {
+    margin-top: 24px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.sectionCount {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+@media (max-width: 1024px) {
+    .cardGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .cardGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.prescriptionCard {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.prescHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.statusBadge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.statusActive {
+    background: #ebfff2;
+    color: #22a65f;
+}
+
+.statusOnHold {
+    background: #fff9eb;
+    color: #b8860b;
+}
+
+.statusDiscontinued {
+    background: #fff1f0;
+    color: #ff4d4f;
+}
+
+.statusAmended {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.statusCompleted {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.prescMeta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.prescDate {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.medList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.medItem {
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.medNameRow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.medName {
+    font-size: 15px;
+    color: #1e293b;
+}
+
+.medDosage {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.priorityBadge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.priorityCritical {
+    background: #fff1f0;
+    color: #ff4d4f;
+}
+
+.priorityHigh {
+    background: #fff3de;
+    color: #d17a00;
+}
+
+.priorityLow {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.medDetails {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #64748b;
+    flex-wrap: wrap;
+}
+
+.medDot {
+    color: #cbd5e1;
+}
+
+.medInstructions {
+    color: #2563eb;
+}
+
+.prescNote {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+    font-style: italic;
+    padding: 12px;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.vitalGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.vitalCard {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.vitalCardTop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.vitalIcon {
+    color: #5f55ff;
+}
+
+.vitalCardLabel {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.vitalDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.vitalDetailLabel {
+    color: #64748b;
+}
+
+.vitalDetail strong {
+    color: #1e293b;
+}

@@ -4,15 +4,17 @@ import type {
     CaregiverActivityLogResponse,
     MedicationSchedule,
     PatientSummary,
+    PrescriptionItem,
     RemindersResponse,
+    VitalPlanItem,
     VitalScheduleItem,
 } from '../types/caregiver.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
 import { api } from '@/services/api'
-import { CAREGIVER_ACTIVITY_API, CAREGIVERS_API, REMINDERS_API } from '@/shared/constants/api.constants'
+import { CAREGIVER_ACTIVITY_API, CAREGIVERS_API, PRESCRIPTIONS_API, REMINDERS_API } from '@/shared/constants/api.constants'
 
-export type { PatientSummary } from '../types/caregiver.types'
+export type { PatientSummary, PrescriptionItem, VitalPlanItem } from '../types/caregiver.types'
 
 export const createCaregiverProfile = async (formData: FormData): Promise<ApiInterface> => {
     const res = await api.post(`${CAREGIVERS_API}/profile`, formData)
@@ -138,5 +140,19 @@ export const getCaregiverActivityLogs = async (page = 1, limit = 8): Promise<Car
     const res = await api.get<{ success: boolean; data: CaregiverActivityLogResponse }>(CAREGIVER_ACTIVITY_API, {
         params: { page, limit },
     })
+    return res.data.data
+}
+
+export const getPatientPrescriptions = async (patientId: string): Promise<PrescriptionItem[]> => {
+    const res = await api.get<{ success: boolean; data: PrescriptionItem[] }>(
+        `${PRESCRIPTIONS_API}/patient/${patientId}`,
+    )
+    return res.data.data
+}
+
+export const getPatientVitalPlans = async (patientId: string): Promise<VitalPlanItem[]> => {
+    const res = await api.get<{ success: boolean; data: VitalPlanItem[] }>(
+        `${CAREGIVERS_API}/patients/${patientId}/vital-plans`,
+    )
     return res.data.data
 }
