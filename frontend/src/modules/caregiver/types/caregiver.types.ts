@@ -179,6 +179,7 @@ export type CaregiverActivityType =
     | 'medication_administered'
     | 'medication_missed'
     | 'vital_recorded'
+    | 'vital_missed'
     | 'symptom_logged'
 
 export interface CaregiverActivityLogItem {

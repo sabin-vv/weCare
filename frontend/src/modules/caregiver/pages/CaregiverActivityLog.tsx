@@ -14,6 +14,7 @@ import styles from './CaregiverActivityLog.module.css'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import { getErrorMessage } from '@/utils/getErrorMessage'
+import { Section } from '@/shared/components/Section/Section'
 
 const activityMeta: Record<
     CaregiverActivityType,
@@ -36,6 +37,11 @@ const activityMeta: Record<
     vital_recorded: {
         label: 'Vital Recorded',
         badge: 'stable',
+        Icon: Stethoscope,
+    },
+    vital_missed: {
+        label: 'Missed Vital',
+        badge: 'critical',
         Icon: Stethoscope,
     },
     symptom_logged: {
@@ -112,15 +118,8 @@ const CaregiverActivityLog = () => {
     }
 
     return (
-        <MainWrapper title="Activity Log">
-            <section className={styles.page}>
-                <div className={styles.header}>
-                    <div>
-                        <span className={styles.eyebrow}>Care History</span>
-                    </div>
-                    <span className={styles.count}>{pagination.totalCount} records</span>
-                </div>
-
+        <MainWrapper title="Activity Log" subtitle="A complete record of patient care actions and outcomes.">
+            <Section title="Care History" actions={`${pagination.totalCount} records`}>
                 {activities.length === 0 ? (
                     <div className={styles.emptyState}>
                         <Activity size={42} />
@@ -135,27 +134,27 @@ const CaregiverActivityLog = () => {
 
                             return (
                                 <article key={activity.id} className={styles.activityCard}>
-                                    <div className={styles.timeBlock}>
-                                        <strong>{formatTime(activity.createdAt)}</strong>
-                                        <span>{formatDate(activity.createdAt)}</span>
-                                    </div>
-
-                                    <div className={`${styles.iconWrap} ${styles[meta.badge]}`}>
-                                        <Icon size={18} />
+                                    <div className={styles.activityHeader}>
+                                        <div className={styles.timeBlock}>
+                                            <strong>{formatTime(activity.createdAt)}</strong>
+                                            <span>{formatDate(activity.createdAt)}</span>
+                                        </div>
+                                        <div className={styles.activityType}>
+                                            <div className={`${styles.iconWrap} ${styles[meta.badge]}`}>
+                                                <Icon size={18} />
+                                            </div>
+                                            <span className={styles.activityLabel}>{meta.label}</span>
+                                        </div>
+                                        <span className={`${styles.statusBadge} ${styles[meta.badge]}`}>
+                                            {meta.badge}
+                                        </span>
                                     </div>
 
                                     <div className={styles.content}>
-                                        <div className={styles.cardTop}>
-                                            <span className={styles.activityLabel}>{meta.label}</span>
-                                            <span className={`${styles.statusBadge} ${styles[meta.badge]}`}>
-                                                {meta.badge}
-                                            </span>
-                                        </div>
-
                                         <div className={styles.detailsGrid}>
                                             <div>
                                                 <span className={styles.fieldLabel}>Clinical Details</span>
-                                                <h3>{description.title}</h3>
+                                                <h3 className={styles.fieldTitle}>{description.title}</h3>
                                                 {description.details && <p>{description.details}</p>}
                                             </div>
                                             <div>
@@ -179,7 +178,7 @@ const CaregiverActivityLog = () => {
                         limit={pagination.limit}
                     />
                 )}
-            </section>
+            </Section>
         </MainWrapper>
     )
 }
