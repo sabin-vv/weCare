@@ -15,6 +15,7 @@ import type {
     AddPrescriptionPayload,
     AddVitalPlanPayload,
     PatientPrescription,
+    MedicalRecordData,
 } from '../types/doctor.types'
 
 import type { ApiInterface } from '@/modules/auth/api/auth.api.types'
@@ -26,6 +27,7 @@ import {
     PRESCRIPTIONS_API,
     VITALS_API,
     CAREGIVERS_API,
+    MEDICAL_RECORDS_API,
 } from '@/shared/constants/api.constants'
 
 export const updateProfile = async (data: FormData, hasExistingProfile = false): Promise<ApiInterface> => {
@@ -188,4 +190,30 @@ export const updateClinicalStatus = async (
         clinicalStatus,
     })
     return res.data
+}
+
+export const getPatientMedicalRecord = async (patientId: string): Promise<MedicalRecordData> => {
+    const res = await api.get<{ success: boolean; data: MedicalRecordData }>(
+        `${MEDICAL_RECORDS_API}/${patientId}`,
+    )
+    return res.data.data
+}
+
+export const updateMedicalRecord = async (
+    patientId: string,
+    data: { allergies?: string[]; pastSurgeries?: string },
+): Promise<MedicalRecordData> => {
+    const res = await api.patch<{ success: boolean; data: MedicalRecordData }>(
+        `${MEDICAL_RECORDS_API}/${patientId}`,
+        data,
+    )
+    return res.data.data
+}
+
+export const addClinicalNote = async (patientId: string, note: string): Promise<MedicalRecordData> => {
+    const res = await api.post<{ success: boolean; data: MedicalRecordData }>(
+        `${MEDICAL_RECORDS_API}/${patientId}/notes`,
+        { note },
+    )
+    return res.data.data
 }
