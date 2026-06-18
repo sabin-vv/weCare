@@ -6,6 +6,7 @@ import DoctorAppointmentsPage from '../pages/DoctorAppointmentsPage'
 import DoctorDashboard from '../pages/DoctorDashboard'
 import DoctorSettings from '../pages/DoctorSettings'
 import PatientList from '../pages/PatientList'
+import PatientMedicalRecordPage from '../pages/PatientMedicalRecordPage'
 import PatientViewPage from '../pages/PatientViewPage'
 
 import { Role } from '@/modules/auth/types/auth.types'
@@ -57,6 +58,14 @@ export const DoctorRoutes: RouteObject[] = [
         element: (
             <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
                 <PatientViewPage />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: '/doctor/patients/:patientId/medical-record',
+        element: (
+            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
+                <PatientMedicalRecordPage />
             </ProtectedRoute>
         ),
     },
