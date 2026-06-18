@@ -88,6 +88,10 @@ import { INotificationRepository } from '../modules/notification/interfaces/noti
 import { INotificationService } from '../modules/notification/interfaces/notification.service.interface'
 import { NotificationRepository } from '../modules/notification/repository/notification.repository'
 import { NotificationService } from '../modules/notification/service/notification.service'
+import { IMedicalRecordRepository } from '../modules/medicalRecord/interfaces/medicalRecord.repository.interface'
+import { IMedicalRecordService } from '../modules/medicalRecord/interfaces/medicalRecord.service.interface'
+import { MedicalRecordRepository } from '../modules/medicalRecord/repository/medicalRecord.repository'
+import { MedicalRecordService } from '../modules/medicalRecord/service/medicalRecord.service'
 import { TOKENS } from './tokens'
 
 container.register<IUserRepository>(TOKENS.IUserRepository, { useClass: UserRepository })
@@ -175,4 +179,11 @@ container.register<INotificationRepository>(TOKENS.INotificationRepository, {
 })
 container.register<INotificationService>(TOKENS.INotificationService, {
     useClass: NotificationService,
+})
+
+container.register<IMedicalRecordRepository>(TOKENS.IMedicalRecordRepository, {
+    useClass: MedicalRecordRepository,
+})
+container.register<IMedicalRecordService>(TOKENS.IMedicalRecordService, {
+    useClass: MedicalRecordService,
 })
