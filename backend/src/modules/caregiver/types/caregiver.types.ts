@@ -10,7 +10,6 @@ export enum VerificationStatus {
 
 export interface CaregiverDocument extends Document {
     userId: Types.ObjectId
-    phoneNumber?: string
     profileImage: string
     govIdImage: string
     certificateNumber: string
@@ -19,6 +18,7 @@ export interface CaregiverDocument extends Document {
     licenseImage: string
     verificationStatus: VerificationStatus
     isActive: boolean
+    isAvailable: boolean
     verifiedBy: Types.ObjectId
     verifiedAt: Date
     rejectReason: string
