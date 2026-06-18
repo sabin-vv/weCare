@@ -72,6 +72,7 @@ export const logMedicationAction = async (
 export const logVitalReading = async (
     patientId: string,
     data: {
+        scheduleId?: string
         vitalType: string
         systolic?: number
         diastolic?: number

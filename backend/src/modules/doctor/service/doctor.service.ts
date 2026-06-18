@@ -8,7 +8,6 @@ import { IAppointmentRepository } from '../../appointment/interfaces/appointment
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
-import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IAvailabilityNotificationService } from '../interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
