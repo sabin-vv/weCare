@@ -597,7 +597,9 @@ export class AppointmentService implements IAppointmentService {
                         paidAt: new Date(),
                     })
 
-                    const patientExists = await this._patientRepo.findUserByUserId(appointment.patientId as Types.ObjectId)
+                    const patientExists = await this._patientRepo.findUserByUserId(
+                        appointment.patientId as Types.ObjectId,
+                    )
                     const patientName = (patientExists?.userId as unknown as { name: string })?.name
 
                     await this._activityLogService.logActivity({

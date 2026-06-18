@@ -330,7 +330,9 @@ const CaregiverReminders = () => {
                                                 <>
                                                     {missedItems.length > 0 && (
                                                         <div className={styles.categoryGroup}>
-                                                            <h4 className={styles.categoryTitle}>Missed ({missedItems.length})</h4>
+                                                            <h4 className={styles.categoryTitle}>
+                                                                Missed ({missedItems.length})
+                                                            </h4>
                                                             <div className={styles.categoryCards}>
                                                                 {missedItems.map(renderReminderCard)}
                                                             </div>
@@ -338,7 +340,9 @@ const CaregiverReminders = () => {
                                                     )}
                                                     {pendingItems.length > 0 && (
                                                         <div className={styles.categoryGroup}>
-                                                            <h4 className={styles.categoryTitle}>Pending ({pendingItems.length})</h4>
+                                                            <h4 className={styles.categoryTitle}>
+                                                                Pending ({pendingItems.length})
+                                                            </h4>
                                                             <div className={styles.categoryCards}>
                                                                 {pendingItems.map(renderReminderCard)}
                                                             </div>
@@ -346,7 +350,9 @@ const CaregiverReminders = () => {
                                                     )}
                                                     {completedItems.length > 0 && (
                                                         <div className={styles.categoryGroup}>
-                                                            <h4 className={styles.categoryTitle}>Completed ({completedItems.length})</h4>
+                                                            <h4 className={styles.categoryTitle}>
+                                                                Completed ({completedItems.length})
+                                                            </h4>
                                                             <div className={styles.categoryCards}>
                                                                 {completedItems.map(renderReminderCard)}
                                                             </div>
