@@ -331,6 +331,23 @@
 .deceased {
     background: #dc2626;
 }
+.medicalRecordBtn {
+    background: #5f55ff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.medicalRecordBtn:hover {
+    opacity: 0.9;
+}
+
 .startBtn {
     background: #10b981;
     color: white;
