@@ -3,11 +3,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import {
-    addClinicalNote,
-    getPatientMedicalRecord,
-    updateMedicalRecord,
-} from '../api/doctor.api'
+import { addClinicalNote, getPatientMedicalRecord, updateMedicalRecord } from '../api/doctor.api'
 import type { ClinicalNote, MedicalRecordData } from '../types/doctor.types'
 
 import styles from './PatientMedicalRecordPage.module.css'
@@ -192,10 +188,7 @@ const PatientMedicalRecordPage = () => {
                     <div className={styles.header}>
                         <div className={styles.headerImage}>
                             {record.profileImage ? (
-                                <img
-                                    src={`${env.AWS_BASE_URL}${record.profileImage}`}
-                                    alt="patient"
-                                />
+                                <img src={`${env.AWS_BASE_URL}${record.profileImage}`} alt="patient" />
                             ) : (
                                 record.patientName?.[0]?.toUpperCase()
                             )}
@@ -209,7 +202,9 @@ const PatientMedicalRecordPage = () => {
                                 <span>•</span>
                                 <span>ID: #{record.patientId}</span>
                                 <span>•</span>
-                                <span className={`${styles.statusBadge} ${getClinicalStatusClass(record.clinicalStatus)}`}>
+                                <span
+                                    className={`${styles.statusBadge} ${getClinicalStatusClass(record.clinicalStatus)}`}
+                                >
                                     {record.clinicalStatus}
                                 </span>
                             </div>
@@ -269,11 +264,7 @@ const PatientMedicalRecordPage = () => {
                                 />
                             </div>
 
-                            <button
-                                className={styles.saveBtn}
-                                onClick={handleSave}
-                                disabled={isSaving}
-                            >
+                            <button className={styles.saveBtn} onClick={handleSave} disabled={isSaving}>
                                 {isSaving ? 'Saving...' : 'Save Changes'}
                             </button>
                         </div>
@@ -354,10 +345,7 @@ const PatientMedicalRecordPage = () => {
                         <div className={styles.notesList}>
                             {record.clinicalNotes.length > 0 ? (
                                 [...record.clinicalNotes]
-                                    .sort(
-                                        (a, b) =>
-                                            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-                                    )
+                                    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                                     .map((note: ClinicalNote, i) => (
                                         <div key={note._id || i} className={styles.noteCard}>
                                             <div className={styles.noteHeader}>
