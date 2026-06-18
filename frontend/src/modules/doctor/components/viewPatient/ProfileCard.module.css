@@ -161,7 +161,7 @@
 
 .rightSection {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     gap: 12px;
     flex-wrap: wrap;
     justify-content: flex-end;
