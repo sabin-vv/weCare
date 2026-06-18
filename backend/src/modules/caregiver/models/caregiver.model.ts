@@ -47,6 +47,11 @@ const caregiverSchema = new Schema<CaregiverDocument>(
             required: true,
             default: true,
         },
+        isAvailable: {
+            type: Boolean,
+            required: true,
+            default: true,
+        },
         verifiedBy: {
             type: Schema.Types.ObjectId,
             ref: 'Admin',
