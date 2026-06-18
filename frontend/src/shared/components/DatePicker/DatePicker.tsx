@@ -152,8 +152,7 @@ const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, max
             ? selectedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
             : ''
 
-    const headerLabel =
-        viewMode === 'day' ? `${MONTHS[viewMonth]} ${viewYear}` : '\u2039 Select year'
+    const headerLabel = viewMode === 'day' ? `${MONTHS[viewMonth]} ${viewYear}` : '\u2039 Select year'
 
     return (
         <div className={styles.wrapper} ref={wrapperRef}>
@@ -178,13 +177,23 @@ const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, max
                     <div className={styles.header}>
                         {viewMode === 'day' ? (
                             <>
-                                <button type="button" className={styles.navBtn} onClick={goToPrevMonth} aria-label="Previous month">
+                                <button
+                                    type="button"
+                                    className={styles.navBtn}
+                                    onClick={goToPrevMonth}
+                                    aria-label="Previous month"
+                                >
                                     &#8249;
                                 </button>
                                 <button type="button" className={styles.headerTitleBtn} onClick={toggleViewMode}>
                                     {headerLabel}
                                 </button>
-                                <button type="button" className={styles.navBtn} onClick={goToNextMonth} aria-label="Next month">
+                                <button
+                                    type="button"
+                                    className={styles.navBtn}
+                                    onClick={goToNextMonth}
+                                    aria-label="Next month"
+                                >
                                     &#8250;
                                 </button>
                             </>
@@ -199,7 +208,9 @@ const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, max
                         <>
                             <div className={styles.dayRow}>
                                 {DAYS.map((d) => (
-                                    <div key={d} className={styles.dayLabel}>{d}</div>
+                                    <div key={d} className={styles.dayLabel}>
+                                        {d}
+                                    </div>
                                 ))}
                             </div>
                             <div className={styles.grid}>{renderDays()}</div>
