@@ -4,6 +4,7 @@ import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
+import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { IAdminRepository } from '../interfaces/admin.repository.interface'
 import { IAdminService } from '../interfaces/admin.service.interface'
 import {
@@ -24,7 +25,6 @@ import {
     RecentDoctorsResponse,
     UsersResponse,
 } from '../types/admin.types'
-import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 
 @injectable()
 export class AdminService implements IAdminService {
