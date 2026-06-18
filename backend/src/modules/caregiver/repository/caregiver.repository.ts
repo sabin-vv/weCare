@@ -28,6 +28,7 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
             {
                 $match: {
                     isActive: true,
+                    isAvailable: true,
                     verificationStatus: 'verified',
                 },
             },
