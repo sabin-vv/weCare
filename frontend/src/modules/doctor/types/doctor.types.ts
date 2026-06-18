@@ -390,6 +390,7 @@ export interface ProfileCardProps {
     onCompleteConsultation?: () => void
     onAddCondition?: () => void
     onAssignCaregiver?: () => void
+    onMedicalRecord?: () => void
     clinicalStatus: ClinicalStatus
     onClinicalStatusChange?: (arg: string) => void
 }
@@ -445,6 +446,50 @@ export interface AcknowledgeResponse {
     success: boolean
     data: AlertData
     message: string
+}
+
+export interface ClinicalNote {
+    _id?: string
+    note: string
+    doctorName: string
+    createdAt: string
+}
+
+export interface MedicalRecordData {
+    _id: string
+    patientId: string
+    patientName: string
+    age: number
+    gender: string
+    profileImage?: string
+    conditions: string[]
+    riskLevel: string
+    clinicalStatus: string
+    allergies: string[]
+    pastSurgeries: string
+    clinicalNotes: ClinicalNote[]
+    vitals: {
+        _id: string
+        type: string
+        value?: number
+        systolic?: number
+        diastolic?: number
+        unit: string
+        recordedAt: string
+    }[]
+    prescriptions: {
+        _id: string
+        medications: {
+            name: string
+            dosage: string
+            frequency: string
+            route: string
+            scheduleTimes: string[]
+            status: string
+        }[]
+        status: string
+        prescribedAt: string
+    }[]
 }
 
 export interface AlertCardProps {
