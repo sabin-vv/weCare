@@ -15,6 +15,7 @@ export const logMedicationSchema = z.object({
 })
 
 export const logVitalReadingSchema = z.object({
+    scheduleId: z.string().optional(),
     vitalType: z.enum(['blood_pressure', 'blood_sugar', 'heart_rate', 'spo2']),
     systolic: optionalNumber,
     diastolic: optionalNumber,
