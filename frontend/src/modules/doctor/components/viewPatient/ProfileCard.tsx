@@ -105,9 +105,6 @@ const ProfileCard = ({
                     </div>
                 </div>
             </div>
-            <button className={styles.medicalRecordBtn} onClick={onMedicalRecord}>
-                Medical Record
-            </button>
             {appointmentStatus === 'confirmed' ? (
                 <button className={styles.startBtn} onClick={onStartConsultation}>
                     Start Consultation
@@ -121,6 +118,25 @@ const ProfileCard = ({
                 </div>
             ) : (
                 <div className={styles.rightSection}>
+                    {caregiver ? (
+                        <div className={styles.caregiverInfo}>
+                            <span className={styles.caregiverLabel}>Assigned Caregiver</span>
+                            <div className={styles.caregiverNameRow}>
+                                <span className={styles.caregiverName}>{caregiver}</span>
+                                <button
+                                    className={styles.editIconBtn}
+                                    onClick={onAssignCaregiver}
+                                    title="Change Caregiver"
+                                >
+                                    ✎
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <button className={styles.caregiverBtn} onClick={onAssignCaregiver}>
+                            Assign Caregiver ▼
+                        </button>
+                    )}
                     <div className={styles.actions}>
                         {pendingStatus ? (
                             <div className={styles.confirmRow}>
@@ -151,25 +167,9 @@ const ProfileCard = ({
                             />
                         )}
                     </div>
-                    {caregiver ? (
-                        <div className={styles.caregiverInfo}>
-                            <span className={styles.caregiverLabel}>Assigned Caregiver</span>
-                            <div className={styles.caregiverNameRow}>
-                                <span className={styles.caregiverName}>{caregiver}</span>
-                                <button
-                                    className={styles.editIconBtn}
-                                    onClick={onAssignCaregiver}
-                                    title="Change Caregiver"
-                                >
-                                    ✎
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <button className={styles.caregiverBtn} onClick={onAssignCaregiver}>
-                            Assign Caregiver ▼
-                        </button>
-                    )}
+                    <button className={styles.medicalRecordBtn} onClick={onMedicalRecord}>
+                        Medical Record
+                    </button>
                 </div>
             )}
         </div>
