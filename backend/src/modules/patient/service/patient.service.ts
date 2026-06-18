@@ -4,17 +4,18 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
-import { IFeedbackRepository } from '../../feedback/interfaces/feedback.repository.interface'
 import { toUserEntity } from '../../auth/mapper/auth.mapper'
 import { UserDocument, UserRole } from '../../auth/types/auth.types'
 import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
+import { CaregiverDocument } from '../../caregiver/types/caregiver.types'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
+import { IFeedbackRepository } from '../../feedback/interfaces/feedback.repository.interface'
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
-import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IPrescriptionRepository } from '../../prescription/interfaces/prescription.repository.interface'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
 import { IPatientRepository } from '../interfaces/patient.repository.interface'
@@ -116,7 +117,10 @@ export class PatientService implements IPatientService {
 
         let caregiver: UserDocument | null = null
         if (patient.caregiverId) {
-            caregiver = await this._userRepo.findById(patient.caregiverId.toString())
+            const caregiverDoc = await this._caregiverRepo.findById(patient.caregiverId.toString())
+            if (caregiverDoc) {
+                caregiver = await this._userRepo.findById(caregiverDoc.userId.toString())
+            }
         }
 
         const [vitals, prescriptions] = await Promise.all([
@@ -352,13 +356,27 @@ export class PatientService implements IPatientService {
         const users = await this._userRepo.findAll({
             _id: { $in: userIds },
         })
-
-        let caregivers: UserDocument[] = []
+        let caregiversMap = new Map<string, UserDocument>()
         if (caregiverIds.length > 0) {
-            caregivers = await this._userRepo.findAll({ _id: { $in: caregiverIds } })
-        }
+            const caregiverDocs = (
+                await Promise.all(caregiverIds.map((id) => this._caregiverRepo.findById(id)))
+            ).filter((doc): doc is CaregiverDocument => doc !== null)
 
-        const caregiversMap = new Map(caregivers.map((c) => [c._id.toString(), c]))
+            const caregiverUserIds = caregiverDocs.map((doc) => doc.userId.toString())
+            const caregiverUsers = await this._userRepo.findAll({
+                _id: { $in: caregiverUserIds.map((id) => new Types.ObjectId(id)) },
+            })
+            const userMap = new Map(caregiverUsers.map((u) => [u._id.toString(), u]))
+
+            caregiversMap = new Map(
+                caregiverDocs
+                    .map((doc) => {
+                        const user = userMap.get(doc.userId.toString())
+                        return user ? ([doc._id.toString(), user] as const) : null
+                    })
+                    .filter((entry): entry is [string, UserDocument] => entry !== null),
+            )
+        }
 
         const appointments = await this._appointmentRepo.findDoctorVisibleAppointmentsByDoctorAndPatientIds(
             doctor._id.toString(),
