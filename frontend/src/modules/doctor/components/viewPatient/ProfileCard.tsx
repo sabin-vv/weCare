@@ -24,6 +24,7 @@ const ProfileCard = ({
     onCompleteConsultation,
     onAddCondition,
     onAssignCaregiver,
+    onMedicalRecord,
     clinicalStatus,
     onClinicalStatusChange,
 }: ProfileCardProps) => {
@@ -104,6 +105,9 @@ const ProfileCard = ({
                     </div>
                 </div>
             </div>
+            <button className={styles.medicalRecordBtn} onClick={onMedicalRecord}>
+                Medical Record
+            </button>
             {appointmentStatus === 'confirmed' ? (
                 <button className={styles.startBtn} onClick={onStartConsultation}>
                     Start Consultation
