@@ -1,4 +1,4 @@
-import { ActivityLogDocument, ActivityCategory } from '../types/activityLog.types'
+import { ActivityLogDocument } from '../types/activityLog.types'
 
 export interface IActivityLogRepository {
     create(data: Partial<ActivityLogDocument>): Promise<ActivityLogDocument>
