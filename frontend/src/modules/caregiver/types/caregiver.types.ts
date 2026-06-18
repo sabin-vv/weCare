@@ -86,6 +86,7 @@ export interface MedicationLogFormState {
 }
 
 export interface VitalLogFormState {
+    selectedScheduleId?: string
     vitalType: string
     systolic: string
     diastolic: string
@@ -103,7 +104,7 @@ export interface SymptomLogFormState {
 
 export type ReminderSource = 'medication' | 'vital' | 'custom'
 
-export interface PatientOption extends Pick<PatientSummary, '_id' | 'userName'> {}
+export type PatientOption = Pick<PatientSummary, '_id' | 'userName'>
 
 export interface ReminderItem {
     _id: string
