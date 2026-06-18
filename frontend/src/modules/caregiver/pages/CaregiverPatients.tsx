@@ -1,11 +1,8 @@
-import { useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
 import {
     Activity,
     AlertCircle,
     BadgeAlert,
     CheckCircle2,
-    ChevronRight,
     ClipboardPlus,
     Clock3,
     Clock4,
@@ -17,6 +14,9 @@ import {
     ShieldAlert,
     Wind,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 import {
     getMyPatients,
@@ -27,6 +27,7 @@ import {
     logVitalReading,
     type PatientSummary,
 } from '../api/caregiver.api'
+import ProfileCard from '../components/ProfileCard/ProfileCard'
 import type {
     AlertCard,
     MedicationLogFormState,
@@ -42,10 +43,8 @@ import styles from './CaregiverPatients.module.css'
 
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
-import { getErrorMessage } from '@/utils/getErrorMessage'
-import ProfileCard from '../components/ProfileCard/ProfileCard'
 import { Section } from '@/shared/components/Section/Section'
-import { useNavigate } from 'react-router-dom'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const iconMap: Record<string, typeof Activity> = {
     blood_pressure: Heart,
@@ -165,6 +164,7 @@ const CaregiverPatients = () => {
     })
     const [isVitalModalOpen, setIsVitalModalOpen] = useState(false)
     const [vitalLogForm, setVitalLogForm] = useState<VitalLogFormState>({
+        selectedScheduleId: undefined,
         vitalType: '',
         systolic: '',
         diastolic: '',
@@ -248,20 +248,6 @@ const CaregiverPatients = () => {
             }
         })
 
-    const scheduleCards = (() => {
-        const grouped = new Map<string, VitalScheduleItem>()
-        for (const s of vitalSchedules) {
-            const existing = grouped.get(s.vitalType)
-            if (!existing || (existing.status !== 'pending' && s.status === 'pending')) {
-                grouped.set(s.vitalType, s)
-            }
-        }
-        return Array.from(grouped.entries()).map(([type, schedule]) => ({
-            type,
-            schedule,
-        }))
-    })()
-
     const openMedicationModal = (medication: MedicationSchedule) => {
         const scheduledDate = new Date(medication.scheduleTime)
         const defaultTime = scheduledDate.toLocaleTimeString('en-GB', {
@@ -309,7 +295,7 @@ const CaregiverPatients = () => {
         }
     }
 
-    const openVitalModal = (vitalType?: string) => {
+    const openVitalModal = (vitalType?: string, schedule?: VitalScheduleItem) => {
         const fallbackType = vitalType || vitalSchedules[0]?.vitalType || 'blood_pressure'
         const now = new Date()
         const defaultTime = now.toLocaleTimeString('en-GB', {
@@ -319,6 +305,7 @@ const CaregiverPatients = () => {
         })
 
         setVitalLogForm({
+            selectedScheduleId: schedule?._id,
             vitalType: fallbackType,
             systolic: fallbackType === 'blood_pressure' ? '120' : '',
             diastolic: fallbackType === 'blood_pressure' ? '80' : '',
@@ -336,6 +323,7 @@ const CaregiverPatients = () => {
     const handleVitalTypeChange = (nextType: string) => {
         setVitalLogForm((current) => ({
             ...current,
+            selectedScheduleId: undefined,
             vitalType: nextType,
             systolic: nextType === 'blood_pressure' ? current.systolic || '120' : '',
             diastolic: nextType === 'blood_pressure' ? current.diastolic || '80' : '',
@@ -350,6 +338,7 @@ const CaregiverPatients = () => {
         try {
             setIsSavingVital(true)
             await logVitalReading(patientId, {
+                scheduleId: vitalLogForm.selectedScheduleId,
                 vitalType: vitalLogForm.vitalType,
                 systolic: isBloodPressure ? Number(vitalLogForm.systolic) : undefined,
                 diastolic: isBloodPressure ? Number(vitalLogForm.diastolic) : undefined,
@@ -524,11 +513,11 @@ const CaregiverPatients = () => {
                             </section>
                         )}
 
-                        {scheduleCards.length === 0 && timeline.length === 0 ? (
+                        {vitalSchedules.length === 0 && timeline.length === 0 ? (
                             <p className={styles.emptyText}>No medication or vital schedules for today.</p>
                         ) : (
                             <>
-                                {scheduleCards.length > 0 && (
+                                {vitalSchedules.length > 0 && (
                                     <section className={styles.section}>
                                         <div className={styles.sectionHeader}>
                                             <div className={styles.sectionTitleWrap}>
@@ -540,19 +529,11 @@ const CaregiverPatients = () => {
                                                     </p>
                                                 </div>
                                             </div>
-
-                                            <button
-                                                type="button"
-                                                className={styles.secondaryAction}
-                                                onClick={() => openVitalModal()}
-                                            >
-                                                Log Vitals
-                                                <ChevronRight size={16} />
-                                            </button>
                                         </div>
 
                                         <div className={styles.vitalsGrid}>
-                                            {scheduleCards.map(({ type, schedule }) => {
+                                            {vitalSchedules.map((schedule) => {
+                                                const type = schedule.vitalType
                                                 const Icon = iconMap[type] || Activity
                                                 const label = labelMap[type] || type
                                                 const unit = unitMap[type] || ''
@@ -568,34 +549,67 @@ const CaregiverPatients = () => {
 
                                                 return (
                                                     <article
-                                                        key={`${type}-${schedule._id}`}
+                                                        key={schedule._id}
                                                         className={styles.vitalCard}
-                                                        onClick={() => openVitalModal(type)}
                                                         role="button"
                                                         tabIndex={0}
+                                                        onClick={() => openVitalModal(type, schedule)}
                                                         onKeyDown={(e) => {
                                                             if (e.key === 'Enter' || e.key === ' ') {
                                                                 e.preventDefault()
-                                                                openVitalModal(type)
+                                                                openVitalModal(type, schedule)
                                                             }
                                                         }}
                                                     >
                                                         <div className={styles.vitalTop}>
                                                             <span className={styles.vitalLabel}>{label}</span>
-                                                            <span className={styles.vitalStatus}>Log reading</span>
+                                                            <span
+                                                                className={styles.vitalStatus}
+                                                                data-status={schedule.status}
+                                                            >
+                                                                {statusLabel}
+                                                            </span>
                                                         </div>
                                                         <div className={styles.vitalValueRow}>
                                                             <Icon size={18} className={styles.vitalIcon} />
-                                                            <div className={styles.vitalValueWrap}>
-                                                                <strong className={styles.vitalValue}>
-                                                                    {scheduleTimeLabel}
-                                                                </strong>
-                                                                {unit && (
-                                                                    <span className={styles.vitalUnit}>{unit}</span>
-                                                                )}
-                                                            </div>
+                                                            {schedule.status === 'recorded' &&
+                                                            schedule.recordedValue ? (
+                                                                <div className={styles.vitalValueWrap}>
+                                                                    <strong className={styles.vitalValue}>
+                                                                        {type === 'blood_pressure'
+                                                                            ? `${schedule.recordedValue.systolic ?? ''}/${schedule.recordedValue.diastolic ?? ''}`
+                                                                            : (schedule.recordedValue.value ?? '')}
+                                                                        <span className={styles.vitalUnit}>
+                                                                            {' '}
+                                                                            {schedule.recordedValue.unit || unit}
+                                                                        </span>
+                                                                    </strong>
+                                                                    <span className={styles.vitalDate}>
+                                                                        {formatDate(schedule.recordedAt!)}{' '}
+                                                                        {formatTime(schedule.recordedAt!)}
+                                                                    </span>
+                                                                </div>
+                                                            ) : (
+                                                                <div className={styles.vitalValueWrap}>
+                                                                    <span className={styles.vitalTime}>
+                                                                        {scheduleTimeLabel}
+                                                                    </span>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                        <span className={styles.vitalUpdated}>{statusLabel}</span>
+                                                        <div className={styles.vitalLog}>
+                                                            {schedule.status === 'pending' && (
+                                                                <span
+                                                                    className={styles.logVital}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation()
+                                                                        openVitalModal(type, schedule)
+                                                                    }}
+                                                                >
+                                                                    Log reading
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </article>
                                                 )
                                             })}
@@ -856,8 +870,8 @@ const CaregiverPatients = () => {
                                     value={vitalLogForm.vitalType}
                                     onChange={(e) => handleVitalTypeChange(e.target.value)}
                                 >
-                                    {scheduleCards.length > 0 ? (
-                                        scheduleCards.map(({ type }) => (
+                                    {vitalSchedules.length > 0 ? (
+                                        [...new Set(vitalSchedules.map((s) => s.vitalType))].map((type) => (
                                             <option key={type} value={type}>
                                                 {labelMap[type] || type}
                                             </option>
