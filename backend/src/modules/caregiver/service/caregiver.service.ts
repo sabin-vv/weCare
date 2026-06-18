@@ -4,15 +4,15 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
-import { INotificationService } from '../../notification/interfaces/notification.service.interface'
-import { CreateNotificationPayload } from '../../notification/types/notification.types'
-import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { ICaregiverActivityService } from '../../caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { IMedicationRepository } from '../../medication/interfaces/medication.repository.interface'
 import { IMedicationLogRepository } from '../../medication/interfaces/medicationLog.repository.interface'
 import { MedicationScheduleDTO } from '../../medication/types/medication.type'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { SymptomLogModel } from '../../symptom/models/symptomLog.model'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
@@ -110,7 +110,6 @@ export class CaregiverService implements ICaregiverService {
         })
 
         const caregiver = await this._caregiverRepo.updateByUserId(new Types.ObjectId(userId), {
-            phoneNumber: dto.phoneNumber,
             isActive: dto.isActive !== undefined ? dto.isActive : existingCaregiver.isActive,
             profileImage: dto.profileImage || existingCaregiver.profileImage,
         })
@@ -284,7 +283,9 @@ export class CaregiverService implements ICaregiverService {
         dto: LogVitalReadingDTO,
     ): Promise<CaregiverVitalLogResponse> {
         const { caregiver, patient } = await this._getAssignedCaregiverAndPatient(caregiverId, patientId)
-        const schedule = await this._vitalRepo.findLoggableVitalScheduleByPatientAndType(patient._id, dto.vitalType)
+        const schedule = dto.scheduleId
+            ? await this._vitalRepo.findVitalScheduleById(dto.scheduleId)
+            : await this._vitalRepo.findLoggableVitalScheduleByPatientAndType(patient._id, dto.vitalType)
 
         if (schedule && schedule.caregiverId?.toString() !== caregiver._id.toString()) {
             throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this vital schedule')
