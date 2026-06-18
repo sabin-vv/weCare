@@ -1,7 +1,7 @@
 import { Heart, Activity, Thermometer, Droplets, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import {
     cancelPatientVitalPlan,
@@ -38,6 +38,7 @@ const SEVERITY_OPTIONS: Array<{ label: string; value: RiskLevel }> = [
 
 const PatientViewPage = () => {
     const { patientId } = useParams<{ patientId: string }>()
+    const navigate = useNavigate()
     const [patient, setPatient] = useState<PatientDetails | null>(null)
     const [vitalPlans, setVitalPlans] = useState<PatientVitalPlan[]>([])
     const [cancellingPlanId, setCancellingPlanId] = useState<string | null>(null)
@@ -297,6 +298,10 @@ const PatientViewPage = () => {
             toast.error(getErrorMessage(error))
         }
     }
+
+    const handleMedicalRecord = () => {
+        navigate(`/doctor/patients/${patientId}/medical-record`)
+    }
     const flatVital = vitalPlans.flatMap((plan) => plan.vitals)
 
     const vitals = flatVital.map((vital) => vital.type)
@@ -323,6 +328,7 @@ const PatientViewPage = () => {
                         setShowConditionModal(true)
                     }}
                     onAssignCaregiver={handleCaregiverModalOpen}
+                    onMedicalRecord={handleMedicalRecord}
                 />
                 <div className={styles.vitalsLogGrid}>
                     {patient.vitals.length > 0 &&
