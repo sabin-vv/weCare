@@ -192,7 +192,8 @@ const PatientAppointmentsPage = () => {
             const res = await cancelAppointment(selectedAppointmentId, reason)
             toast.success(res.message)
             setIsCancelModalOpen(false)
-            setAppointments((prev) => prev.filter((app) => app._id !== selectedAppointmentId))
+            const data = await getPatientAppointments()
+            setAppointments(data)
         } catch (error) {
             toast.error(getErrorMessage(error))
         } finally {
