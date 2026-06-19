@@ -30,6 +30,20 @@ const FeedbackProfileCard = ({ profile, onFeedback }: FeedbackProfileCardProps) 
                     {profile.role === Role.DOCTOR ? 'Dr.' : ''}
                     {profile.name}
                 </h3>
+
+                {profile.rating && (
+                    <div className={styles.stars}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                                key={star}
+                                size={16}
+                                fill={star <= profile.rating! ? '#f5a623' : 'none'}
+                                color={star <= profile.rating! ? '#f5a623' : '#d4dce8'}
+                            />
+                        ))}
+                    </div>
+                )}
+
                 {(profile.email || profile.mobile) && (
                     <div className={styles.contactInfo}>
                         {profile.email && (
@@ -44,20 +58,9 @@ const FeedbackProfileCard = ({ profile, onFeedback }: FeedbackProfileCardProps) 
                                 {profile.mobile}
                             </span>
                         )}
-                    </div>
-                )}
-                {profile.specialization && <span className={styles.role}>{profile.specialization.join(',')}</span>}
-
-                {profile.rating && (
-                    <div className={styles.stars}>
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                                key={star}
-                                size={16}
-                                fill={star <= profile.rating! ? '#f5a623' : 'none'}
-                                color={star <= profile.rating! ? '#f5a623' : '#d4dce8'}
-                            />
-                        ))}
+                        {profile.specialization && (
+                            <span className={styles.contactItem}>{profile.specialization.join(',')}</span>
+                        )}
                     </div>
                 )}
             </div>

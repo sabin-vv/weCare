@@ -564,6 +564,9 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
         }
 
+        const patientExists = await this._patientRepo.findUserByUserId(appointment.patientId as Types.ObjectId)
+        const patientName = (patientExists?.userId as unknown as { name: string })?.name
+
         if (appointment.status !== 'pending_payment') {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not pending payment')
         }
@@ -582,7 +585,7 @@ export class AppointmentService implements IAppointmentService {
                 wallet = await this._walletService.debit(
                     dto.patientId,
                     totalAmount,
-                    `Consultation payment for appointment ${appointmentId}`,
+                    `Consultation payment for appointment ${patientName}`,
                     appointmentId,
                 )
 
@@ -596,11 +599,6 @@ export class AppointmentService implements IAppointmentService {
                         status: 'success',
                         paidAt: new Date(),
                     })
-
-                    const patientExists = await this._patientRepo.findUserByUserId(
-                        appointment.patientId as Types.ObjectId,
-                    )
-                    const patientName = (patientExists?.userId as unknown as { name: string })?.name
 
                     await this._activityLogService.logActivity({
                         performedBy: dto.patientId,

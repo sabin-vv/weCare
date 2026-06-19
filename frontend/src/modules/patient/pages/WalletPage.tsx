@@ -1,4 +1,3 @@
-import { ArrowRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { getWallet } from '../api/patient.api'
@@ -49,9 +48,7 @@ const WalletPage = () => {
                         <div className={styles.transactionHeader}>
                             <h4>Transaction History</h4>
 
-                            <button className={styles.viewAllBtn}>
-                                View All <ArrowRight size={18} />
-                            </button>
+                            <button className={styles.viewAllBtn}></button>
                         </div>
 
                         <div className={styles.transactionList}>
@@ -59,27 +56,60 @@ const WalletPage = () => {
                                 transactions.map((transaction, index) => (
                                     <div key={index} className={styles.transactionCard}>
                                         <div className={styles.transactionLeft}>
-                                            <span className={`${styles.typeBadge} ${transaction.type === 'credit' ? styles.creditBadge : styles.debitBadge}`}>
+                                            <span
+                                                className={`${styles.typeBadge} ${transaction.type === 'credit' ? styles.creditBadge : styles.debitBadge}`}
+                                            >
                                                 {transaction.type === 'credit' ? (
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                                                    <svg
+                                                        width="12"
+                                                        height="12"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <line x1="12" y1="19" x2="12" y2="5" />
+                                                        <polyline points="5 12 12 5 19 12" />
+                                                    </svg>
                                                 ) : (
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                                                    <svg
+                                                        width="12"
+                                                        height="12"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    >
+                                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                                        <polyline points="19 12 12 19 5 12" />
+                                                    </svg>
                                                 )}
                                                 {transaction.type}
                                             </span>
 
                                             <div className={styles.transactionMeta}>
                                                 {transaction.description ? (
-                                                    <span className={styles.transactionDesc}>{transaction.description}</span>
+                                                    <span className={styles.transactionDesc}>
+                                                        {transaction.description}
+                                                    </span>
                                                 ) : null}
                                                 <span className={styles.transactionDate}>
-                                                    {new Date(transaction.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                    {new Date(transaction.createdAt).toLocaleDateString('en-IN', {
+                                                        day: 'numeric',
+                                                        month: 'short',
+                                                        year: 'numeric',
+                                                    })}
                                                 </span>
                                             </div>
                                         </div>
 
                                         <span className={transaction.type === 'credit' ? styles.credit : styles.debit}>
-                                            {transaction.type === 'credit' ? '+' : '-'}₹{transaction.amount.toLocaleString()}
+                                            {transaction.type === 'credit' ? '+' : '-'}₹
+                                            {transaction.amount.toLocaleString()}
                                         </span>
                                     </div>
                                 ))

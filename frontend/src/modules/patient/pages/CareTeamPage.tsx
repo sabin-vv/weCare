@@ -41,30 +41,33 @@ const CareTeamPage = () => {
     useEffect(() => {
         const fetchCareTeam = async () => {
             try {
-                const data = await getCareTeam()
-                if (data.doctor) {
+                const members = await getCareTeam()
+                const doctorMember = members.find((m) => m.role === 'doctor') || null
+                const caregiverMember = members.find((m) => m.role === 'caregiver') || null
+
+                if (doctorMember) {
                     setDoctor({
-                        id: data.doctor.id,
-                        name: data.doctor.name.replace('Dr. ', ''),
+                        id: doctorMember.id,
+                        name: doctorMember.name.replace('Dr. ', ''),
                         role: 'doctor',
-                        profileImage: data.doctor.profileImage,
-                        specialization: data.doctor.specialization,
-                        status: data.doctor.isActive,
-                        rating: data.doctor.myRating,
-                        email: data.doctor.email,
-                        mobile: data.doctor.mobile,
+                        profileImage: doctorMember.profileImage,
+                        specialization: doctorMember.specialization,
+                        status: doctorMember.isActive,
+                        rating: doctorMember.myRating,
+                        email: doctorMember.email,
+                        mobile: doctorMember.mobile,
                     })
                 }
-                if (data.caregiver) {
+                if (caregiverMember) {
                     setCaregiver({
-                        id: data.caregiver.id,
-                        name: data.caregiver.name,
+                        id: caregiverMember.id,
+                        name: caregiverMember.name,
                         role: 'caregiver',
-                        profileImage: data.caregiver.profileImage,
-                        status: data.caregiver.isActive,
-                        rating: data.caregiver.myRating,
-                        email: data.caregiver.email,
-                        mobile: data.caregiver.mobile,
+                        profileImage: caregiverMember.profileImage,
+                        status: caregiverMember.isActive,
+                        rating: caregiverMember.myRating,
+                        email: caregiverMember.email,
+                        mobile: caregiverMember.mobile,
                     })
                 }
             } catch (err) {
