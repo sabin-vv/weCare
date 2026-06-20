@@ -16,6 +16,19 @@ import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { loadRazorpayScript } from '@/utils/loadRazorpay'
+import { Section } from '@/shared/components/Section/Section'
+
+const SLOT_BUFFER_MINUTES = 15
+
+const isSlotInPast = (slot: DoctorSlot, date: Date) => {
+    const cutoff = new Date(Date.now() + SLOT_BUFFER_MINUTES * 60 * 1000)
+    const [h, m] = slot.start.split(':').map(Number)
+    const slotDate = new Date(date)
+    slotDate.setHours(h, m, 0, 0)
+    return slotDate < cutoff
+}
+
+const isToday = (date: Date) => date.toDateString() === new Date().toDateString()
 
 const DoctorAvailabilityPage = () => {
     const { doctorId } = useParams<{ doctorId: string }>()
@@ -99,7 +112,9 @@ const DoctorAvailabilityPage = () => {
         evening: slots.filter((s) => Number(s.start.split(':')[0]) >= 17),
     })
 
-    const groupedSlots = groupSlots(slots)
+    const visibleSlots =
+        selectedDate && isToday(selectedDate) ? slots.filter((slot) => !isSlotInPast(slot, selectedDate)) : slots
+    const groupedSlots = groupSlots(visibleSlots)
 
     const validateCheckout = () => {
         if (!selectedTimeSlot || !selectedDate) {
@@ -273,7 +288,7 @@ const DoctorAvailabilityPage = () => {
                 subtitle="Choose a date, reserve a time that works for you, and complete checkout when you're ready."
             >
                 <main className={styles.main}>
-                    <div className={styles.leftSection}>
+                    <Section>
                         <h2 className={styles.sectionTitle}>Select Appointment Date & Time</h2>
 
                         <div className={styles.miniDoctorCard}>
@@ -353,9 +368,9 @@ const DoctorAvailabilityPage = () => {
                                 )
                             })
                         )}
-                    </div>
+                    </Section>
 
-                    <div className={styles.rightSection}>
+                    <Section>
                         <div className={styles.bookingSummary}>
                             <h2 className={styles.sectionTitle}>Booking Summary</h2>
 
@@ -432,7 +447,7 @@ const DoctorAvailabilityPage = () => {
                                 ) : null}
                             </div>
                         </div>
-                    </div>
+                    </Section>
                 </main>
                 <div className={styles.cancellationPolicy}>
                     <h4 className={styles.cancellationPolicyTitle}>Cancellation Policy</h4>
