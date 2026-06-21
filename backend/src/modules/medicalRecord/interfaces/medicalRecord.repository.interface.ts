@@ -1,4 +1,4 @@
-import { MedicalRecordDocument, IClinicalNote } from '../types/medicalRecord.types'
+import { IClinicalNote,MedicalRecordDocument } from '../types/medicalRecord.types'
 
 export interface IMedicalRecordRepository {
     findByPatientId(patientId: string): Promise<MedicalRecordDocument | null>
