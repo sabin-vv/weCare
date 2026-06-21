@@ -45,6 +45,7 @@ export const ACTIVITY_ACTIONS = [
     'appointment_booked',
     'appointment_confirmed',
     'appointment_cancelled',
+    'appointment_rescheduled',
     'appointment_completed',
     'payment_success',
     'payment_failed',
