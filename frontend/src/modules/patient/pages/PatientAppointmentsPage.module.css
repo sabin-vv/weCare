@@ -28,9 +28,10 @@
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    width: 100%;
 }
 
 .appointmentCard {
@@ -45,6 +46,28 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
+}
+
+.cardTopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.doctorDetails {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profilePic {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
 }
 
 .appointmentCard:hover {
@@ -52,31 +75,66 @@
     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
 }
 
-.cardHeader {
+.avatarPlaceholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #1d4ed8;
+    flex-shrink: 0;
 }
 
 .doctorInfo {
     display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.nameRow {
+    display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .doctorName {
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.15rem;
     color: #1a1a1a;
 }
 
+.appointmentId {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: #f1f5f9;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+}
+
+.specialtyRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
 .doctorSpecialize {
-    font-size: 0.85rem;
-    color: #666;
+    font-size: 0.9rem;
+    color: #64748b;
     text-transform: capitalize;
 }
 
-.statusBadge {
+.statusText {
+    display: flex;
+    width: fit-content;
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -105,30 +163,56 @@
 }
 
 .completed {
-    background: #f1f3f5;
-    color: #495057;
+    background: #edf2ff;
+    color: #364fc7;
 }
 
 .appointmentDetails {
     display: flex;
     flex-direction: column;
+    align-items: end;
     gap: 0.5rem;
     padding: 1rem 0;
     border-top: 1px solid #f0f0f0;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.detailRow {
+.detailsRow {
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.75rem;
+    gap: 3rem;
     font-size: 0.95rem;
-    color: #444;
+    color: #475569;
+    padding: 0.85rem 0;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
 }
 
-.icon {
-    color: #007bff;
-    flex-shrink: 0;
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+.detailValue {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    gap: 4px;
+    color: #364fc7;
+}
+
+.detailsSeparator {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+}
+
+.paymentStatus {
+    text-transform: capitalize;
 }
 
 .cardFooter {
@@ -136,14 +220,29 @@
     justify-content: space-between;
     align-items: center;
 }
-
-.amount {
-    font-weight: 700;
-    color: #1a1a1a;
+.footerLeft {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
-.paymentStatus {
-    text-transform: capitalize;
+.footerLeft span {
+    font-size: 13px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.footerLeft strong {
+    color: #475569;
+    font-weight: 600;
+}
+
+.footerRight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .emptyState {
@@ -168,6 +267,77 @@
     border-top: 3px solid #007bff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+}
+
+.bookAgainButton {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #1d4ed8;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.bookAgainButton:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+}
+
+.bookAgainButton:active {
+    transform: scale(0.98);
+}
+
+.retryButton {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.retryButton:hover {
+    background: #fde68a;
+    transform: translateY(-1px);
+}
+
+.retryButton:active {
+    transform: scale(0.98);
+}
+
+.rescheduleButton {
+    padding: 10px 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.rescheduleButton:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.rescheduleButton:active {
+    transform: scale(0.98);
 }
 
 .cancelButton {
@@ -208,8 +378,27 @@
 }
 
 @media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
+    .appointmentCard {
+        padding: 1.25rem;
+    }
+
+    .detailsRow {
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .detailsSeparator {
+        display: none;
+    }
+
+    .profilePic,
+    .avatarPlaceholder {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatarPlaceholder {
+        font-size: 1.15rem;
     }
 }
 
