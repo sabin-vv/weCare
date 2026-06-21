@@ -1,10 +1,10 @@
 import { model, Schema, Types } from 'mongoose'
 
 import {
-    ACTIVITY_CATEGORIES,
-    ACTOR_ROLES,
     ACTIVITY_ACTIONS,
+    ACTIVITY_CATEGORIES,
     ActivityLogDocument,
+    ACTOR_ROLES,
     TARGET_TYPES,
 } from '../types/activityLog.types'
 
