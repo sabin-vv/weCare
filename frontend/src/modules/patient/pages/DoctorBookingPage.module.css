@@ -33,11 +33,24 @@
 .filters {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+.filterLeft {
+    display: flex;
+    align-items: center;
     gap: 12px;
 }
-.filters > *:last-child {
+
+.filterRight {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
     flex: 1;
-    min-width: 200px;
+    max-width: 420px;
 }
 
 .clearButton {
@@ -45,10 +58,10 @@
     align-items: center;
     gap: 6px;
     padding: 10px 14px;
-    border: 1px solid #e2e8f2;
+    border: 1px solid #fecaca;
     border-radius: 10px;
-    background: #ffffff;
-    color: #4f6780;
+    background: #fff5f5;
+    color: #dc2626;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -57,9 +70,9 @@
     max-width: 100px;
 }
 .clearButton:hover {
-    background: #f8fafc;
-    color: #e54d4d;
-    border-color: #e54d4d;
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fca5a5;
 }
 
 .selectIcon {
@@ -99,11 +112,19 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     padding: 24px 18px 18px;
     border-radius: 18px;
     background: #ffffff;
     border: 1px solid #e7edf7;
     box-shadow: 0 10px 22px rgba(27, 66, 118, 0.05);
+}
+
+.cardBody {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .avatar {
@@ -153,11 +174,21 @@
 }
 
 .specialty {
-    margin: 0 0 18px;
     font-size: 12px;
     font-weight: 600;
     color: #5ca6e7;
     text-align: center;
+    text-transform: capitalize;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: #f5f5f5;
+    padding: 4px 10px;
+    border-radius: 8px;
+    margin: 0 0 18px;
 }
 
 .bookButton {
