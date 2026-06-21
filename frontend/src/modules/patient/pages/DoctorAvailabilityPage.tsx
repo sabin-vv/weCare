@@ -2,8 +2,15 @@ import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useParams, useNavigate } from 'react-router-dom'
 
-import { getDoctorSlots, createAppointment, verifyPayment, getWallet } from '../api/patient.api'
-import { type DoctorInfo, type DoctorSlot, type RazorpayResponse } from '../types/patient.types'
+import {
+    getDoctorSlots,
+    createAppointment,
+    verifyPayment,
+    getWallet,
+    getAppointmentById,
+    rescheduleAppointment,
+} from '../api/patient.api'
+import { type Appointment, type DoctorInfo, type DoctorSlot, type RazorpayResponse } from '../types/patient.types'
 
 import styles from './DoctorAvailabilityPage.module.css'
 
@@ -12,11 +19,11 @@ import PatientLayout from '@/layout/PatientLayout'
 import { api } from '@/services/api'
 import Button from '@/shared/components/Button/Button'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import { Section } from '@/shared/components/Section/Section'
 import { useAuth } from '@/shared/context/AuthContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { loadRazorpayScript } from '@/utils/loadRazorpay'
-import { Section } from '@/shared/components/Section/Section'
 
 const SLOT_BUFFER_MINUTES = 15
 
@@ -31,8 +38,9 @@ const isSlotInPast = (slot: DoctorSlot, date: Date) => {
 const isToday = (date: Date) => date.toDateString() === new Date().toDateString()
 
 const DoctorAvailabilityPage = () => {
-    const { doctorId } = useParams<{ doctorId: string }>()
+    const { doctorId, appointmentId } = useParams<{ doctorId: string; appointmentId: string }>()
     const [doctor, setDoctor] = useState<DoctorInfo | null>(null)
+    const [appointment, setAppointment] = useState<Appointment>()
 
     const [slots, setSlots] = useState<DoctorSlot[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -77,6 +85,11 @@ const DoctorAvailabilityPage = () => {
     useEffect(() => {
         const fetchDoctor = async () => {
             try {
+                if (appointmentId) {
+                    const data = await getAppointmentById(appointmentId)
+                    setAppointment(data)
+                }
+
                 const res = await api.get(`/doctors/${doctorId}`)
 
                 setDoctor(res.data.data)
@@ -90,7 +103,7 @@ const DoctorAvailabilityPage = () => {
         }
 
         if (doctorId) fetchDoctor()
-    }, [doctorId])
+    }, [doctorId, appointmentId])
 
     useEffect(() => {
         if (doctorId && selectedDate) {
@@ -239,6 +252,29 @@ const DoctorAvailabilityPage = () => {
         } catch (err) {
             toast.error(getErrorMessage(err))
             await fetchWallet().catch(() => null)
+        } finally {
+            setIsProcessingPayment(false)
+        }
+    }
+
+    const handleReSchedule = async () => {
+        if (!appointmentId || !selectedDate || !selectedTimeSlot.start) return
+
+        const appointmentDate = selectedDate.toISOString()
+        const slotStart = selectedTimeSlot.start
+        const slotEnd = selectedTimeSlot.end
+
+        try {
+            setIsProcessingPayment(true)
+            await rescheduleAppointment(appointmentId, {
+                appointmentDate,
+                slotStart,
+                slotEnd,
+            })
+            toast.success('Schedule Updated')
+            navigate('/appointments')
+        } catch (error) {
+            toast.error(getErrorMessage(error))
         } finally {
             setIsProcessingPayment(false)
         }
@@ -398,54 +434,71 @@ const DoctorAvailabilityPage = () => {
 
                             <div className={styles.infoRow}>
                                 <span className={styles.infoLabel}>Time Slot</span>
-                                <span className={styles.infoValue}>{selectedTimeSlot.start || 'Not selected'}</span>
+                                <span className={styles.infoValue}>
+                                    {selectedTimeSlot.start
+                                        ? `${selectedTimeSlot.start} - ${selectedTimeSlot.end}`
+                                        : 'Not selected'}
+                                </span>
                             </div>
 
                             <hr className={styles.divider} />
 
-                            <div className={styles.feeRow}>
-                                <span>Consultation Fee</span>
-                                <span>₹{doctor?.consultationFee.toLocaleString()}</span>
-                            </div>
+                            {appointment ? (
+                                <div>
+                                    <Button disabled={!canCheckout} onClick={handleReSchedule}>
+                                        Update Schedule
+                                    </Button>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className={styles.feeRow}>
+                                        <span>Consultation Fee</span>
+                                        <span>₹{doctor?.consultationFee.toLocaleString()}</span>
+                                    </div>
 
-                            <div className={styles.feeRow}>
-                                <span>Platform Fee</span>
-                                <span>₹{settings?.platformFee}</span>
-                            </div>
+                                    <div className={styles.feeRow}>
+                                        <span>Platform Fee</span>
+                                        <span>₹{settings?.platformFee}</span>
+                                    </div>
 
-                            <hr className={styles.divider} />
+                                    <hr className={styles.divider} />
 
-                            <div className={styles.totalRow}>
-                                <span>Total</span>
-                                <span>₹{totalFee.toLocaleString()}</span>
-                            </div>
+                                    <div className={styles.totalRow}>
+                                        <span>Total</span>
+                                        <span>₹{totalFee.toLocaleString()}</span>
+                                    </div>
 
-                            <div className={styles.canellationPolicyWarning}>
-                                <p>Please review the cancellation policy carefully before proceeding with payment.</p>
-                            </div>
+                                    <div className={styles.canellationPolicyWarning}>
+                                        <p>
+                                            Please review the cancellation policy carefully before proceeding with
+                                            payment.
+                                        </p>
+                                    </div>
 
-                            <div className={styles.paymentMethods}>
-                                <Button
-                                    onClick={handleRazorpayAppointment}
-                                    disabled={!canCheckout}
-                                    isLoading={isProcessingPayment}
-                                >
-                                    Pay with Razorpay
-                                </Button>
-                                <Button
-                                    variant="secondary"
-                                    disabled={!canCheckout || hasInsufficientWalletBalance}
-                                    className={styles.walletButton}
-                                    onClick={handleWalletAppointment}
-                                >
-                                    Wallet (₹{walletbalance.toLocaleString()})
-                                </Button>
-                                {hasInsufficientWalletBalance ? (
-                                    <p className={styles.paymentHint}>
-                                        Add money to your wallet to complete this booking.
-                                    </p>
-                                ) : null}
-                            </div>
+                                    <div className={styles.paymentMethods}>
+                                        <Button
+                                            onClick={handleRazorpayAppointment}
+                                            disabled={!canCheckout}
+                                            isLoading={isProcessingPayment}
+                                        >
+                                            Pay with Razorpay
+                                        </Button>
+                                        <Button
+                                            variant="secondary"
+                                            disabled={!canCheckout || hasInsufficientWalletBalance}
+                                            className={styles.walletButton}
+                                            onClick={handleWalletAppointment}
+                                        >
+                                            Wallet (₹{walletbalance.toLocaleString()})
+                                        </Button>
+                                        {hasInsufficientWalletBalance ? (
+                                            <p className={styles.paymentHint}>
+                                                Add money to your wallet to complete this booking.
+                                            </p>
+                                        ) : null}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </Section>
                 </main>
