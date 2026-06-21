@@ -32,7 +32,7 @@ export interface AppointmentDocument extends Document {
     completedAt?: Date
     missedAt?: Date
     cancelledAt?: Date
-    cancelledBy?: Types.ObjectId
+    cancelledBy?: Types.ObjectId | PopulatedUser
     cancellationReason?: string
     expiredAt?: Date
     rescheduledAt?: Date
@@ -83,6 +83,8 @@ export interface AppointmentResponseDTO {
     paymentStatus: string
     amount: number
     createdAt: string
+    cancelledBy?: string
+    cancellationReason?: string
 }
 
 export interface PopulatedPayment {
