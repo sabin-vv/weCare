@@ -9,6 +9,7 @@ import type {
     PatientProfileData,
     PatientProfileResponse,
     Prescription,
+    RescheduleAppointmentRequest,
     Specialist,
     SubscriptionData,
     UpdatePatientProfileData,
@@ -89,6 +90,11 @@ export const getPatientAppointments = async (): Promise<Appointment[]> => {
     return response.data.data
 }
 
+export const getAppointmentById = async (appointmentId: string): Promise<Appointment> => {
+    const response = await api.get(`${APPOINTMENT_API}/${appointmentId}`)
+    return response.data
+}
+
 export const getWallet = async (): Promise<GetWalletResponse> => {
     const response = await api.get(`${WALLET_API}`)
     return response.data
@@ -103,6 +109,11 @@ export const retryPayment = async (id: string, paymentMethod: 'razorpay' | 'wall
     const response = await api.post<{ data: RetryPaymentResponse }>(`${APPOINTMENT_API}/${id}/retry-payment`, {
         paymentMethod,
     })
+    return response.data.data
+}
+
+export const rescheduleAppointment = async (id: string, data: RescheduleAppointmentRequest): Promise<Appointment> => {
+    const response = await api.patch<{ data: Appointment }>(`${APPOINTMENT_API}/${id}/reschedule`, data)
     return response.data.data
 }
 

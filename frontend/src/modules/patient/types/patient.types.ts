@@ -68,6 +68,12 @@ export interface CreateAppointmentRequest {
     slotEnd: string
 }
 
+export interface RescheduleAppointmentRequest {
+    appointmentDate: string
+    slotStart: string
+    slotEnd: string
+}
+
 export interface VerifyPaymentRequest {
     paymentId: string
     razorpayOrderId: string
@@ -83,8 +89,10 @@ interface Specialization {
 
 export interface Appointment {
     _id: string
+    appointmentId?: string
     doctorId: {
         _id: string
+        profileImage?: string
         userId: {
             name: string
             email: string
@@ -97,6 +105,8 @@ export interface Appointment {
     status: 'pending_payment' | 'confirmed' | 'cancelled' | 'in_consultation' | 'completed'
     paymentStatus: 'pending' | 'paid' | 'failed' | 'refund_pending' | 'refunded'
     amount: number
+    cancelledBy?: string
+    cancellationReason?: string
 }
 
 export interface RazorpayOrder {
