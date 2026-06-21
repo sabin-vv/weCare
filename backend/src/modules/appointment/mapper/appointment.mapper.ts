@@ -64,6 +64,7 @@ export const toAppointmentResponseDTO = (appointment: AppointmentDocument): Appo
         _id: appointment._id.toString(),
         doctorId: normalizePopulatedUser(appointment.doctorId),
         patientId: normalizePopulatedUser(appointment.patientId),
+        appointmentId: appointment.appointmentId,
         appointmentDate: appointment.appointmentDate.toISOString(),
         slotStart: appointment.slotStart,
         slotEnd: appointment.slotEnd,

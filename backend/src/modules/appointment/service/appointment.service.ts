@@ -6,8 +6,11 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
+import { INotificationService } from '../../notification/interfaces/notification.service.interface'
+import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IWalletService } from '../../wallet/interfaces/wallet.service.interface'
@@ -18,12 +21,9 @@ import {
     RazorpayAppointmentResponse,
     WalletAppointmentResponse,
 } from '../interfaces/appointment.service.interface'
-import { toAppointmentListResponseDTO, toDoctorAppointmentRowDTO } from '../mapper/appointment.mapper'
+import { toAppointmentListResponseDTO, toAppointmentResponseDTO, toDoctorAppointmentRowDTO } from '../mapper/appointment.mapper'
 import { AppointmentDocument, AppointmentResponseDTO, DoctorAppointmentsResponseDTO } from '../types/appointment.types'
-import { CreateAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
-import { INotificationService } from '../../notification/interfaces/notification.service.interface'
-import { CreateNotificationPayload } from '../../notification/types/notification.types'
-import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
+import { CreateAppointmentDTO, RescheduleAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 
 @injectable()
 export class AppointmentService implements IAppointmentService {
@@ -85,12 +85,24 @@ export class AppointmentService implements IAppointmentService {
         }
     }
 
+    private async generateNextAppointmentId(): Promise<string> {
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+        const lastId = await this._appointmentRepo.getLastAppointmentId()
+
+        if (!lastId) return `APT-${today}-00001`
+
+        const lastNum = parseInt(lastId.split('-')[2], 10)
+        return `APT-${today}-${String(lastNum + 1).padStart(5, '0')}`
+    }
+
     private async createBaseAppointment(
         dto: CreateAppointmentDTO & { patientId: string },
         consultationFee: number,
         status: AppointmentDocument['status'],
         expiredAt?: Date,
     ) {
+        const appointmentId = await this.generateNextAppointmentId()
+
         return await this._appointmentRepo.create({
             patientId: new Types.ObjectId(dto.patientId),
             doctorId: new Types.ObjectId(dto.doctorId),
@@ -100,6 +112,7 @@ export class AppointmentService implements IAppointmentService {
             slotEnd: dto.slotEnd,
             status,
             expiredAt,
+            appointmentId,
         })
     }
 
@@ -347,6 +360,91 @@ export class AppointmentService implements IAppointmentService {
     async getPatientAppointments(patientId: string): Promise<AppointmentResponseDTO[]> {
         const appointments = await this._appointmentRepo.findByPatientId(patientId)
         return toAppointmentListResponseDTO(appointments)
+    }
+
+    async getAppointmentById(appointmentId: string, patientId: string): Promise<AppointmentResponseDTO> {
+        const appointment = await this._appointmentRepo.findByIdPopulated(appointmentId)
+        if (!appointment) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+        }
+
+        if (appointment.patientId.toString() !== patientId) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'Not your appointment')
+        }
+
+        return toAppointmentResponseDTO(appointment)
+    }
+
+    async rescheduleAppointment(
+        appointmentId: string,
+        patientId: string,
+        dto: RescheduleAppointmentDTO,
+    ): Promise<AppointmentResponseDTO> {
+        const appointment = await this._appointmentRepo.findById(appointmentId)
+        if (!appointment) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+        }
+
+        if (appointment.patientId.toString() !== patientId) {
+            throw new AppError(HTTP_STATUS.FORBIDDEN, 'Not your appointment')
+        }
+
+        if (appointment.status !== 'confirmed') {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Only confirmed appointments can be rescheduled')
+        }
+
+        const appointmentDate = new Date(appointment.appointmentDate)
+        const now = new Date()
+        const hoursBefore = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60)
+        if (hoursBefore <= 2) {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Cannot reschedule within 2 hours of appointment')
+        }
+
+        const activeAppointments = await this._appointmentRepo.findActiveAppointments(
+            appointment.doctorId.toString(),
+            dto.appointmentDate,
+        )
+        const isSlotBooked = activeAppointments.some(
+            (a) => a.slotStart === dto.slotStart && a.status !== 'cancelled',
+        )
+        if (isSlotBooked) {
+            throw new AppError(HTTP_STATUS.CONFLICT, 'This slot is already booked')
+        }
+
+        const updated = await this._appointmentRepo.update(appointmentId, {
+            appointmentDate: new Date(dto.appointmentDate),
+            slotStart: dto.slotStart,
+            slotEnd: dto.slotEnd,
+            rescheduledAt: new Date(),
+        })
+        if (!updated) {
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to reschedule appointment')
+        }
+
+        const doctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
+        const doctorName = (doctor?.userId as unknown as { name?: string })?.name ?? 'Doctor'
+
+        const reschedulePayload: CreateNotificationPayload = {
+            recipientId: patientId,
+            recipientRole: 'patient',
+            type: 'appointment_rescheduled',
+            title: 'Appointment Rescheduled',
+            message: `Your appointment with Dr. ${doctorName} has been moved to ${new Date(dto.appointmentDate).toLocaleDateString()} at ${dto.slotStart}.`,
+            metadata: { appointmentId },
+        }
+        await this._notificationService.createNotification(reschedulePayload).catch(() => null)
+
+        await this._activityLogService.logActivity({
+            performedBy: patientId,
+            performedByRole: 'patient',
+            category: 'appointment',
+            action: 'appointment_rescheduled',
+            targetId: appointmentId,
+            targetType: 'appointment',
+            description: `Rescheduled appointment with Dr. ${doctorName} to ${new Date(dto.appointmentDate).toLocaleDateString()} at ${dto.slotStart}`,
+        })
+
+        return toAppointmentResponseDTO(updated)
     }
 
     async getDoctorAppointments(
