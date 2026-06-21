@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { logger } from '../../../core/logger/logger'
 import { IDoctorRepository } from '../../../modules/doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../../modules/patient/interfaces/patient.repository.interface'
 import { IPrescriptionRepository } from '../../../modules/prescription/interfaces/prescription.repository.interface'
@@ -11,8 +12,7 @@ import { IUserRepository } from '../../auth/interfaces/user.repository.interface
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
 import { IMedicalRecordRepository } from '../interfaces/medicalRecord.repository.interface'
 import { IMedicalRecordService } from '../interfaces/medicalRecord.service.interface'
-import { IClinicalNote, MedicalRecordDTO, MedicalRecordDocument } from '../types/medicalRecord.types'
-import { logger } from '../../../core/logger/logger'
+import { IClinicalNote, MedicalRecordDocument,MedicalRecordDTO } from '../types/medicalRecord.types'
 
 @injectable()
 export class MedicalRecordService implements IMedicalRecordService {
