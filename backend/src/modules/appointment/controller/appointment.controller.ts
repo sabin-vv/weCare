@@ -77,6 +77,42 @@ export class AppointmentController {
         })
     }
 
+    getAppointmentById = async (req: Request, res: Response) => {
+        const patientId = req.user?.userId
+        if (!patientId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const { appointmentId } = req.params as { appointmentId: string }
+        const appointment = await this._appointmentService.getAppointmentById(appointmentId, patientId)
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: appointment,
+        })
+    }
+
+    rescheduleAppointment = async (req: Request, res: Response) => {
+        const patientId = req.user?.userId
+        if (!patientId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const { appointmentId } = req.params as { appointmentId: string }
+
+        const appointment = await this._appointmentService.rescheduleAppointment(
+            appointmentId,
+            patientId,
+            req.body,
+        )
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            message: 'Appointment rescheduled successfully',
+            data: appointment,
+        })
+    }
+
     retryPayment = async (req: Request, res: Response) => {
         const patientId = req.user?.userId
         if (!patientId) {
