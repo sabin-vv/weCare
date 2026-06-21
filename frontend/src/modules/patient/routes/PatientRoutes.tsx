@@ -37,6 +37,14 @@ export const PatientRoutes: RouteObject[] = [
         ),
     },
     {
+        path: '/doctors/:doctorId/reschedule/:appointmentId',
+        element: (
+            <ProtectedRoute allowedRoles={[Role.PATIENT]}>
+                <DoctorAvailabilityPage />
+            </ProtectedRoute>
+        ),
+    },
+    {
         path: '/appointments',
         element: (
             <ProtectedRoute allowedRoles={[Role.PATIENT]}>
