@@ -44,6 +44,21 @@ const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
             [options, selectedValue],
         )
 
+        const measureRef = useRef<HTMLDivElement | null>(null)
+        const [wrapperMinWidth, setWrapperMinWidth] = useState(0)
+
+        useEffect(() => {
+            if (!measureRef.current) return
+            const maxWidth = Math.max(
+                ...options.map((opt) => {
+                    const span = measureRef.current!.querySelector(`[data-label="${opt.label}"]`) as HTMLElement | null
+                    return span?.offsetWidth ?? 0
+                }),
+            )
+            const EXTRA = 80
+            setWrapperMinWidth(maxWidth ? maxWidth + EXTRA : 0)
+        }, [options])
+
         useEffect(() => {
             if (!isControlled) {
                 setInternalValue(String(defaultValue ?? options[0]?.value ?? ''))
@@ -196,7 +211,12 @@ const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
         }
 
         return (
-            <div className={styles.selectWrapper} ref={wrapperRef} onBlur={handleBlur}>
+            <div
+                className={styles.selectWrapper}
+                ref={wrapperRef}
+                onBlur={handleBlur}
+                style={wrapperMinWidth ? { minWidth: wrapperMinWidth } : undefined}
+            >
                 {label && (
                     <label htmlFor={selectId} className={styles.label} id={`${selectId}-label`}>
                         {label}
@@ -283,7 +303,7 @@ const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
                                         }}
                                         onKeyDown={(event) => handleOptionKeyDown(event, optionIndex)}
                                     >
-                                        <span>{option.label}</span>
+                                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{option.label}</span>
                                         {isSelected && (
                                             <span className={styles.optionIndicator} aria-hidden="true">
                                                 <Check size={14} strokeWidth={2.5} />
@@ -297,6 +317,27 @@ const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
                 </div>
 
                 <ErrorField error={errors} />
+
+                <div
+                    ref={measureRef}
+                    aria-hidden="true"
+                    style={{
+                        position: 'absolute',
+                        visibility: 'hidden',
+                        pointerEvents: 'none',
+                        whiteSpace: 'nowrap',
+                        fontSize: 14,
+                        fontWeight: 500,
+                        top: 0,
+                        left: 0,
+                    }}
+                >
+                    {options.map((opt) => (
+                        <span key={opt.label} data-label={opt.label}>
+                            {opt.label}
+                        </span>
+                    ))}
+                </div>
             </div>
         )
     },
