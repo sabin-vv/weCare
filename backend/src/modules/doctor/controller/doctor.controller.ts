@@ -69,14 +69,33 @@ export class DoctorController {
         res.status(HTTP_STATUS.OK).json({ success: true, message: 'Doctor availability updated', data: result })
     }
 
+    private validSortBy = ['rating', 'name', 'newest'] as const
+    private validSortOrder = ['asc', 'desc'] as const
+
     searchDoctors = async (req: Request, res: Response) => {
-        const { search, specialty, page, limit } = req.query
+        const { search, specialty, page, limit, sortBy, sortOrder } = req.query
+
+        if (sortBy !== undefined && !this.validSortBy.includes(sortBy as typeof this.validSortBy[number])) {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, `Invalid sortBy value. Allowed: ${this.validSortBy.join(', ')}`)
+        }
+
+        if (
+            sortOrder !== undefined &&
+            !this.validSortOrder.includes(sortOrder as typeof this.validSortOrder[number])
+        ) {
+            throw new AppError(
+                HTTP_STATUS.BAD_REQUEST,
+                `Invalid sortOrder value. Allowed: ${this.validSortOrder.join(', ')}`,
+            )
+        }
 
         const result = await this._doctorService.searchDoctors({
             search: search as string,
             specialty: specialty as string,
             page: parseInt(page as string) || 1,
             limit: parseInt(limit as string) || 8,
+            sortBy: sortBy as 'rating' | 'name' | 'newest' | undefined,
+            sortOrder: sortOrder as 'asc' | 'desc' | undefined,
         })
 
         res.status(HTTP_STATUS.OK).json({
