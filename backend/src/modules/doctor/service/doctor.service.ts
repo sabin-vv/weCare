@@ -4,11 +4,12 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
+import { IFeedbackRepository } from '../../feedback/interfaces/feedback.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
-import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IAvailabilityNotificationService } from '../interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
@@ -101,6 +102,7 @@ export class DoctorService implements IDoctorService {
         private _notificationService: INotificationService,
         @inject(TOKENS.IActivityLogService)
         private _activityLogService: IActivityLogService,
+        @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
     ) {}
 
     async createProfile(userId: string, dto: DoctorDTO) {
@@ -321,14 +323,36 @@ export class DoctorService implements IDoctorService {
         }
     }
 
+    private async mapRatings(doctors: PopulatedDoctorDocument[]): Promise<DoctorSearchResult[]> {
+        const allRatings = await this._feedbackRepo.getAverageRatingByDoctors()
+        const ratingMap = new Map(allRatings.map((r) => [r.doctorId, r]))
+
+        return doctors.map((doc) => {
+            const user = doc.userId
+            const rating = ratingMap.get(doc._id.toString())
+
+            return {
+                id: doc._id.toString(),
+                name: user?.name || 'Unknown Doctor',
+                specialty: doc.specializations.map((s) => s.name).join(', '),
+                profileImage: doc.profileImage,
+                averageRating: rating?.averageRating,
+                reviewCount: rating?.reviewCount,
+            }
+        })
+    }
+
     async searchDoctors(params: {
         search?: string
         specialty?: string
         page: number
         limit: number
+        sortBy?: 'rating' | 'name' | 'newest'
+        sortOrder?: 'asc' | 'desc'
     }): Promise<DoctorSearchResponse> {
         const page = params.page || 1
         const limit = params.limit || 8
+        const sortOrder = params.sortOrder || 'desc'
         const filter: DoctorSearchFilter = { isActive: true, verificationStatus: 'verified' }
 
         if (params.specialty) {
@@ -342,25 +366,50 @@ export class DoctorService implements IDoctorService {
             ]
         }
 
-        const { doctors, total } = await this._doctorRepo.search(filter, {
-            page,
-            limit,
-        })
-
-        const mappedDoctors = doctors.map((doc: PopulatedDoctorDocument): DoctorSearchResult => {
-            const user = doc.userId
-            return {
-                id: doc._id.toString(),
-                name: user?.name || 'Unknown Doctor',
-                specialty: doc.specializations.map((s) => s.name).join(', '),
-                profileImage: doc.profileImage,
-            }
-        })
-
         const specialties = await this.getSpecialties()
-        const totalPages = Math.ceil(total / limit)
 
-        return { doctors: mappedDoctors, specialties, totalCount: total, totalPages, currentPage: page }
+        if (params.sortBy === 'newest') {
+            const { doctors, total } = await this._doctorRepo.search(filter, {
+                page,
+                limit,
+                sortBy: 'newest',
+                sortOrder,
+            })
+
+            const mappedDoctors = await this.mapRatings(doctors)
+            const totalPages = Math.ceil(total / limit)
+
+            return { doctors: mappedDoctors, specialties, totalCount: total, totalPages, currentPage: page }
+        }
+
+        const sortField = params.sortBy || 'rating'
+
+        const allDoctors = await this._doctorRepo.search(filter, {
+            page: 1,
+            limit: Number.MAX_SAFE_INTEGER,
+        })
+
+        const allMapped = await this.mapRatings(allDoctors.doctors)
+
+        if (sortField === 'name') {
+            allMapped.sort((a, b) => {
+                const cmp = a.name.localeCompare(b.name)
+                return sortOrder === 'asc' ? cmp : -cmp
+            })
+        } else {
+            allMapped.sort((a, b) => {
+                const ratingA = a.averageRating ?? 0
+                const ratingB = b.averageRating ?? 0
+                return sortOrder === 'desc' ? ratingB - ratingA : ratingA - ratingB
+            })
+        }
+
+        const total = allMapped.length
+        const totalPages = Math.ceil(total / limit)
+        const start = (page - 1) * limit
+        const paginatedDoctors = allMapped.slice(start, start + limit)
+
+        return { doctors: paginatedDoctors, specialties, totalCount: total, totalPages, currentPage: page }
     }
 
     async getSpecialties(): Promise<string[]> {

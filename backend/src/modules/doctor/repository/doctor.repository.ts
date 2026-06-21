@@ -28,7 +28,10 @@ export class DoctorRepository extends BaseRepository<DoctorDocument> implements 
 
         return doctor
     }
-    async search(filter: DoctorSearchFilter, options: { page: number; limit: number }) {
+    async search(
+        filter: DoctorSearchFilter,
+        options: { page: number; limit: number; sortBy?: string; sortOrder?: 'asc' | 'desc' },
+    ) {
         const skip = (options.page - 1) * options.limit
 
         const baseFilter: Record<string, unknown> = {
@@ -83,8 +86,14 @@ export class DoctorRepository extends BaseRepository<DoctorDocument> implements 
             baseFilter.$or = searchOrConditions
         }
 
+        let query = this.model.find(baseFilter).populate('userId', 'name')
+
+        if (options.sortBy === 'newest') {
+            query = query.sort({ createdAt: options.sortOrder === 'asc' ? 1 : -1 })
+        }
+
         const [doctors, total] = await Promise.all([
-            this.model.find(baseFilter).populate('userId', 'name').skip(skip).limit(options.limit),
+            query.skip(skip).limit(options.limit),
             this.model.countDocuments(baseFilter),
         ])
 
@@ -92,7 +101,10 @@ export class DoctorRepository extends BaseRepository<DoctorDocument> implements 
     }
 
     async getSpecialties(): Promise<string[]> {
-        const result = await this.model.distinct('specializations.name', { isActive: true })
+        const result = await this.model.distinct('specializations.name', {
+            isActive: true,
+            verificationStatus: 'verified',
+        })
         return result.filter((s): s is string => !!s)
     }
 }
