@@ -50,6 +50,8 @@ export const getDoctors = async (params: GetDoctorsParams): Promise<GetDoctorsRe
     if (params.specialty) searchParams.append('specialty', params.specialty)
     if (params.page) searchParams.append('page', params.page.toString())
     if (params.limit) searchParams.append('limit', params.limit.toString())
+    if (params.sortBy) searchParams.append('sortBy', params.sortBy)
+    if (params.sortOrder) searchParams.append('sortOrder', params.sortOrder)
 
     const response = await api.get<GetDoctorsResponse>(`${DOCTORS_API}?${searchParams.toString()}`)
     return response.data

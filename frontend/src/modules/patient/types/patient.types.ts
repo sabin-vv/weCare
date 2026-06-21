@@ -7,6 +7,8 @@ export interface Specialist {
     accent: string
     initials: string
     profileImage?: string
+    averageRating?: number
+    reviewCount?: number
 }
 
 export interface PatientProfileData {
@@ -42,6 +44,8 @@ export interface GetDoctorsParams {
     specialty?: string
     page?: number
     limit?: number
+    sortBy?: 'rating' | 'name' | 'newest'
+    sortOrder?: 'asc' | 'desc'
 }
 
 export interface DoctorSlot {
