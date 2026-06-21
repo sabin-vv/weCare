@@ -4,7 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { IActivityLogService } from '../interfaces/activityLog.service.interface'
-import { ActivityCategory, ActivityAction, ActorRole, TargetType } from '../types/activityLog.types'
+import { ActivityAction, ActivityCategory, ActorRole, TargetType } from '../types/activityLog.types'
 
 @injectable()
 export class ActivityLogController {
