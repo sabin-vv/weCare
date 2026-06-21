@@ -18,5 +18,18 @@ export const retryPaymentSchema = z.object({
     paymentMethod: z.enum(['razorpay', 'wallet']),
 })
 
+export const rescheduleAppointmentSchema = z.object({
+    appointmentDate: z.string().min(1, 'Appointment date is required'),
+    slotStart: z
+        .string()
+        .min(1, 'Slot start time is required')
+        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format'),
+    slotEnd: z
+        .string()
+        .min(1, 'Slot end time is required')
+        .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format'),
+})
+
 export type CreateAppointmentDTO = z.infer<typeof createAppointmentSchema>
 export type RetryPaymentDTO = z.infer<typeof retryPaymentSchema>
+export type RescheduleAppointmentDTO = z.infer<typeof rescheduleAppointmentSchema>

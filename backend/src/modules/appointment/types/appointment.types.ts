@@ -22,6 +22,7 @@ export interface AppointmentDocument extends Document {
     patientId: Types.ObjectId | PopulatedAppointmentUser
     doctorId: Types.ObjectId
     appointmentDate: Date
+    appointmentId: string
     slotStart: string
     slotEnd: string
     consultationFee: number
@@ -34,6 +35,7 @@ export interface AppointmentDocument extends Document {
     cancelledBy?: Types.ObjectId
     cancellationReason?: string
     expiredAt?: Date
+    rescheduledAt?: Date
     createdAt: Date
     updatedAt: Date
 }
@@ -73,6 +75,7 @@ export interface AppointmentResponseDTO {
     _id: string
     doctorId: string | Types.ObjectId | PopulatedUser
     patientId: string | Types.ObjectId | PopulatedUser
+    appointmentId: string
     appointmentDate: string
     slotStart: string
     slotEnd: string

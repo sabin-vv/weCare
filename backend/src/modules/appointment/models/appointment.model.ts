@@ -18,6 +18,11 @@ const appointmentSchema = new Schema<AppointmentDocument>(
             type: Date,
             required: true,
         },
+        appointmentId: {
+            type: String,
+            required: true,
+            unique: true,
+        },
         slotStart: {
             type: String,
             required: true,
@@ -59,6 +64,9 @@ const appointmentSchema = new Schema<AppointmentDocument>(
             type: String,
         },
         expiredAt: {
+            type: Date,
+        },
+        rescheduledAt: {
             type: Date,
         },
     },
