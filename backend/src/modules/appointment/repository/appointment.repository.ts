@@ -20,14 +20,17 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
     }
 
     async findByIdPopulated(id: string): Promise<AppointmentDocument | null> {
-        return await this.model.findById(id).populate({
-            path: 'doctorId',
-            select: 'profileImage specializations',
-            populate: {
-                path: 'userId',
-                select: 'name email',
-            },
-        })
+        return await this.model
+            .findById(id)
+            .populate({
+                path: 'doctorId',
+                select: 'profileImage specializations',
+                populate: {
+                    path: 'userId',
+                    select: 'name email',
+                },
+            })
+            .populate('cancelledBy', 'name')
     }
 
     async update(id: string, data: Partial<AppointmentDocument>): Promise<AppointmentDocument | null> {
@@ -46,6 +49,7 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
                 },
             })
             .populate('paymentId', 'status totalAmount')
+            .populate('cancelledBy', 'name')
             .sort({ appointmentDate: -1, slotStart: -1 })
     }
 
