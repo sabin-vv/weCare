@@ -1,4 +1,4 @@
-import { BadgeCheck, UserRound, Loader2, X } from 'lucide-react'
+import { BadgeCheck, UserRound, Loader2, X, Star } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -10,9 +10,17 @@ import styles from './DoctorBookingPage.module.css'
 import { env } from '@/config/env'
 import PatientLayout from '@/layout/PatientLayout'
 import Button from '@/shared/components/Button/Button'
+import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import SelectField from '@/shared/components/SelectField/SelectField'
+
+const sortOptions = [
+    { label: 'Rating (High to Low)', value: 'rating-desc' },
+    { label: 'Name (A-Z)', value: 'name-asc' },
+    { label: 'Name (Z-A)', value: 'name-desc' },
+    { label: 'Newest First', value: 'newest-desc' },
+]
 
 const DoctorBookingPage = () => {
     const navigate = useNavigate()
@@ -24,6 +32,9 @@ const DoctorBookingPage = () => {
     const [page, setPage] = useState<number>(1)
     const [totalPages, setTotalPages] = useState<number>(1)
     const [totalCount, setTotalCount] = useState<number>(0)
+    const [sortValue, setSortValue] = useState('rating-desc')
+
+    const [sortBy, sortOrder] = sortValue.split('-') as ['rating' | 'name' | 'newest', 'asc' | 'desc']
 
     const fetchDoctors = useCallback(
         async (pageNum: number) => {
@@ -34,6 +45,8 @@ const DoctorBookingPage = () => {
                     specialty: selectedSpecialty,
                     page: pageNum,
                     limit: 8,
+                    sortBy,
+                    sortOrder,
                 })
 
                 setDoctors(response.data)
@@ -44,7 +57,7 @@ const DoctorBookingPage = () => {
                     setSpecialtyOptions([
                         { label: 'All Specialties', value: '' },
                         ...response.specialties.map((s: string) => ({
-                            label: s,
+                            label: s[0].toUpperCase() + s.slice(1),
                             value: s,
                         })),
                     ])
@@ -55,7 +68,7 @@ const DoctorBookingPage = () => {
                 setIsLoading(false)
             }
         },
-        [query, selectedSpecialty],
+        [query, selectedSpecialty, sortBy, sortOrder],
     )
 
     useEffect(() => {
@@ -64,11 +77,12 @@ const DoctorBookingPage = () => {
 
     useEffect(() => {
         setPage(1)
-    }, [query, selectedSpecialty])
+    }, [query, selectedSpecialty, sortValue])
 
     const clearFilters = () => {
         setQuery('')
         setSelectedSpecialty('')
+        setSortValue('rating-desc')
         setPage(1)
     }
 
@@ -76,64 +90,79 @@ const DoctorBookingPage = () => {
 
     return (
         <PatientLayout>
-            <section className={styles.panel}>
+            <MainWrapper
+                title="Available Specialists"
+                subtitle=" Book a consultation with our verified healthcare professionals."
+            >
                 <div className={styles.sectionTop}>
-                    <div>
-                        <h1 className={styles.title}>Available Specialists</h1>
-                        <p className={styles.subtitle}>
-                            Book a consultation with our verified healthcare professionals.
-                        </p>
-                    </div>
-
                     <div className={styles.filters}>
-                        {hasFilters && (
-                            <button type="button" className={styles.clearButton} onClick={clearFilters}>
-                                Clear All
-                                <X size={16} />
-                            </button>
-                        )}
-                        <SelectField
-                            label=""
-                            id="specialty"
-                            options={specialtyOptions}
-                            value={selectedSpecialty}
-                            onChange={(e) => setSelectedSpecialty(e.target.value)}
-                        />
-                        <SearchField value={query} onSearch={setQuery} placeholder="Search doctor or specialty" />
+                        <div className={styles.filterLeft}>
+                            <SelectField
+                                label=""
+                                id="specialty"
+                                options={specialtyOptions}
+                                value={selectedSpecialty}
+                                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                            />
+                            <SelectField
+                                label=""
+                                id="sort"
+                                options={sortOptions}
+                                value={sortValue}
+                                onChange={(e) => setSortValue(e.target.value)}
+                            />
+                            {hasFilters && (
+                                <button type="button" className={styles.clearButton} onClick={clearFilters}>
+                                    Clear All
+                                    <X size={16} />
+                                </button>
+                            )}
+                        </div>
+                        <div className={styles.filterRight}>
+                            <SearchField value={query} onSearch={setQuery} placeholder="Search doctor or specialty" />
+                        </div>
                     </div>
                 </div>
 
                 <div className={styles.grid}>
                     {doctors.map((doctor) => (
                         <article key={doctor.id} className={styles.card}>
-                            <div
-                                className={styles.avatar}
-                                style={{ '--avatar-accent': doctor.accent } as React.CSSProperties}
-                            >
-                                {doctor.profileImage ? (
-                                    <img
-                                        src={
-                                            doctor.profileImage.startsWith('http')
-                                                ? doctor.profileImage
-                                                : `${env.AWS_BASE_URL}${doctor.profileImage}`
-                                        }
-                                        alt={doctor.name}
-                                        className={styles.profileImage}
-                                    />
-                                ) : doctor.accent === '#dfeefe' || doctor.accent === '#e1efff' ? (
-                                    <UserRound size={30} />
-                                ) : (
-                                    <span>{doctor.initials}</span>
+                            <div className={styles.cardBody}>
+                                <div
+                                    className={styles.avatar}
+                                    style={{ '--avatar-accent': doctor.accent } as React.CSSProperties}
+                                >
+                                    {doctor.profileImage ? (
+                                        <img
+                                            src={
+                                                doctor.profileImage.startsWith('http')
+                                                    ? doctor.profileImage
+                                                    : `${env.AWS_BASE_URL}${doctor.profileImage}`
+                                            }
+                                            alt={doctor.name}
+                                            className={styles.profileImage}
+                                        />
+                                    ) : doctor.accent === '#dfeefe' || doctor.accent === '#e1efff' ? (
+                                        <UserRound size={30} />
+                                    ) : (
+                                        <span>{doctor.initials}</span>
+                                    )}
+                                </div>
+
+                                <div className={styles.verified}>
+                                    <span>Verified</span>
+                                    <BadgeCheck size={14} />
+                                </div>
+
+                                <h2 className={styles.doctorName}>{doctor.name}</h2>
+                                <p className={styles.specialty}>{doctor.specialty}</p>
+                                {doctor.averageRating && (
+                                    <span className={styles.rating}>
+                                        {doctor.averageRating}
+                                        <Star size={16} fill="#ffce12" stroke="0" /> ({doctor.reviewCount})
+                                    </span>
                                 )}
                             </div>
-
-                            <div className={styles.verified}>
-                                <span>Verified</span>
-                                <BadgeCheck size={14} />
-                            </div>
-
-                            <h2 className={styles.doctorName}>{doctor.name}</h2>
-                            <p className={styles.specialty}>{doctor.specialty}</p>
 
                             <Button type="button" onClick={() => navigate(`/doctors/${doctor.id}`)}>
                                 Book Appointment
@@ -163,7 +192,7 @@ const DoctorBookingPage = () => {
                         <p>No specialists found matching your search.</p>
                     </div>
                 )}
-            </section>
+            </MainWrapper>
         </PatientLayout>
     )
 }
