@@ -133,8 +133,18 @@ export interface DoctorSearchResult {
     id: string
     name: string
     specialty: string
-
+    averageRating?: number
+    reviewCount?: number
     profileImage?: string
+}
+
+export interface SearchDoctorsParams {
+    search?: string
+    specialty?: string
+    page: number
+    limit: number
+    sortBy?: 'rating' | 'name' | 'newest'
+    sortOrder?: 'asc' | 'desc'
 }
 
 export interface DoctorSearchResponse {

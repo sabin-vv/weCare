@@ -20,6 +20,8 @@ export interface IDoctorService {
         specialty?: string
         page: number
         limit: number
+        sortBy?: 'rating' | 'name' | 'newest'
+        sortOrder?: 'asc' | 'desc'
     }): Promise<DoctorSearchResponse>
     getSpecialties(): Promise<string[]>
     getDoctorById(doctorId: string): Promise<DoctorProfileResponse>

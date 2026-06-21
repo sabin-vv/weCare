@@ -10,7 +10,7 @@ export interface IDoctorRepository {
     updateByUserId(userId: Types.ObjectId, data: Partial<DoctorDocument>): Promise<DoctorDocument>
     search(
         filter: DoctorSearchFilter,
-        options: { page: number; limit: number },
+        options: { page: number; limit: number; sortBy?: string; sortOrder?: 'asc' | 'desc' },
     ): Promise<{ doctors: PopulatedDoctorDocument[]; total: number }>
     getSpecialties(): Promise<string[]>
 }
