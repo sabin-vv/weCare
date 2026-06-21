@@ -40,6 +40,21 @@ const normalizePopulatedUser = (
     return value
 }
 
+const getPopulatedUserName = (
+    value?: string | Types.ObjectId | PopulatedUser | MongooseLikeDocument<PopulatedUser>,
+): string | undefined => {
+    if (!value || typeof value === 'string' || value instanceof Types.ObjectId) {
+        return undefined
+    }
+
+    const user = normalizePopulatedUser(value)
+    if (typeof user === 'string' || user instanceof Types.ObjectId) {
+        return undefined
+    }
+
+    return user.name
+}
+
 const mapPaymentStatus = (status?: PopulatedPayment['status']) => {
     switch (status) {
         case 'success':
@@ -76,6 +91,8 @@ export const toAppointmentResponseDTO = (appointment: AppointmentDocument): Appo
               : 'paid',
         amount: payment?.totalAmount ?? appointment.consultationFee,
         createdAt: appointment.createdAt.toISOString(),
+        cancelledBy: getPopulatedUserName(appointment.cancelledBy),
+        cancellationReason: appointment?.cancellationReason,
     }
 }
 
