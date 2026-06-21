@@ -19,6 +19,17 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
         return await this.model.findById(id)
     }
 
+    async findByIdPopulated(id: string): Promise<AppointmentDocument | null> {
+        return await this.model.findById(id).populate({
+            path: 'doctorId',
+            select: 'profileImage specializations',
+            populate: {
+                path: 'userId',
+                select: 'name email',
+            },
+        })
+    }
+
     async update(id: string, data: Partial<AppointmentDocument>): Promise<AppointmentDocument | null> {
         return await this.model.findByIdAndUpdate(id, data, { returnDocument: 'after' })
     }
@@ -28,6 +39,7 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .find({ patientId })
             .populate({
                 path: 'doctorId',
+                select: 'profileImage specializations',
                 populate: {
                     path: 'userId',
                     select: 'name email',
@@ -162,6 +174,11 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             },
             { returnDocument: 'after' },
         )
+    }
+
+    async getLastAppointmentId(): Promise<string | null> {
+        const last = await this.model.findOne().sort({ appointmentId: -1 }).select('appointmentId').lean()
+        return last?.appointmentId || null
     }
 
     async cancelFutureAppointmentsByPatientId(patientId: string, reason: string, cancelledBY: string): Promise<number> {

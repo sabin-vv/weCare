@@ -5,6 +5,8 @@ export interface IAppointmentRepository {
 
     findById(id: string): Promise<AppointmentDocument | null>
 
+    findByIdPopulated(id: string): Promise<AppointmentDocument | null>
+
     update(id: string, data: Partial<AppointmentDocument>): Promise<AppointmentDocument | null>
 
     delete(id: string): Promise<AppointmentDocument | null>
@@ -31,4 +33,6 @@ export interface IAppointmentRepository {
     cancelAppointment(id: string, reason: string, cancelledBy: string): Promise<AppointmentDocument | null>
 
     cancelFutureAppointmentsByPatientId(patientId: string, reason: string, cancelledBY: string): Promise<number>
+
+    getLastAppointmentId(): Promise<string | null>
 }
