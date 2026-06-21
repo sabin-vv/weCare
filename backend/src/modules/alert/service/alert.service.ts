@@ -6,11 +6,11 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { getIO } from '../../../core/socket'
 import { SOCKET_EVENTS } from '../../../core/socket/events'
+import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IAlertRepository } from '../interfaces/alert.repository.interface'
 import { IAlertService } from '../interfaces/alert.service.interface'
-import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { AlertDocument } from '../types/alert.types'
 
 @injectable()
