@@ -5,4 +5,5 @@ export interface IFeedbackRepository {
     findOneByPatientAndTarget(patientId: string, targetId: string, targetRole: string): Promise<FeedbackDocument | null>
     findFeedbackByPatient(patientId: string): Promise<FeedbackDocument[]>
     update(id: string, data: Partial<FeedbackDocument>): Promise<FeedbackDocument | null>
+    getAverageRatingByDoctors(): Promise<Array<{ doctorId: string; averageRating: number; reviewCount: number }>>
 }

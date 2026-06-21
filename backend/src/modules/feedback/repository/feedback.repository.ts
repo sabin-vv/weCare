@@ -27,4 +27,27 @@ export class FeedbackRepository extends BaseRepository<FeedbackDocument> impleme
     async findFeedbackByPatient(patientId: string): Promise<FeedbackDocument[]> {
         return this.model.find({ patientId: new Types.ObjectId(patientId) }).sort({ createdAt: -1 })
     }
+
+    async getAverageRatingByDoctors(): Promise<
+        Array<{ doctorId: string; averageRating: number; reviewCount: number }>
+    > {
+        const result = await this.model.aggregate([
+            {
+                $match: { targetRole: 'doctor' },
+            },
+            {
+                $group: {
+                    _id: '$targetId',
+                    averageRating: { $avg: '$rating' },
+                    reviewCount: { $sum: 1 },
+                },
+            },
+        ])
+
+        return result.map((r) => ({
+            doctorId: r._id.toString(),
+            averageRating: Math.round(r.averageRating * 10) / 10,
+            reviewCount: r.reviewCount,
+        }))
+    }
 }
