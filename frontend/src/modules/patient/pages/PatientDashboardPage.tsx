@@ -1,6 +1,7 @@
 import { Activity, Bell, Calendar, CheckCircle2, Clock, Droplet, Heart, Pill, Wind, XCircle } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 import {
     cancelSubscription,
@@ -33,12 +34,11 @@ import styles from './PatientDashboardPage.module.css'
 import PatientLayout from '@/layout/PatientLayout'
 import { getPlatformSettings } from '@/modules/admin/api/admin.api'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import { Section } from '@/shared/components/Section/Section'
 import { useAuth } from '@/shared/context/AuthContext'
 import { useNotifications } from '@/shared/hooks/useNotifications'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { loadRazorpayScript } from '@/utils/loadRazorpay'
-import { Section } from '@/shared/components/Section/Section'
-import { useNavigate } from 'react-router-dom'
 
 const DEFAULT_SUBSCRIPTION_AMOUNT = 25000
 
