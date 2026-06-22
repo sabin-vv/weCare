@@ -3,9 +3,9 @@ import { NavLink } from 'react-router-dom'
 
 import styles from './AdminSidebar.module.css'
 
+import { env } from '@/config/env'
 import { usePendingCount } from '@/shared/context/PendingCountContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
-import { env } from '@/config/env'
 
 const AdminSidebar = () => {
     const { doctorCount, caregiverCount } = usePendingCount()
