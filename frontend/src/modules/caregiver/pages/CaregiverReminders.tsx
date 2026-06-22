@@ -10,8 +10,8 @@ import styles from './CaregiverReminders.module.css'
 import InputField from '@/shared/components/InputField/InputField'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 import { Section } from '@/shared/components/Section/Section'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const priorityLabels: Record<string, string> = {
     critical: 'Critical',
