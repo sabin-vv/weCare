@@ -297,7 +297,6 @@ export interface VitalSchedule {
     vitalType: string
     scheduleTime: string
     endDate: string
-    priority: string
     status: string
     recordedValue?: {
         systolic?: number
