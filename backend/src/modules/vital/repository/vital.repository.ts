@@ -4,12 +4,7 @@ import { injectable } from 'tsyringe'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { vitalPlanModel } from '../models/vitalPlan.model'
 import { vitalScheduleModel } from '../models/vitalSchedule.model'
-import {
-    VitalPlanDocument,
-    VitalPlanStatus,
-    VitalScheduleDocument,
-    VitalType,
-} from '../types/vital.types'
+import { VitalPlanDocument, VitalPlanStatus, VitalScheduleDocument, VitalType } from '../types/vital.types'
 
 @injectable()
 export class VitalRepository implements IVitalRepository {
@@ -111,13 +106,12 @@ export class VitalRepository implements IVitalRepository {
     }
 
     async findLatestRecordedSchedulesByPatientId(patientId: Types.ObjectId): Promise<VitalScheduleDocument[]> {
-        return vitalScheduleModel
-            .aggregate([
-                { $match: { patientId, status: 'recorded', recordedAt: { $ne: null } } },
-                { $sort: { recordedAt: -1 } },
-                { $group: { _id: '$vitalType', doc: { $first: '$$ROOT' } } },
-                { $replaceRoot: { newRoot: '$doc' } },
-            ]) as unknown as VitalScheduleDocument[]
+        return vitalScheduleModel.aggregate([
+            { $match: { patientId, status: 'recorded', recordedAt: { $ne: null } } },
+            { $sort: { recordedAt: -1 } },
+            { $group: { _id: '$vitalType', doc: { $first: '$$ROOT' } } },
+            { $replaceRoot: { newRoot: '$doc' } },
+        ]) as unknown as VitalScheduleDocument[]
     }
 
     async findOverduePendingSchedules(threshold: Date): Promise<VitalScheduleDocument[]> {
@@ -130,10 +124,7 @@ export class VitalRepository implements IVitalRepository {
     }
 
     async markSchedulesAsMissed(ids: Types.ObjectId[]): Promise<void> {
-        await vitalScheduleModel.updateMany(
-            { _id: { $in: ids } },
-            { $set: { status: 'missed' } },
-        )
+        await vitalScheduleModel.updateMany({ _id: { $in: ids } }, { $set: { status: 'missed' } })
     }
 
     async pauseVitalPlanByPatientId(patientId: string, reason: string): Promise<void> {
@@ -177,6 +168,25 @@ export class VitalRepository implements IVitalRepository {
             },
         )
     }
+
+    async findPriorVitalSchedule(
+        patientId: string,
+        vitalType: VitalType,
+        currentId: string,
+        scheduleTime: Date,
+    ): Promise<VitalScheduleDocument[]> {
+        return vitalScheduleModel
+            .find({
+                patientId: new Types.ObjectId(patientId),
+                vitalType,
+                _id: { $ne: new Types.ObjectId(currentId) },
+                scheduleTime: { $lt: scheduleTime },
+            })
+            .sort({ scheduleTime: -1 })
+            .limit(1)
+            .lean()
+    }
+
     async resumeVitalPlanByPatientId(patientId: string): Promise<void> {
         await vitalPlanModel.updateMany(
             {
