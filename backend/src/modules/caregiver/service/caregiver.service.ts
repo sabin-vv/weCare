@@ -273,6 +273,17 @@ export class CaregiverService implements ICaregiverService {
             description: `${schedule.medicineName} - ${schedule.dosage} `,
         })
 
+        if (dto.status === 'skipped') {
+            await this._alertService.createAlert({
+                patientId: patient._id,
+                scheduleId: schedule._id,
+                targetRole: ['caregiver', 'doctor'],
+                type: 'missed_medication',
+                severity: 'high',
+                triggerReason: `${schedule.medicineName} was skipped by caregiver`,
+            })
+        }
+
         return this._toMedicationScheduleDTO(updated)
     }
 
