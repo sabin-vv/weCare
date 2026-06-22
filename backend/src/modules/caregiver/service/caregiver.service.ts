@@ -208,7 +208,6 @@ export class CaregiverService implements ICaregiverService {
             vitalType: schedule.vitalType,
             scheduleTime: schedule.scheduleTime.toISOString(),
             endDate: schedule.endDate.toISOString(),
-            priority: schedule.priority,
             status: schedule.status,
             recordedValue: schedule.recordedValue,
             recordedAt: schedule.recordedAt?.toISOString(),
