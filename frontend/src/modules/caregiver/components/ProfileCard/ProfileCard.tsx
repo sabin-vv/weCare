@@ -1,7 +1,8 @@
-import { env } from '@/config/env'
 import type { PatientSummary } from '../../types/caregiver.types'
 
 import styles from './ProfileCard.module.css'
+
+import { env } from '@/config/env'
 
 interface ProfileCardProps {
     patient: PatientSummary
