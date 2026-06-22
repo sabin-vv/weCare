@@ -3,7 +3,7 @@ import { injectable } from 'tsyringe'
 
 import { IMedicationRepository } from '../interfaces/medication.repository.interface'
 import { SystemGeneratedScheduleModel } from '../models/medicationSchedule.model'
-import { MedicationScheduleInput, MedicationScheduleModel } from '../types/medication.type'
+import { MedicationScheduleInput, MedicationScheduleModel, ScheduleData } from '../types/medication.type'
 
 @injectable()
 export class MedicationRepository implements IMedicationRepository {
@@ -65,6 +65,19 @@ export class MedicationRepository implements IMedicationRepository {
 
     async findScheduleById(scheduleId: string): Promise<MedicationScheduleModel | null> {
         return SystemGeneratedScheduleModel.findById(scheduleId).lean() as unknown as MedicationScheduleModel | null
+    }
+
+    async findPriorSchedule(patientId: Types.ObjectId, schedule: ScheduleData): Promise<MedicationScheduleModel[]> {
+        return await SystemGeneratedScheduleModel.find({
+            patientId: patientId,
+            medicineName: schedule.medicineName,
+            dosage: schedule.dosage,
+            _id: { $ne: schedule._id },
+            scheduleTime: { $lt: schedule.scheduleTime },
+        })
+            .sort({ scheduleTime: -1 })
+            .limit(2)
+            .lean()
     }
 
     async updateSchedule(
