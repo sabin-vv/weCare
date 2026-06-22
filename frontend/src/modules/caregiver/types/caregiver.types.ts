@@ -150,7 +150,6 @@ export interface VitalScheduleItem {
     vitalType: string
     scheduleTime: string
     endDate: string
-    priority: string
     status: 'pending' | 'recorded' | 'missed' | 'skipped' | 'cancelled'
     recordedValue?: {
         systolic?: number
