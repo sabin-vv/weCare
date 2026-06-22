@@ -6,10 +6,10 @@ import type {
     PlatformSettings,
     RecentCaregiversResponse,
 } from '../types/admin.types'
+import type { ActivityLogFilters } from '../types/admin.types'
 
 import { api } from '@/services/api'
 import { ADMIN_API, UPLOADS_API } from '@/shared/constants/api.constants'
-import type { ActivityLogFilters } from '../types/admin.types'
 
 export const getPendingDoctors = async (
     page: number,
