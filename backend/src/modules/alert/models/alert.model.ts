@@ -17,6 +17,11 @@ const alertSchema = new Schema<AlertDocument>(
             enum: ['missed_medication', 'critical_vital', 'critical_symptom', 'missed_vital'],
             required: true,
         },
+        targetRole: {
+            type: [String],
+            enum: ['doctor', 'caregiver', 'patient'],
+            required: true,
+        },
         severity: {
             type: String,
             enum: ['medium', 'high', 'critical'],

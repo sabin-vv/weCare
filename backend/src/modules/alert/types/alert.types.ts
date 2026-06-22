@@ -3,11 +3,13 @@ import { Document, Types } from 'mongoose'
 export type AlertType = 'missed_medication' | 'critical_vital' | 'critical_symptom' | 'missed_vital'
 export type Severity = 'medium' | 'high' | 'critical'
 export type AlertStatus = 'open' | 'acknowledged'
+export type TargetType = 'doctor' | 'caregiver' | 'patient'
 
 export interface AlertDocument extends Document {
     patientId: Types.ObjectId
     scheduleId?: Types.ObjectId
     type: AlertType
+    targetRole: TargetType[]
     severity: Severity
     triggerReason: string
     status: AlertStatus
