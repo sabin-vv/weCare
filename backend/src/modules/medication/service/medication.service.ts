@@ -153,17 +153,34 @@ export class MedicationService implements IMedicationService {
             })
         }
 
-        const criticalSchedules = recentlyMissed.filter((s) => s.priority === 'critical')
-        for (const schedule of criticalSchedules) {
+        for (const schedule of recentlyMissed) {
             await this._alertService.createAlert({
                 patientId: schedule.patientId,
                 scheduleId: schedule._id,
+                targetRole: ['caregiver'],
                 type: 'missed_medication',
-                severity: 'critical',
+                severity: 'high',
                 triggerReason: `${schedule.medicineName} (${schedule.dosage}) was not administered within the allowed time window`,
             })
+
+            const priorSchedule = await this._medicationRepo.findPriorSchedule(schedule.patientId, {
+                _id: schedule._id,
+                medicineName: schedule.medicineName,
+                dosage: schedule.dosage,
+                scheduleTime: schedule.scheduleTime,
+            })
+            if (priorSchedule.length >= 2 && priorSchedule.every((p) => p.status === 'missed')) {
+                await this._alertService.createAlert({
+                    patientId: schedule.patientId,
+                    scheduleId: schedule._id,
+                    targetRole: ['caregiver', 'doctor'],
+                    type: 'missed_medication',
+                    severity: 'critical',
+                    triggerReason: `${schedule.medicineName} missed ${priorSchedule.length} consecutive times`,
+                })
+            }
         }
 
-        return { updatedCount: updateResult.modifiedCount, criticalAlerts: criticalSchedules.length }
+        return { updatedCount: updateResult.modifiedCount, criticalAlerts: recentlyMissed.length }
     }
 }
