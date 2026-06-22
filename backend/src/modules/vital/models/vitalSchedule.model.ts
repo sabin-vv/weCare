@@ -35,11 +35,6 @@ const vitalScheduleSchema = new Schema<VitalScheduleDocument>(
             type: Date,
             required: true,
         },
-        priority: {
-            type: String,
-            enum: ['low', 'medium', 'high', 'critical'],
-            default: 'medium',
-        },
         status: {
             type: String,
             enum: ['pending', 'recorded', 'missed', 'skipped', 'cancelled'],
