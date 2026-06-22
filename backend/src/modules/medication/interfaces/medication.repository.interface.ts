@@ -1,6 +1,6 @@
 import { Types } from 'mongoose'
 
-import { MedicationScheduleInput, MedicationScheduleModel } from '../types/medication.type'
+import { MedicationScheduleInput, MedicationScheduleModel, ScheduleData } from '../types/medication.type'
 
 export interface IMedicationRepository {
     createMany(schedules: MedicationScheduleInput[]): Promise<void>
@@ -15,6 +15,7 @@ export interface IMedicationRepository {
 
     findByPatientAndCaregiver(patientId: Types.ObjectId): Promise<MedicationScheduleModel[]>
     findScheduleById(scheduleId: string): Promise<MedicationScheduleModel | null>
+    findPriorSchedule(patientId: Types.ObjectId, schedule: ScheduleData): Promise<MedicationScheduleModel[]>
     updateSchedule(scheduleId: string, data: Partial<MedicationScheduleModel>): Promise<MedicationScheduleModel | null>
 
     cancelMedicationSchedulesByPatient(patientId: string, reason: string): Promise<void>
