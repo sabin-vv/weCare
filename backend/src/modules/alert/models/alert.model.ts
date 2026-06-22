@@ -14,7 +14,7 @@ const alertSchema = new Schema<AlertDocument>(
         },
         type: {
             type: String,
-            enum: ['missed_medication', 'critical_vital', 'critical_symptom'],
+            enum: ['missed_medication', 'critical_vital', 'critical_symptom', 'missed_vital'],
             required: true,
         },
         severity: {
