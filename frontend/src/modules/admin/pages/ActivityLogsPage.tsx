@@ -1,15 +1,18 @@
+import { X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import Pagination from '@/shared/components/Pagination/Pagination'
-import DataTable from '@/shared/components/Table/DataTable'
-import SelectField from '@/shared/components/SelectField/SelectField'
-import DatePicker from '@/shared/components/DatePicker/DatePicker'
+
 import { getActivityLogs } from '../api/admin.api'
 import type { ActivityLogFilters } from '../types/admin.types'
 import type { ActivityLogEntry } from '../types/admin.types'
-import type { Column } from '@/shared/components/Table/dataTable.types'
+
 import styles from './ActivityLogsPage.module.css'
+
+import DatePicker from '@/shared/components/DatePicker/DatePicker'
+import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
-import { X } from 'lucide-react'
+import SelectField from '@/shared/components/SelectField/SelectField'
+import DataTable from '@/shared/components/Table/DataTable'
+import type { Column } from '@/shared/components/Table/dataTable.types'
 
 const ROLE_OPTIONS = [
     { value: '', label: 'All Roles' },
