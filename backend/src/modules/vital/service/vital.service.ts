@@ -209,10 +209,27 @@ export class VitalService implements IVitalService {
             await this._alertService.createAlert({
                 patientId: schedule.patientId,
                 scheduleId: schedule._id,
+                targetRole: ['caregiver'],
                 type: 'missed_vital',
-                severity: 'critical',
+                severity: 'medium',
                 triggerReason: `${schedule.vitalType.replace(/_/g, ' ')} reading was not recorded within the allowed time window`,
             })
+            const priorSchedule = await this._vitalRepo.findPriorVitalSchedule(
+                schedule.patientId.toString(),
+                schedule.vitalType,
+                schedule._id.toString(),
+                schedule.scheduleTime,
+            )
+            if (priorSchedule.length >= 1 && priorSchedule[0].status === 'missed') {
+                await this._alertService.createAlert({
+                    patientId: schedule.patientId,
+                    scheduleId: schedule._id,
+                    type: 'missed_vital',
+                    targetRole: ['doctor', 'caregiver'],
+                    severity: 'critical',
+                    triggerReason: `${schedule.vitalType.replace(/_/g, ' ')} missed ${priorSchedule.length} consecutive times`,
+                })
+            }
         }
 
         return { updatedCount: vitalSchedules.length, criticalAlerts: vitalSchedules.length }
