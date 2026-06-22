@@ -31,7 +31,6 @@ export interface VitalScheduleDocument extends Document {
     scheduleDate: Date
     scheduleTime: Date
     endDate: Date
-    priority: 'low' | 'medium' | 'high' | 'critical'
     status: 'pending' | 'recorded' | 'missed' | 'skipped' | 'cancelled'
     recordedValue?: {
         systolic?: number
@@ -50,7 +49,6 @@ export interface VitalScheduleDTO {
     vitalType: string
     scheduleTime: string
     endDate: string
-    priority: string
     status: string
     recordedValue?: {
         systolic?: number
