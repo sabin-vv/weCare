@@ -151,7 +151,6 @@ export class VitalService implements IVitalService {
                         scheduleDate: startOfDay,
                         scheduleTime,
                         endDate,
-                        priority: 'medium',
                         status: 'pending',
                     })
                 }
@@ -176,7 +175,6 @@ export class VitalService implements IVitalService {
             vitalType: schedule.vitalType,
             scheduleTime: schedule.scheduleTime.toISOString(),
             endDate: schedule.endDate.toISOString(),
-            priority: schedule.priority,
             status: schedule.status,
             recordedValue: schedule.recordedValue,
             recordedAt: schedule.recordedAt?.toISOString(),
@@ -207,18 +205,17 @@ export class VitalService implements IVitalService {
             })
         }
 
-        const criticalSchedules = vitalSchedules.filter((s) => s.priority === 'critical')
-        for (const schedule of criticalSchedules) {
+        for (const schedule of vitalSchedules) {
             await this._alertService.createAlert({
                 patientId: schedule.patientId,
                 scheduleId: schedule._id,
-                type: 'critical_vital',
+                type: 'missed_vital',
                 severity: 'critical',
                 triggerReason: `${schedule.vitalType.replace(/_/g, ' ')} reading was not recorded within the allowed time window`,
             })
         }
 
-        return { updatedCount: vitalSchedules.length, criticalAlerts: criticalSchedules.length }
+        return { updatedCount: vitalSchedules.length, criticalAlerts: vitalSchedules.length }
     }
 
     private calculateScheduleTimes(frequencyValue: number, frequencyUnit: string): string[] {
