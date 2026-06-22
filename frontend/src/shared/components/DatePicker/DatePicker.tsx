@@ -1,5 +1,6 @@
 import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
+
 import styles from './DatePicker.module.css'
 import type { DatePickerProps } from './DatePicker.types'
 
