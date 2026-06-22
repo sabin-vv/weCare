@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import toast from 'react-hot-toast'
 import { Activity, Clock, Droplet, Heart, Wind } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { getMyPatients, getPatientPrescriptions, getPatientVitalPlans, type PatientSummary } from '../api/caregiver.api'
+import ProfileCard from '../components/ProfileCard/ProfileCard'
 import type { PrescriptionItem, VitalPlanItem } from '../types/caregiver.types'
 
 import styles from './PrescriptionPage.module.css'
 
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
-import { getErrorMessage } from '@/utils/getErrorMessage'
-import ProfileCard from '../components/ProfileCard/ProfileCard'
 import { Section } from '@/shared/components/Section/Section'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const vitalIconMap: Record<string, typeof Activity> = {
     blood_pressure: Heart,
