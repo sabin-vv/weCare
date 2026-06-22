@@ -49,3 +49,10 @@ export interface MedicationScheduleDTO {
     administeredAt?: string
     administrationNotes?: string
 }
+
+export interface ScheduleData {
+    _id: Types.ObjectId
+    medicineName: string
+    dosage: string
+    scheduleTime: Date
+}
