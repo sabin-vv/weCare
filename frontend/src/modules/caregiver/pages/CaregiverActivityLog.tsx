@@ -13,8 +13,8 @@ import styles from './CaregiverActivityLog.module.css'
 
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
-import { getErrorMessage } from '@/utils/getErrorMessage'
 import { Section } from '@/shared/components/Section/Section'
+import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const activityMeta: Record<
     CaregiverActivityType,
