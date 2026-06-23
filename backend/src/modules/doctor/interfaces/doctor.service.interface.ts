@@ -1,4 +1,6 @@
 import {
+    DailyAppointmentStat,
+    DashboardStats,
     DoctorAvailability,
     DoctorProfileResponse,
     DoctorSearchResponse,
@@ -26,4 +28,10 @@ export interface IDoctorService {
     getSpecialties(): Promise<string[]>
     getDoctorById(doctorId: string): Promise<DoctorProfileResponse>
     getDoctorSlots(doctorId: string, date: string): Promise<DoctorSlotsResponse>
+    getDashboardStats(userId: string): Promise<DashboardStats>
+    getAppointmentStats(
+        userId: string,
+        startDate: string,
+        endDate: string,
+    ): Promise<{ dailyStats: DailyAppointmentStat[] }>
 }
