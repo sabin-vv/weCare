@@ -1,5 +1,6 @@
 import { Types } from 'mongoose'
 
+import { AlertDocument } from '../../alert/types/alert.types'
 import { MedicationScheduleDTO } from '../../medication/types/medication.type'
 import { VitalPlanItem, VitalScheduleDTO } from '../../vital/types/vital.types'
 import { PatientSummary } from '../interfaces/caregiver.repository.interface'
@@ -18,6 +19,10 @@ export interface ICaregiverService {
     getPatientVitalPlans(caregiverId: Types.ObjectId, patientId: string): Promise<VitalPlanItem[]>
     getPatientVitalSchedules(caregiverId: Types.ObjectId, patientId: string): Promise<VitalScheduleDTO[]>
     getMyPatients(caregiverId: Types.ObjectId): Promise<PatientSummary[]>
+    getAlerts(
+        caregiverId: Types.ObjectId,
+        filters?: { type?: string; severity?: string; status?: string; limit?: number },
+    ): Promise<AlertDocument[]>
     logMedication(
         caregiverId: Types.ObjectId,
         patientId: string,
