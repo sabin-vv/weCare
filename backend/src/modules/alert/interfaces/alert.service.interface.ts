@@ -5,6 +5,10 @@ export interface IAlertService {
         userId: string,
         filters?: { type?: string; severity?: string; status?: string; limit?: number },
     ): Promise<AlertDocument[]>
+    getAlertsByPatientIds(
+        patientIds: string[],
+        filters?: { type?: string; severity?: string; status?: string; limit?: number },
+    ): Promise<AlertDocument[]>
     getPatientAlertCount(userId: string): Promise<number>
     acknowledgeAlert(userId: string, alertId: string, note?: string): Promise<AlertDocument>
     createAlert(data: Partial<AlertDocument>): Promise<AlertDocument>
