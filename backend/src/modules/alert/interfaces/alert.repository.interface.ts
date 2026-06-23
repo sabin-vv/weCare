@@ -5,6 +5,6 @@ export interface IAlertRepository {
     findById(id: string): Promise<AlertDocument | null>
     findAll(filter: Record<string, unknown>): Promise<AlertDocument[]>
     update(id: string, data: Partial<AlertDocument>): Promise<AlertDocument | null>
-    findByPatientId(patientId: string, filter?: Record<string, unknown>): Promise<AlertDocument[]>
-    findByPatientIds(patientIds: string[], filter?: Record<string, unknown>): Promise<AlertDocument[]>
+    findByPatientId(patientId: string, filter?: Record<string, unknown>, limit?: number): Promise<AlertDocument[]>
+    findByPatientIds(patientIds: string[], filter?: Record<string, unknown>, limit?: number): Promise<AlertDocument[]>
 }

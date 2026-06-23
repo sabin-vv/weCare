@@ -12,22 +12,34 @@ export class AlertRepository extends BaseRepository<AlertDocument> implements IA
         super(alertModel)
     }
 
-    async findByPatientId(patientId: string, filter: Record<string, unknown> = {}): Promise<AlertDocument[]> {
-        return this.model
+    async findByPatientId(
+        patientId: string,
+        filter: Record<string, unknown> = {},
+        limit?: number,
+    ): Promise<AlertDocument[]> {
+        const query = this.model
             .find({
                 patientId: new Types.ObjectId(patientId),
                 ...filter,
             })
             .sort({ severity: -1, triggeredAt: -1 })
+
+        return limit ? query.limit(limit) : query
     }
 
-    async findByPatientIds(patientIds: string[], filter: Record<string, unknown> = {}): Promise<AlertDocument[]> {
-        return this.model
+    async findByPatientIds(
+        patientIds: string[],
+        filter: Record<string, unknown> = {},
+        limit?: number,
+    ): Promise<AlertDocument[]> {
+        const query = this.model
             .find({
                 patientId: { $in: patientIds.map((id) => new Types.ObjectId(id)) },
                 ...filter,
             })
             .populate({ path: 'patientId', populate: { path: 'userId', model: 'User', select: 'name' } })
             .sort({ severity: -1, triggeredAt: -1 })
+
+        return limit ? query.limit(limit) : query
     }
 }
