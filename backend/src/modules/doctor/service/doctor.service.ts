@@ -4,12 +4,15 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { IActivityLogRepository } from '../../activityLog/interfaces/activityLog.repository.interface'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
+import { IAlertRepository } from '../../alert/interfaces/alert.repository.interface'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { IFeedbackRepository } from '../../feedback/interfaces/feedback.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
+import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IAvailabilityNotificationService } from '../interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
@@ -23,6 +26,8 @@ import { toDoctorEntity, toDoctorProfileResponse } from '../mapper/doctor.mapper
 import { toDoctorSlotsResponse } from '../mapper/doctorSlots.mapper'
 import {
     CancelledAppointmentSummary,
+    DailyAppointmentStat,
+    DashboardStats,
     DoctorAvailability,
     DoctorAvailabilityDocument,
     DoctorDocument,
@@ -103,6 +108,9 @@ export class DoctorService implements IDoctorService {
         @inject(TOKENS.IActivityLogService)
         private _activityLogService: IActivityLogService,
         @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
+        @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
+        @inject(TOKENS.IAlertRepository) private _alertRepo: IAlertRepository,
+        @inject(TOKENS.IActivityLogRepository) private _activityLogRepo: IActivityLogRepository,
     ) {}
 
     async createProfile(userId: string, dto: DoctorDTO) {
@@ -478,5 +486,113 @@ export class DoctorService implements IDoctorService {
             _id: string | Types.ObjectId
             status?: 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
         }
+    }
+
+    async getDashboardStats(userId: string): Promise<DashboardStats> {
+        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
+        if (!doctor) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+        }
+
+        const patientResult = await this._patientRepo.listPatientsByDoctor({
+            primaryDoctorId: doctor._id,
+            search: '',
+            page: 1,
+            limit: 1,
+        })
+        const activePatients = patientResult.total
+
+        const patients = await this._patientRepo.listPatientsByDoctor({
+            primaryDoctorId: doctor._id,
+            search: '',
+            page: 1,
+            limit: activePatients,
+        })
+        const patientIds = patients.data.map((p) => p._id.toString())
+        const caregiverIds = [
+            ...new Set(patients.data.filter((p) => p.caregiverId).map((p) => p.caregiverId!.toString())),
+        ]
+
+        const allAppointments = await this._appointmentRepo.findByDoctorId(doctor._id.toString())
+        const todayStart = new Date()
+        todayStart.setHours(0, 0, 0, 0)
+        const todayEnd = new Date()
+        todayEnd.setHours(23, 59, 59, 999)
+        const todayAppointments = allAppointments.filter((a) => {
+            const aptDate = new Date(a.appointmentDate)
+            return (
+                aptDate >= todayStart && aptDate <= todayEnd && (a.status === 'confirmed' || a.status === 'completed')
+            )
+        }).length
+
+        const alerts = await this._alertRepo.findByPatientIds(patientIds, { status: 'open' })
+        const openAlerts = alerts.length
+
+        const activeCaregivers = caregiverIds.length
+
+        const activityResult = await this._activityLogRepo.findAllPaginated(
+            { performedBy: doctor.userId.toString() },
+            1,
+            4,
+        )
+        const recentActivity = activityResult.data.map((log) => ({
+            action: log.action,
+            description: log.description,
+            createdAt: log.createdAt.toISOString(),
+        }))
+
+        return {
+            activePatients,
+            todayAppointments,
+            openAlerts,
+            activeCaregivers,
+            recentActivity,
+        }
+    }
+
+    async getAppointmentStats(
+        userId: string,
+        startDate: string,
+        endDate: string,
+    ): Promise<{ dailyStats: DailyAppointmentStat[] }> {
+        const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
+        if (!doctor) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+        }
+
+        const start = new Date(`${startDate}T00:00:00.000Z`)
+        const end = new Date(`${endDate}T23:59:59.999Z`)
+
+        const appointments = await this._appointmentRepo.findByDoctorIdAndDateRange(doctor._id.toString(), start, end)
+
+        const dailyMap = new Map<string, { missed: number; completed: number; cancelled: number }>()
+
+        for (const apt of appointments) {
+            const aptDate = apt.appointmentDate instanceof Date ? apt.appointmentDate : new Date(apt.appointmentDate)
+            const dateStr = `${aptDate.getUTCFullYear()}-${String(aptDate.getUTCMonth() + 1).padStart(2, '0')}-${String(aptDate.getUTCDate()).padStart(2, '0')}`
+
+            if (!dailyMap.has(dateStr)) {
+                dailyMap.set(dateStr, { missed: 0, completed: 0, cancelled: 0 })
+            }
+
+            const day = dailyMap.get(dateStr)!
+            if (apt.status === 'missed') day.missed++
+            else if (apt.status === 'completed') day.completed++
+            else if (apt.status === 'cancelled') day.cancelled++
+        }
+
+        const dailyStats: DailyAppointmentStat[] = []
+        const current = new Date(start)
+
+        while (current <= end) {
+            const dateStr = `${current.getUTCFullYear()}-${String(current.getUTCMonth() + 1).padStart(2, '0')}-${String(current.getUTCDate()).padStart(2, '0')}`
+            dailyStats.push({
+                date: dateStr,
+                ...(dailyMap.get(dateStr) || { missed: 0, completed: 0, cancelled: 0 }),
+            })
+            current.setUTCDate(current.getUTCDate() + 1)
+        }
+
+        return { dailyStats }
     }
 }
