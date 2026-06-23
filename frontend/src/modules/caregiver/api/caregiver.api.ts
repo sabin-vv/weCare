@@ -1,4 +1,5 @@
 import type {
+    AlertData,
     CaregiverProfileResponse,
     CreateReminderDTO,
     CaregiverActivityLogResponse,
@@ -154,6 +155,21 @@ export const getPatientPrescriptions = async (patientId: string): Promise<Prescr
 export const getPatientVitalPlans = async (patientId: string): Promise<VitalPlanItem[]> => {
     const res = await api.get<{ success: boolean; data: VitalPlanItem[] }>(
         `${CAREGIVERS_API}/patients/${patientId}/vital-plans`,
+    )
+    return res.data.data
+}
+
+export const getCaregiverAlerts = async (
+    filters?: { type?: string; severity?: string; status?: string; limit?: number },
+): Promise<AlertData[]> => {
+    const res = await api.get<{ success: boolean; data: AlertData[] }>(`${CAREGIVERS_API}/alerts`, { params: filters })
+    return res.data.data
+}
+
+export const acknowledgeAlert = async (alertId: string, note?: string): Promise<AlertData> => {
+    const res = await api.patch<{ success: boolean; data: AlertData; message: string }>(
+        `${ALERTS_API}/${alertId}/acknowledge`,
+        { note },
     )
     return res.data.data
 }
