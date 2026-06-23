@@ -159,6 +159,38 @@ export class CaregiverController {
         })
     }
 
+    getAlerts = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
+        if (!caregiver) {
+            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+        }
+
+        const { type, severity, status, limit } = req.query as {
+            type?: string
+            severity?: string
+            status?: string
+            limit?: string
+        }
+
+        const alerts = await this._caregiverService.getAlerts(caregiver._id, {
+            type,
+            severity,
+            status,
+            limit: limit ? Number(limit) : undefined,
+        })
+
+        res.status(HTTP_STATUS.OK).json({
+            success: true,
+            data: alerts,
+            message: 'Alerts fetched',
+        })
+    }
+
     logMedication = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
