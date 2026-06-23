@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 
 import { getCurrentUser } from '../../auth/api/auth.api'
 import { getDoctorProfile } from '../api/doctor.api'
+import Dashboard from '../components/Dashboard/Dashboard'
 import DoctorDetailsForm from '../form/DoctorDetailesForm'
 import type { DoctorDocuments, Specialization } from '../types/doctor.types'
 
@@ -80,9 +81,16 @@ const DoctorDashboard = () => {
         loadDashboardState()
     }, [baseUrl, setAuth, user])
 
+    const hour = new Date().getHours()
+    let timePeriod = ''
+    if (hour >= 5 && hour < 12) timePeriod = 'Morning'
+    else if (hour >= 12 && hour < 17) timePeriod = 'Afternoon'
+    else if (hour >= 17 && hour < 21) timePeriod = 'Evening'
+    else timePeriod = 'Night'
+
     return (
         <DoctorLayout>
-            <MainWrapper title="Dashboard">
+            <MainWrapper title={`Good ${timePeriod},${user?.name}`}>
                 {!user?.isProfileComplete || user.verificationStatus === 'rejected' ? (
                     <>
                         {user && user.verificationStatus === 'rejected' && (
@@ -95,14 +103,7 @@ const DoctorDashboard = () => {
                         <DoctorDetailsForm document={documents} specialization={specializations} />
                     </>
                 ) : user.verificationStatus === VerificationStatus.Verified ? (
-                    <section className={styles.statusPanel}>
-                        <span className={`${styles.badge} ${styles.successBadge}`}>Verified Account</span>
-                        <h1 className={styles.heading}>Welcome back, Dr. {user?.name}</h1>
-                        <p className={styles.sub}>
-                            Your account is active and ready. You can now manage patients, schedules, and consultations
-                            from your dashboard.
-                        </p>
-                    </section>
+                    <Dashboard />
                 ) : (
                     <section className={styles.statusPanel}>
                         <span className={`${styles.badge} ${styles.pendingBadge}`}>Verification In Progress</span>
