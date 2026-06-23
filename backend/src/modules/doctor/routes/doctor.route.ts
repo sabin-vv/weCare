@@ -26,6 +26,9 @@ export const createDoctorRoutes = () => {
     )
     router.post('/profile', requireAuth, upload.none(), validate(DoctorSchema), doctorController.createProfile)
 
+    router.get('/dashboard', requireAuth, doctorController.getDashboard)
+    router.get('/appointment-stats', requireAuth, doctorController.getAppointmentStats)
+
     router.put('/patients/:patientId/start-consultation', requireAuth, doctorController.startConsultation)
     router.put('/patients/:patientId/complete-consultation', requireAuth, doctorController.completeConsultation)
 

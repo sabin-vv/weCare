@@ -137,6 +137,35 @@ export class DoctorController {
         })
     }
 
+    getDashboard = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const result = await this._doctorService.getDashboardStats(userId)
+
+        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Dashboard stats fetched', data: result })
+    }
+
+    getAppointmentStats = async (req: Request, res: Response) => {
+        const userId = req.user?.userId
+        if (!userId) {
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        }
+
+        const startDate = (req.query.startDate as string)?.trim()
+        const endDate = (req.query.endDate as string)?.trim()
+
+        if (!startDate || !endDate) {
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'startDate and endDate query parameters are required')
+        }
+
+        const result = await this._doctorService.getAppointmentStats(userId, startDate, endDate)
+
+        res.status(HTTP_STATUS.OK).json({ success: true, data: result })
+    }
+
     startConsultation = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
