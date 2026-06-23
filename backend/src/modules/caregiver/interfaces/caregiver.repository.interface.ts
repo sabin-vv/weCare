@@ -12,6 +12,8 @@ export interface PatientSummary {
     riskLevel: string
     clinicalStatus: string
     profileImage?: string
+    primaryDoctorId?: Types.ObjectId
+    assignedDoctorName?: string
 }
 
 export interface ICaregiverRepository {
