@@ -61,6 +61,30 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .sort({ appointmentDate: -1, slotStart: -1 })
     }
 
+    async findByDoctorIdForDate(doctorId: string, date: string): Promise<AppointmentDocument[]> {
+        const [year, month, day] = date.split('-').map((value) => Number(value))
+        const startOfDay = new Date(year, month - 1, day)
+        const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999)
+
+        return await this.model
+            .find({
+                doctorId,
+                appointmentDate: { $gte: startOfDay, $lte: endOfDay },
+            })
+            .populate('patientId', 'name email')
+            .populate('paymentId', 'status totalAmount')
+            .sort({ appointmentDate: -1, slotStart: -1 })
+    }
+
+    async findByDoctorIdAndDateRange(doctorId: string, startDate: Date, endDate: Date): Promise<AppointmentDocument[]> {
+        return await this.model
+            .find({
+                doctorId,
+                appointmentDate: { $gte: startDate, $lte: endDate },
+            })
+            .sort({ appointmentDate: -1, slotStart: -1 })
+    }
+
     async findActiveAppointments(doctorId: string, date: string): Promise<AppointmentDocument[]> {
         const startOfDay = new Date(date)
         startOfDay.setHours(0, 0, 0, 0)
