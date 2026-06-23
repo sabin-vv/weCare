@@ -3,27 +3,17 @@ import toast from 'react-hot-toast'
 
 import { getCurrentUser } from '../../auth/api/auth.api'
 import { getCaregiverProfile } from '../api/caregiver.api'
+import Dashboard from '../components/Dashboard/Dashboard'
 import CaregiverDetailsForm from '../form/CaregiverDetailsForm'
+import type { CaregiverDocumentsDisplay } from '../types/caregiver.types'
 
 import styles from './CaregiverDashboard.module.css'
 
 import { env } from '@/config/env'
 import { VerificationStatus } from '@/modules/auth/types/auth.types'
+import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-
-interface CaregiverDocumentsDisplay {
-    govId: File | string | null
-    profileImage: File | string | null
-    certificate: {
-        number: string
-        document: File | string | null
-    }
-    license: {
-        number: string
-        document: File | string | null
-    }
-}
 
 const CaregiverDashboard = () => {
     const { user, setAuth } = useAuth()
@@ -92,8 +82,15 @@ const CaregiverDashboard = () => {
         loadDashboardState()
     }, [baseUrl, setAuth, user])
 
+    const hour = new Date().getHours()
+    let timePeriod = ''
+    if (hour >= 5 && hour < 12) timePeriod = 'Morning'
+    else if (hour >= 12 && hour < 17) timePeriod = 'Afternoon'
+    else if (hour >= 17 && hour < 21) timePeriod = 'Evening'
+    else timePeriod = 'Night'
+
     return (
-        <main className={styles.content}>
+        <MainWrapper title={`Good ${timePeriod}, ${user?.name}`}>
             {!user?.isProfileComplete || user.verificationStatus === 'rejected' ? (
                 <>
                     {user && user.verificationStatus === 'rejected' && (
@@ -106,14 +103,7 @@ const CaregiverDashboard = () => {
                     <CaregiverDetailsForm documents={documents} />
                 </>
             ) : user.verificationStatus === VerificationStatus.Verified ? (
-                <section className={styles.statusPanel}>
-                    <span className={`${styles.badge} ${styles.successBadge}`}>Verified Account</span>
-                    <h1 className={styles.heading}>Welcome back, {user?.name}</h1>
-                    <p className={styles.sub}>
-                        Your account is active and ready. You can now manage patients, schedules, and caregiving duties
-                        from your dashboard.
-                    </p>
-                </section>
+                <Dashboard />
             ) : (
                 <section className={styles.statusPanel}>
                     <span className={`${styles.badge} ${styles.pendingBadge}`}>Verification In Progress</span>
@@ -136,7 +126,7 @@ const CaregiverDashboard = () => {
                     </div>
                 </section>
             )}
-        </main>
+        </MainWrapper>
     )
 }
 
