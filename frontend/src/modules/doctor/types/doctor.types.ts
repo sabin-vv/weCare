@@ -492,6 +492,17 @@ export interface MedicalRecordData {
     }[]
 }
 
+export interface DailyAppointmentStat {
+    date: string
+    missed: number
+    completed: number
+    cancelled: number
+}
+
+export interface AppointmentStats {
+    dailyStats: DailyAppointmentStat[]
+}
+
 export interface AlertCardProps {
     patientName: string
     message: string
@@ -505,4 +516,22 @@ export interface AlertCardProps {
     acknowledgedBy?: string
 
     onAcknowledge?: () => void
+}
+
+export interface DashboardStats {
+    activePatients: number
+    todayAppointments: number
+    openAlerts: number
+    activeCaregivers: number
+    recentActivity: {
+        action: string
+        description: string
+        createdAt: string
+    }[]
+}
+
+export interface DashboardStatsResponse {
+    success: boolean
+    message: string
+    data: DashboardStats
 }
