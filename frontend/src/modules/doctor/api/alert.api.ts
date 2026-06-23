@@ -4,7 +4,7 @@ import { api } from '@/services/api'
 import { ALERTS_API } from '@/shared/constants/api.constants'
 
 export const getAlerts = async (
-    filters?: { type?: string; severity?: string; status?: string },
+    filters?: { type?: string; severity?: string; status?: string; limit?: number },
 ): Promise<AlertData[]> => {
     const res = await api.get<AlertsResponse>(ALERTS_API, { params: filters })
     return res.data.data
