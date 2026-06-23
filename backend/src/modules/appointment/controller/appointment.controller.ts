@@ -52,6 +52,7 @@ export class AppointmentController {
             search: (req.query.search as string)?.trim() || '',
             page: parseInt(req.query.page as string) || 1,
             limit: parseInt(req.query.limit as string) || 8,
+            date: (req.query.date as string)?.trim() || undefined,
         })
 
         res.status(HTTP_STATUS.OK).json({
