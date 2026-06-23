@@ -49,6 +49,7 @@ export const createCaregiverRoutes = () => {
         validate(logSymptomSchema),
         caregiverController.logSymptom,
     )
+    router.get('/alerts', requireAuth, caregiverController.getAlerts)
     router.get('/patients', requireAuth, caregiverController.getMyPatients)
     router.get('/', requireAuth, caregiverController.listCaregivers)
 
