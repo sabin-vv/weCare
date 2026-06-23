@@ -14,8 +14,14 @@ export class AlertController {
         const userId = req.user?.userId
         if (!userId) throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
 
-        const { type, severity, status } = req.query as Record<string, string | undefined>
-        const alerts = await this._alertService.getAlerts(userId, { type, severity, status })
+        const { type, severity, status, limit } = req.query as Record<string, string | undefined>
+        const parsedLimit = limit ? parseInt(limit, 10) : undefined
+        const alerts = await this._alertService.getAlerts(userId, {
+            type,
+            severity,
+            status,
+            limit: Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+        })
         res.status(HTTP_STATUS.OK).json({ success: true, data: alerts })
     }
 
