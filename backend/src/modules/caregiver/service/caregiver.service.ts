@@ -219,6 +219,15 @@ export class CaregiverService implements ICaregiverService {
         return await this._caregiverRepo.findPatientsByCaregiver(caregiverId)
     }
 
+    async getAlerts(
+        caregiverId: Types.ObjectId,
+        filters?: { type?: string; severity?: string; status?: string; limit?: number },
+    ) {
+        const patients = await this._caregiverRepo.findPatientsByCaregiver(caregiverId)
+        const patientIds = patients.map((p) => p._id.toString())
+        return this._alertService.getAlertsByPatientIds(patientIds, filters)
+    }
+
     async logMedication(
         caregiverId: Types.ObjectId,
         patientId: string,
