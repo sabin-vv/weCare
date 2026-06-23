@@ -172,6 +172,25 @@ export interface DoctorSlot {
     available: boolean
 }
 
+export interface DashboardStats {
+    activePatients: number
+    todayAppointments: number
+    openAlerts: number
+    activeCaregivers: number
+    recentActivity: {
+        action: string
+        description: string
+        createdAt: string
+    }[]
+}
+
+export interface DailyAppointmentStat {
+    date: string
+    missed: number
+    completed: number
+    cancelled: number
+}
+
 export interface DoctorSlotsResponse {
     doctorId: string
     date: string
