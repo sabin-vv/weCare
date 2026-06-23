@@ -24,7 +24,7 @@ export class AlertService implements IAlertService {
 
     async getAlerts(
         userId: string,
-        filters?: { type?: string; severity?: string; status?: string },
+        filters?: { type?: string; severity?: string; status?: string; limit?: number },
     ): Promise<AlertDocument[]> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
@@ -47,7 +47,7 @@ export class AlertService implements IAlertService {
         if (filters?.status) filter.status = filters.status
         else filter.status = 'open'
 
-        return this._alertRepo.findByPatientIds(patientIds, filter)
+        return this._alertRepo.findByPatientIds(patientIds, filter, filters?.limit)
     }
 
     async acknowledgeAlert(userId: string, alertId: string, note?: string): Promise<AlertDocument> {
