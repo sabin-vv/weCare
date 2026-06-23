@@ -3,6 +3,7 @@ import { injectable } from 'tsyringe'
 
 import { BaseRepository } from '../../../core/base/base.repository'
 import { UserModel } from '../../auth/models/user.model'
+import { DoctorModel } from '../../doctor/models/doctor.model'
 import { PatientModel } from '../../patient/models/patient.model'
 import { ICaregiverRepository, PatientSummary } from '../interfaces/caregiver.repository.interface'
 import { CaregiverModel } from '../models/caregiver.model'
@@ -77,6 +78,21 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
         const users = await UserModel.find({ _id: { $in: userIds } }).lean()
         const userMap = new Map(users.map((u) => [u._id.toString(), u]))
 
+        const doctorIds = patients.filter((p) => p.primaryDoctorId).map((p) => p.primaryDoctorId!)
+        const doctorNameMap = new Map<string, string>()
+        if (doctorIds.length > 0) {
+            const doctors = await DoctorModel.find({ _id: { $in: doctorIds } }).lean()
+            const doctorUserIds = doctors.filter((d) => d.userId).map((d) => d.userId)
+            const doctorUsers = await UserModel.find({ _id: { $in: doctorUserIds } }).lean()
+            const doctorUserMap = new Map(doctorUsers.map((u) => [u._id.toString(), u]))
+            for (const doc of doctors) {
+                const docUser = doctorUserMap.get(doc.userId.toString())
+                if (docUser) {
+                    doctorNameMap.set(doc._id.toString(), docUser.name)
+                }
+            }
+        }
+
         return patients
             .map((p) => {
                 const user = userMap.get(p.userId.toString())
@@ -90,6 +106,8 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
                     riskLevel: p.riskLevel || 'mild',
                     clinicalStatus: p.clinicalStatus || 'active',
                     profileImage: p.profileImage,
+                    primaryDoctorId: p.primaryDoctorId,
+                    assignedDoctorName: p.primaryDoctorId ? doctorNameMap.get(p.primaryDoctorId.toString()) || '' : '',
                     userName: user?.name || 'Unknown',
                     userMobile: user?.mobile || '',
                     userEmail: user?.email || '',
