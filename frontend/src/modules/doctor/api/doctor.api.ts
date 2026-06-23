@@ -1,4 +1,7 @@
 import type {
+    AppointmentStats,
+    DashboardStats,
+    DashboardStatsResponse,
     DoctorAvailability,
     DoctorAvailabilityResponse,
     DoctorProfile,
@@ -88,12 +91,14 @@ export const getDoctorAppointments = async (
     search: string,
     page: number,
     limit: number,
+    date?: string,
 ): Promise<DoctorAppointmentsResponse> => {
     const res = await api.get<{ data: DoctorAppointmentsResponse }>(`${APPOINTMENT_API}/doctor`, {
         params: {
             search,
             page,
             limit,
+            date,
         },
     })
 
@@ -103,6 +108,18 @@ export const getDoctorAppointments = async (
 export const getPatientById = async (patientId: string): Promise<PatientDetails> => {
     const res = await api.get<PatientDetailsResponse>(`${PATIENTS_API}/${patientId}`)
 
+    return res.data.data
+}
+
+export const getDashboardStats = async (): Promise<DashboardStats> => {
+    const res = await api.get<DashboardStatsResponse>(`${DOCTORS_API}/dashboard`)
+    return res.data.data
+}
+
+export const getAppointmentStats = async (startDate: string, endDate: string): Promise<AppointmentStats> => {
+    const res = await api.get<{ success: boolean; data: AppointmentStats }>(`${DOCTORS_API}/appointment-stats`, {
+        params: { startDate, endDate },
+    })
     return res.data.data
 }
 
