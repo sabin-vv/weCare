@@ -173,6 +173,35 @@ export interface PatientSummary extends ApiInterface {
     riskLevel: string
     clinicalStatus: string
     profileImage?: string
+    primaryDoctorId?: string
+    assignedDoctorName?: string
+}
+
+export type AlertSeverity = 'medium' | 'high' | 'critical'
+
+export type AlertType = 'missed_medication' | 'critical_vital' | 'critical_symptom'
+
+export type AlertStatus = 'open' | 'acknowledged'
+
+export interface AlertData {
+    _id: string
+    patientId: {
+        _id: string
+        userId: {
+            _id: string
+            name: string
+        }
+        patientId: string
+    }
+    scheduleId?: string
+    type: AlertType
+    severity: AlertSeverity
+    triggerReason: string
+    status: AlertStatus
+    acknowledgeBy?: string
+    acknowledgeAt?: string
+    acknowledgeNote?: string
+    triggeredAt: string
 }
 
 export type CaregiverActivityType =
@@ -236,4 +265,17 @@ export interface VitalPlanItem {
     frequencyUnit: 'hours' | 'days' | 'weeks'
     durationValue: number
     durationUnit: 'hours' | 'days' | 'weeks' | 'months'
+}
+
+export interface CaregiverDocumentsDisplay {
+    govId: File | string | null
+    profileImage: File | string | null
+    certificate: {
+        number: string
+        document: File | string | null
+    }
+    license: {
+        number: string
+        document: File | string | null
+    }
 }
