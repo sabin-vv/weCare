@@ -37,7 +37,7 @@ export interface IAppointmentService {
 
     getDoctorAppointments(
         doctorId: string,
-        params: { search: string; page: number; limit: number },
+        params: { search: string; page: number; limit: number; date?: string },
     ): Promise<DoctorAppointmentsResponseDTO>
 
     cancelAppointment(

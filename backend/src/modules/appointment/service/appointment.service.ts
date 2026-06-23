@@ -449,7 +449,7 @@ export class AppointmentService implements IAppointmentService {
 
     async getDoctorAppointments(
         doctorId: string,
-        params: { search: string; page: number; limit: number },
+        params: { search: string; page: number; limit: number; date?: string },
     ): Promise<DoctorAppointmentsResponseDTO> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
@@ -459,7 +459,9 @@ export class AppointmentService implements IAppointmentService {
         const normalizedSearch = params.search.trim().toLowerCase()
         const page = Math.max(1, params.page || 1)
         const limit = Math.max(1, params.limit || 8)
-        const appointments = await this._appointmentRepo.findByDoctorId(doctor._id.toString())
+        const appointments = params.date
+            ? await this._appointmentRepo.findByDoctorIdForDate(doctor._id.toString(), params.date)
+            : await this._appointmentRepo.findByDoctorId(doctor._id.toString())
         const doctorVisibleAppointments = appointments.filter(
             (appointment) => appointment.status === 'confirmed' || appointment.status === 'completed',
         )
