@@ -192,7 +192,7 @@ export interface DoctorAppointment {
 
 export interface DoctorAppointmentsResponse {
     appointments: DoctorAppointment[]
-    pagination: Pagination
+    pagination: PaginationData
 }
 
 export interface DoctorAvailabilityUpdateResult {
@@ -222,7 +222,7 @@ export interface Patients {
     caregiver: string
     clinicalStatus: ClinicalStatus
 }
-export interface Pagination {
+export interface PaginationData {
     page: number
     limit: number
     totalCount: number
@@ -230,7 +230,7 @@ export interface Pagination {
 }
 export interface ListPatientsResponse {
     patients: Patients[]
-    pagination: Pagination
+    pagination: PaginationData
 }
 
 export interface PatientDetails {
@@ -439,7 +439,10 @@ export interface AlertData {
 
 export interface AlertsResponse {
     success: boolean
-    data: AlertData[]
+    data: {
+        alerts: AlertData[]
+        pagination: PaginationData
+    }
 }
 
 export interface AcknowledgeResponse {
