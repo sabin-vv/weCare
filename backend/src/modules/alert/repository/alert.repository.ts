@@ -16,13 +16,16 @@ export class AlertRepository extends BaseRepository<AlertDocument> implements IA
         patientId: string,
         filter: Record<string, unknown> = {},
         limit?: number,
+        page?: number,
     ): Promise<AlertDocument[]> {
+        const skip = page && limit ? (page - 1) * limit : 0
         const query = this.model
             .find({
                 patientId: new Types.ObjectId(patientId),
                 ...filter,
             })
             .sort({ severity: -1, triggeredAt: -1 })
+            .skip(skip)
 
         return limit ? query.limit(limit) : query
     }
@@ -31,7 +34,9 @@ export class AlertRepository extends BaseRepository<AlertDocument> implements IA
         patientIds: string[],
         filter: Record<string, unknown> = {},
         limit?: number,
+        page?: number,
     ): Promise<AlertDocument[]> {
+        const skip = page && limit ? (page - 1) * limit : 0
         const query = this.model
             .find({
                 patientId: { $in: patientIds.map((id) => new Types.ObjectId(id)) },
@@ -39,7 +44,22 @@ export class AlertRepository extends BaseRepository<AlertDocument> implements IA
             })
             .populate({ path: 'patientId', populate: { path: 'userId', model: 'User', select: 'name' } })
             .sort({ severity: -1, triggeredAt: -1 })
+            .skip(skip)
 
         return limit ? query.limit(limit) : query
+    }
+
+    async countByPatientId(patientId: string, filter: Record<string, unknown> = {}): Promise<number> {
+        return this.model.countDocuments({
+            patientId: new Types.ObjectId(patientId),
+            ...filter,
+        })
+    }
+
+    async countByPatientIds(patientIds: string[], filter: Record<string, unknown> = {}): Promise<number> {
+        return this.model.countDocuments({
+            patientId: { $in: patientIds.map((id) => new Types.ObjectId(id)) },
+            ...filter,
+        })
     }
 }
