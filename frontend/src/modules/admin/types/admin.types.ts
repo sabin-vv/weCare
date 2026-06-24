@@ -173,6 +173,29 @@ export interface AdminAppointmentsResponse {
     pagination: Pagination
 }
 
+export interface AdminPayment {
+    _id: string
+    paymentId: string
+    patientId: string
+    patientName: string
+    patientEmail: string
+    patientMobile: string
+    patientProfileImage?: string
+    paymentType: 'consultation' | 'subscription'
+    paymentMethod: 'razorpay' | 'wallet'
+    consultationFee?: number
+    platformFee?: number
+    totalAmount: number
+    status: 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
+    paidAt?: string
+    createdAt: string
+}
+
+export interface AdminPaymentsResponse {
+    payments: AdminPayment[]
+    pagination: Pagination
+}
+
 export interface PlatformSettings {
     platformName: string
     contactEmail: string
