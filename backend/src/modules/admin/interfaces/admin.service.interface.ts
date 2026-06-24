@@ -1,4 +1,5 @@
 import {
+    AdminAppointmentsResponseDTO,
     AdminVerificationStatus,
     DashboardChartData,
     PendingCaregiversResponse,
@@ -12,6 +13,14 @@ import {
 
 export interface IAdminService {
     getDashboardChartData(limit?: number, startDate?: string, endDate?: string): Promise<DashboardChartData>
+    getAdminAppointments(
+        page: number,
+        limit: number,
+        search?: string,
+        status?: string,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<AdminAppointmentsResponseDTO>
     getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse>
     getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse>
     verifyDoctor(doctorId: string, status: AdminVerificationStatus, adminId: string, reason?: string): Promise<{ message: string }>
