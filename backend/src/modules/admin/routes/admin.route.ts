@@ -27,6 +27,7 @@ export const createAdminRoutes = () => {
     router.get('/pending-doctors-count', requireAdmin, adminController.getPendingDoctorsCount)
     router.get('/pending-caregivers-count', requireAdmin, adminController.getPendingCaregiversCount)
 
+    router.get('/dashboard-charts', requireAdmin, adminController.getDashboardChartData)
     router.get('/users', requireAdmin, adminController.getUsers)
     router.patch('/toggle-status/:userId', requireAdmin, adminController.toggleUserStatus)
 
