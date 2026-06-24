@@ -13,7 +13,9 @@ export const AlertCard = ({
     onAcknowledge,
 }: AlertCardProps) => {
     return (
-        <div className={`${styles.card} ${styles[severity]}`}>
+        <div
+            className={`${styles.card} ${styles[severity]} ${status === 'acknowledged' ? styles.acknowledgedCard : ''}`}
+        >
             <div className={styles.left}>
                 <div className={styles.icon}>{icon}</div>
 
