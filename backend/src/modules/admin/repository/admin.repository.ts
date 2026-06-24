@@ -15,6 +15,7 @@ import { IAdminRepository } from '../interfaces/admin.repository.interface'
 import { platFoemSettingsModel } from '../models/platformSettings.model'
 import {
     AdminAppointmentsResponseDTO,
+    AdminPaymentsResponseDTO,
     AdminUserProfile,
     AdminVerificationStatus,
     AppointmentStats,
@@ -857,6 +858,105 @@ export class AdminRepository implements IAdminRepository {
 
         return {
             appointments,
+            pagination: { page: pageSafe, limit: limitSafe, totalCount, totalPages },
+        }
+    }
+
+    async getPayments(
+        page: number,
+        limit: number,
+        search?: string,
+        status?: string,
+        paymentType?: string,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<AdminPaymentsResponseDTO> {
+        const pageSafe = Math.max(1, page)
+        const limitSafe = Math.max(1, limit)
+        const skip = (pageSafe - 1) * limitSafe
+
+        const matchFilters: Record<string, unknown> = {}
+
+        if (status && status !== 'all') {
+            matchFilters.status = status
+        }
+        if (paymentType && paymentType !== 'all') {
+            matchFilters.paymentType = paymentType
+        }
+        if (startDate || endDate) {
+            const dateFilter: Record<string, Date> = {}
+            if (startDate) dateFilter.$gte = new Date(startDate + 'T00:00:00')
+            if (endDate) dateFilter.$lte = new Date(endDate + 'T23:59:59')
+            matchFilters.paidAt = dateFilter
+        }
+
+        const searchTrimmed = search?.trim() ?? ''
+        const searchOr: Record<string, unknown>[] = []
+        if (searchTrimmed) {
+            const regex = new RegExp(escapeRegExp(searchTrimmed), 'i')
+            searchOr.push({ 'patientUser.name': regex })
+            searchOr.push({ 'patientUser.email': regex })
+        }
+
+        const aggregation = await PaymentModel.aggregate([
+            {
+                $lookup: {
+                    from: PatientModel.collection.name,
+                    localField: 'patientId',
+                    foreignField: '_id',
+                    as: 'patientProfile',
+                },
+            },
+            { $unwind: { path: '$patientProfile', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: UserModel.collection.name,
+                    localField: 'patientProfile.userId',
+                    foreignField: '_id',
+                    as: 'patientUser',
+                },
+            },
+            { $unwind: { path: '$patientUser', preserveNullAndEmptyArrays: true } },
+            ...(Object.keys(matchFilters).length ? [{ $match: matchFilters }] : []),
+            ...(searchOr.length ? [{ $match: { $or: searchOr } }] : []),
+            { $sort: { createdAt: -1 } },
+            {
+                $facet: {
+                    data: [
+                        { $skip: skip },
+                        { $limit: limitSafe },
+                        {
+                            $project: {
+                                _id: { $toString: '$_id' },
+                                paymentId: { $toString: '$_id' },
+                                patientId: { $toString: '$patientProfile.userId' },
+                                patientName: { $ifNull: ['$patientUser.name', 'Unknown'] },
+                                patientEmail: { $ifNull: ['$patientUser.email', ''] },
+                                patientMobile: { $ifNull: ['$patientUser.mobile', ''] },
+                                patientProfileImage: '$patientProfile.profileImage',
+                                paymentType: 1,
+                                paymentMethod: 1,
+                                consultationFee: 1,
+                                platformFee: 1,
+                                totalAmount: 1,
+                                status: 1,
+                                paidAt: { $toString: '$paidAt' },
+                                createdAt: { $toString: '$createdAt' },
+                            },
+                        },
+                    ],
+                    pagination: [{ $count: 'totalCount' }],
+                },
+            },
+        ])
+
+        const facet = aggregation[0]
+        const payments = (facet?.data ?? []) as AdminPaymentsResponseDTO['payments']
+        const totalCount = facet?.pagination?.[0]?.totalCount ?? 0
+        const totalPages = Math.max(1, Math.ceil(totalCount / limitSafe))
+
+        return {
+            payments,
             pagination: { page: pageSafe, limit: limitSafe, totalCount, totalPages },
         }
     }
