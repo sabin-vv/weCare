@@ -117,6 +117,45 @@ export interface UsersResponse {
     pagination: Pagination
 }
 
+export interface RecentUser {
+    _id: string
+    name: string
+    email: string
+    role: string
+    createdAt: string
+}
+
+export interface AppointmentStats {
+    today: { confirmed: number; completed: number; cancelled: number; missed: number; inConsultation: number }
+    thisMonth: { pendingPayment: number; confirmed: number; completed: number; cancelled: number; missed: number; inConsultation: number }
+    dailyTrend: { date: string; confirmed: number; completed: number; cancelled: number; missed: number }[]
+}
+
+export interface RevenueStats {
+    thisMonth: { totalRevenue: number; platformFees: number; consultationFees: number }
+    dailyRevenue: { date: string; amount: number }[]
+    paymentMethods: { razorpay: number; wallet: number }
+}
+
+export interface PendingVerificationUser {
+    _id: string
+    name: string
+    email: string
+    profileImage?: string
+    role: 'doctor' | 'caregiver'
+    createdAt: string
+}
+
+export interface DashboardChartData {
+    appointmentStats: AppointmentStats
+    revenueStats: RevenueStats
+    recentUsers: RecentUser[]
+    pendingVerifications: PendingVerificationUser[]
+    totalDoctors: number
+    totalCaregivers: number
+    totalPatients: number
+}
+
 export interface PlatformSettingsDocument extends Document {
     platformName: string
     contactEmail: string
