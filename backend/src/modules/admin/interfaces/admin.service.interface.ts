@@ -1,5 +1,6 @@
 import {
     AdminAppointmentsResponseDTO,
+    AdminPaymentsResponseDTO,
     AdminVerificationStatus,
     DashboardChartData,
     PendingCaregiversResponse,
@@ -21,6 +22,15 @@ export interface IAdminService {
         startDate?: string,
         endDate?: string,
     ): Promise<AdminAppointmentsResponseDTO>
+    getPayments(
+        page: number,
+        limit: number,
+        search?: string,
+        status?: string,
+        paymentType?: string,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<AdminPaymentsResponseDTO>
     getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse>
     getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse>
     verifyDoctor(doctorId: string, status: AdminVerificationStatus, adminId: string, reason?: string): Promise<{ message: string }>
