@@ -14,6 +14,7 @@ import { PaymentModel } from '../../payment/models/payment.model'
 import { IAdminRepository } from '../interfaces/admin.repository.interface'
 import { platFoemSettingsModel } from '../models/platformSettings.model'
 import {
+    AdminAppointmentsResponseDTO,
     AdminUserProfile,
     AdminVerificationStatus,
     AppointmentStats,
@@ -728,5 +729,135 @@ export class AdminRepository implements IAdminRepository {
             .slice(0, pendingLimit)
 
         return { appointmentStats, revenueStats, recentUsers, pendingVerifications: mergedPending, totalDoctors, totalCaregivers, totalPatients }
+    }
+
+    async getAdminAppointments(
+        page: number,
+        limit: number,
+        search?: string,
+        status?: string,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<AdminAppointmentsResponseDTO> {
+        const pageSafe = Math.max(1, page)
+        const limitSafe = Math.max(1, limit)
+        const skip = (pageSafe - 1) * limitSafe
+
+        const matchFilters: Record<string, unknown> = {}
+
+        if (status && status !== 'all') {
+            matchFilters.status = status
+        }
+
+        if (startDate || endDate) {
+            const dateFilter: Record<string, Date> = {}
+            if (startDate) dateFilter.$gte = new Date(startDate + 'T00:00:00')
+            if (endDate) dateFilter.$lte = new Date(endDate + 'T23:59:59')
+            matchFilters.appointmentDate = dateFilter
+        }
+
+        const searchTrimmed = search?.trim() ?? ''
+        const searchOr: Record<string, unknown>[] = []
+        if (searchTrimmed) {
+            const regex = new RegExp(escapeRegExp(searchTrimmed), 'i')
+            searchOr.push({ 'patientUser.name': regex })
+            searchOr.push({ 'patientUser.email': regex })
+            searchOr.push({ 'doctorUser.name': regex })
+            searchOr.push({ 'doctorUser.email': regex })
+        }
+
+        const aggregation = await AppointmentModel.aggregate([
+            {
+                $lookup: {
+                    from: PatientModel.collection.name,
+                    localField: 'patientId',
+                    foreignField: 'userId',
+                    as: 'patientProfile',
+                },
+            },
+            { $unwind: { path: '$patientProfile', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: UserModel.collection.name,
+                    localField: 'patientProfile.userId',
+                    foreignField: '_id',
+                    as: 'patientUser',
+                },
+            },
+            { $unwind: { path: '$patientUser', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: DoctorModel.collection.name,
+                    localField: 'doctorId',
+                    foreignField: '_id',
+                    as: 'doctorProfile',
+                },
+            },
+            { $unwind: { path: '$doctorProfile', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: UserModel.collection.name,
+                    localField: 'doctorProfile.userId',
+                    foreignField: '_id',
+                    as: 'doctorUser',
+                },
+            },
+            { $unwind: { path: '$doctorUser', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: PaymentModel.collection.name,
+                    localField: 'paymentId',
+                    foreignField: '_id',
+                    as: 'payment',
+                },
+            },
+            { $unwind: { path: '$payment', preserveNullAndEmptyArrays: true } },
+            ...(Object.keys(matchFilters).length ? [{ $match: matchFilters }] : []),
+            ...(searchOr.length ? [{ $match: { $or: searchOr } }] : []),
+            { $sort: { createdAt: -1 } },
+            {
+                $facet: {
+                    data: [
+                        { $skip: skip },
+                        { $limit: limitSafe },
+                        {
+                            $project: {
+                                _id: { $toString: '$_id' },
+                                appointmentId: 1,
+                                patientId: { $toString: '$patientProfile.userId' },
+                                patientName: { $ifNull: ['$patientUser.name', 'Unknown'] },
+                                patientEmail: { $ifNull: ['$patientUser.email', ''] },
+                                patientMobile: { $ifNull: ['$patientUser.mobile', ''] },
+                                patientProfileImage: '$patientProfile.profileImage',
+                                doctorId: { $toString: '$doctorProfile._id' },
+                                doctorName: { $ifNull: ['$doctorUser.name', 'Unknown'] },
+                                doctorProfileImage: '$doctorProfile.profileImage',
+                                specialization: {
+                                    $ifNull: [{ $arrayElemAt: ['$doctorProfile.specializations.name', 0] }, ''],
+                                },
+                                appointmentDate: { $toString: '$appointmentDate' },
+                                slotStart: 1,
+                                slotEnd: 1,
+                                status: 1,
+                                consultationFee: 1,
+                                paymentStatus: '$payment.status',
+                                createdAt: { $toString: '$createdAt' },
+                            },
+                        },
+                    ],
+                    pagination: [{ $count: 'totalCount' }],
+                },
+            },
+        ])
+
+        const facet = aggregation[0]
+        const appointments = (facet?.data ?? []) as AdminAppointmentsResponseDTO['appointments']
+        const totalCount = facet?.pagination?.[0]?.totalCount ?? 0
+        const totalPages = Math.max(1, Math.ceil(totalCount / limitSafe))
+
+        return {
+            appointments,
+            pagination: { page: pageSafe, limit: limitSafe, totalCount, totalPages },
+        }
     }
 }
