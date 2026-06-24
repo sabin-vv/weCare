@@ -13,28 +13,173 @@
 
 .statsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 24px;
 }
 
-.overview {
+.chartRow {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
 }
 
-.section {
-    background: #fff;
-    padding: 24px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    min-height: 300px;
+.chartWrapper {
+    position: relative;
 }
 
-.section h3 {
-    margin: 0 0 16px;
-    font-size: 18px;
-    color: #475569;
+.totalCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+}
+
+.totalCount {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.totalLabel {
+    font-size: 13px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.revenueCards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 0;
+}
+
+.revenueCard {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+}
+
+.revenueValue {
+    font-size: 22px;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+.revenueLabel {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.userTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.userTable th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.userTable td {
+    padding: 10px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.userName {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.roleBadge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.doctor {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.caregiver {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.patient {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.dateCell {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.activityList {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.activityItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.activityItem:last-child {
+    border-bottom: none;
+}
+
+.activityDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.activityContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.activityDesc {
+    font-size: 14px;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.activityMeta {
+    font-size: 12px;
+    color: #94a3b8;
 }
 
 .placeholder {
