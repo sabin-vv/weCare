@@ -1,6 +1,7 @@
 import type { PresignUploadParams, PresignUploadResponse } from '../../auth/api/auth.api.types'
 import type {
     ActivityLogsResponse,
+    AdminAppointmentsResponse,
     DashboardChartData,
     PendingCaregiversResponse,
     PendingDoctorsResponse,
@@ -83,6 +84,23 @@ export const getDashboardChartData = async (limit?: number, startDate?: string, 
     if (endDate) params.endDate = endDate
     const res = await api.get(`${ADMIN_API}/dashboard-charts`, { params })
     return res.data.data
+}
+
+export const getAdminAppointments = async (
+    page: number = 1,
+    limit: number = 8,
+    search?: string,
+    status?: string,
+    startDate?: string,
+    endDate?: string,
+): Promise<AdminAppointmentsResponse> => {
+    const params: Record<string, string | number> = { page, limit }
+    if (search) params.search = search
+    if (status && status !== 'all') params.status = status
+    if (startDate) params.startDate = startDate
+    if (endDate) params.endDate = endDate
+    const res = await api.get(`${ADMIN_API}/appointments`, { params })
+    return res.data
 }
 
 export const getPendingCount = async (): Promise<{ count: number }> => {
