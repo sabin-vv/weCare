@@ -52,10 +52,7 @@ export class AdminController {
         const specIndex = getSingleParam(req.params.specIndex, 'specIndex')
         const { verified } = req.body as { verified: boolean }
 
-        const adminId = (req as AuthenticatedRequest).user?.userId
-        if (!adminId) throw new Error('Admin id missing from token')
-
-        const result = await this._adminService.verifySpecialization(doctorId, Number(specIndex), verified, adminId)
+        const result = await this._adminService.verifySpecialization(doctorId, Number(specIndex), verified)
 
         res.status(HTTP_STATUS.OK).json(result)
     }
@@ -87,6 +84,14 @@ export class AdminController {
         const result = await this._adminService.verifyCaregiver(caregiverId, status, adminId)
 
         res.status(HTTP_STATUS.OK).json(result)
+    }
+
+    getDashboardChartData = async (req: Request, res: Response) => {
+        const limit = Number(req.query.limit) || 10
+        const startDate = req.query.startDate as string | undefined
+        const endDate = req.query.endDate as string | undefined
+        const data = await this._adminService.getDashboardChartData(limit, startDate, endDate)
+        res.status(HTTP_STATUS.OK).json({ success: true, data })
     }
 
     getPendingCount = async (_req: Request, res: Response) => {
