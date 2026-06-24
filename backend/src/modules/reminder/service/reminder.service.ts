@@ -93,7 +93,7 @@ export class ReminderService implements IReminderService {
                     patientId,
                     patientName,
                     scheduleTime: schedule.scheduleTime,
-                    priority: schedule.priority as ReminderItem['priority'],
+                    priority: 'medium' as const,
                     status: schedule.status === 'missed' ? ('missed' as const) : ('pending' as const),
                 }
             }),
