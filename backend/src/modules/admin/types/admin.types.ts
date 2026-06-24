@@ -191,6 +191,40 @@ export interface AdminAppointmentsResponseDTO {
     pagination: AdminAppointmentsPaginationDTO
 }
 
+export type AdminPaymentStatus = 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
+export type AdminPaymentMethod = 'razorpay' | 'wallet'
+export type AdminPaymentType = 'consultation' | 'subscription'
+
+export interface AdminPaymentRowDTO {
+    _id: string
+    paymentId: string
+    patientId: string
+    patientName: string
+    patientEmail: string
+    patientMobile: string
+    patientProfileImage?: string
+    paymentType: AdminPaymentType
+    paymentMethod: AdminPaymentMethod
+    consultationFee?: number
+    platformFee?: number
+    totalAmount: number
+    status: AdminPaymentStatus
+    paidAt?: string
+    createdAt: string
+}
+
+export interface AdminPaymentsPaginationDTO {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+}
+
+export interface AdminPaymentsResponseDTO {
+    payments: AdminPaymentRowDTO[]
+    pagination: AdminPaymentsPaginationDTO
+}
+
 export interface PlatformSettingsDocument extends Document {
     platformName: string
     contactEmail: string
