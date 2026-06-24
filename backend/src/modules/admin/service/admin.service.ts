@@ -16,6 +16,7 @@ import {
     toRecentDoctorDTO,
 } from '../mapper/admin.mapper'
 import {
+    AdminAppointmentsResponseDTO,
     AdminVerificationStatus,
     DashboardChartData,
     PendingCaregiversResponse,
@@ -135,6 +136,17 @@ export class AdminService implements IAdminService {
 
     async getDashboardChartData(limit?: number, startDate?: string, endDate?: string): Promise<DashboardChartData> {
         return this._adminRepo.getDashboardChartData(limit, startDate, endDate)
+    }
+
+    async getAdminAppointments(
+        page: number,
+        limit: number,
+        search?: string,
+        status?: string,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<AdminAppointmentsResponseDTO> {
+        return this._adminRepo.getAdminAppointments(page, limit, search, status, startDate, endDate)
     }
 
     async getPendingCount(): Promise<PendingCountResponse> {
