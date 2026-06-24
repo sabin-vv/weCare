@@ -135,7 +135,7 @@ const Dashboard = () => {
                 ])
                 setStats(dashboardData)
                 setAppointments(appointmentData.appointments.slice(0, DASHBOARD_LIST_LIMIT))
-                setAlerts(alertsData.slice(0, DASHBOARD_LIST_LIMIT))
+                setAlerts(alertsData.alerts.slice(0, DASHBOARD_LIST_LIMIT))
             } catch (error) {
                 toast.error(getErrorMessage(error))
             } finally {
