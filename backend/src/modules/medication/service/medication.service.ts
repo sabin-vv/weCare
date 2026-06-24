@@ -176,7 +176,7 @@ export class MedicationService implements IMedicationService {
                     targetRole: ['caregiver', 'doctor'],
                     type: 'missed_medication',
                     severity: 'critical',
-                    triggerReason: `${schedule.medicineName} missed ${priorSchedule.length} consecutive times`,
+                    triggerReason: `${schedule.medicineName} missed ${priorSchedule.length + 1} consecutive times`,
                 })
             }
         }
