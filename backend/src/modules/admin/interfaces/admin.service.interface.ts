@@ -1,5 +1,6 @@
 import {
     AdminVerificationStatus,
+    DashboardChartData,
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
@@ -10,6 +11,7 @@ import {
 } from '../types/admin.types'
 
 export interface IAdminService {
+    getDashboardChartData(limit?: number, startDate?: string, endDate?: string): Promise<DashboardChartData>
     getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse>
     getRecentDoctorVerifications(limit: number): Promise<RecentDoctorsResponse>
     verifyDoctor(doctorId: string, status: AdminVerificationStatus, adminId: string, reason?: string): Promise<{ message: string }>
@@ -17,7 +19,6 @@ export interface IAdminService {
         doctorId: string,
         specIndex: number,
         verified: boolean,
-        adminId: string,
     ): Promise<{ message: string }>
     getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse>
     getRecentCaregiverVerifications(limit: number): Promise<RecentCaregiversResponse>
