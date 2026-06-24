@@ -2,6 +2,7 @@ import type { PresignUploadParams, PresignUploadResponse } from '../../auth/api/
 import type {
     ActivityLogsResponse,
     AdminAppointmentsResponse,
+    AdminPaymentsResponse,
     DashboardChartData,
     PendingCaregiversResponse,
     PendingDoctorsResponse,
@@ -100,6 +101,25 @@ export const getAdminAppointments = async (
     if (startDate) params.startDate = startDate
     if (endDate) params.endDate = endDate
     const res = await api.get(`${ADMIN_API}/appointments`, { params })
+    return res.data
+}
+
+export const getAdminPayments = async (
+    page: number = 1,
+    limit: number = 8,
+    search?: string,
+    status?: string,
+    paymentType?: string,
+    startDate?: string,
+    endDate?: string,
+): Promise<AdminPaymentsResponse> => {
+    const params: Record<string, string | number> = { page, limit }
+    if (search) params.search = search
+    if (status && status !== 'all') params.status = status
+    if (paymentType && paymentType !== 'all') params.paymentType = paymentType
+    if (startDate) params.startDate = startDate
+    if (endDate) params.endDate = endDate
+    const res = await api.get(`${ADMIN_API}/payments`, { params })
     return res.data
 }
 
