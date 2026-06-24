@@ -227,7 +227,7 @@ export class VitalService implements IVitalService {
                     type: 'missed_vital',
                     targetRole: ['doctor', 'caregiver'],
                     severity: 'critical',
-                    triggerReason: `${schedule.vitalType.replace(/_/g, ' ')} missed ${priorSchedule.length} consecutive times`,
+                    triggerReason: `${schedule.vitalType.replace(/_/g, ' ')} missed ${priorSchedule.length + 1} consecutive times`,
                 })
             }
         }
