@@ -17,6 +17,7 @@ import {
 } from '../mapper/admin.mapper'
 import {
     AdminVerificationStatus,
+    DashboardChartData,
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
@@ -84,9 +85,8 @@ export class AdminService implements IAdminService {
         doctorId: string,
         specIndex: number,
         verified: boolean,
-        adminId: string,
     ): Promise<{ message: string }> {
-        return this._adminRepo.verifySpecialization(doctorId, specIndex, verified, adminId)
+        return this._adminRepo.verifySpecialization(doctorId, specIndex, verified)
     }
 
     async getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse> {
@@ -131,6 +131,10 @@ export class AdminService implements IAdminService {
                     : `Caregiver ${user.name} Verification Rejected`,
         })
         return result
+    }
+
+    async getDashboardChartData(limit?: number, startDate?: string, endDate?: string): Promise<DashboardChartData> {
+        return this._adminRepo.getDashboardChartData(limit, startDate, endDate)
     }
 
     async getPendingCount(): Promise<PendingCountResponse> {
