@@ -147,6 +147,32 @@ export interface DashboardChartData {
     totalPatients: number
 }
 
+export interface AdminAppointment {
+    _id: string
+    appointmentId: string
+    patientId: string
+    patientName: string
+    patientEmail: string
+    patientMobile: string
+    patientProfileImage?: string
+    doctorId: string
+    doctorName: string
+    doctorProfileImage?: string
+    specialization: string
+    appointmentDate: string
+    slotStart: string
+    slotEnd: string
+    status: 'pending_payment' | 'confirmed' | 'cancelled' | 'missed' | 'in_consultation' | 'completed'
+    consultationFee: number
+    paymentStatus?: string
+    createdAt: string
+}
+
+export interface AdminAppointmentsResponse {
+    appointments: AdminAppointment[]
+    pagination: Pagination
+}
+
 export interface PlatformSettings {
     platformName: string
     contactEmail: string
