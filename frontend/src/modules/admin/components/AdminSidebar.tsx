@@ -1,4 +1,12 @@
-import { LayoutDashboard, Users, UserCheck, ShieldPlus, History as HistoryIcon, CalendarDays } from 'lucide-react'
+import {
+    LayoutDashboard,
+    Users,
+    UserCheck,
+    ShieldPlus,
+    History as HistoryIcon,
+    CalendarDays,
+    Banknote,
+} from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
 import styles from './AdminSidebar.module.css'
@@ -72,6 +80,13 @@ const AdminSidebar = () => {
                 >
                     <CalendarDays size={20} />
                     <span>Appointments</span>
+                </NavLink>
+                <NavLink
+                    to={'/admin/payments'}
+                    className={({ isActive }) => (isActive ? styles.activeLink : styles.link)}
+                >
+                    <Banknote size={20} />
+                    <span>Payments</span>
                 </NavLink>
             </nav>
         </aside>
