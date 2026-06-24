@@ -1,5 +1,11 @@
-import { PatientResponseDTO } from '../mapper/patient.mapper'
-import { CareTeamResponseDTO, ClinicalStatus, ListPatientsResponse, PatientDetailsDTO, PatientProfileResponseDTO } from '../types/patient.types'
+import { PatientResponseDTO } from '../types/patient.types'
+import {
+    CareTeamResponseDTO,
+    ClinicalStatus,
+    ListPatientsResponse,
+    PatientDetailsDTO,
+    PatientProfileResponseDTO,
+} from '../types/patient.types'
 import { RegisterPatientDTO } from '../validator/patient.schema'
 import { UpdatePatientConditionDTO } from '../validator/updatePatientCondition.schema'
 import { UpdatePatientSettingsDTO } from '../validator/updatePatientSettings.schema'
@@ -28,5 +34,9 @@ export interface IPatientService {
         dto: UpdatePatientConditionDTO,
     ): Promise<PatientDetailsDTO>
     assignCaregiver(doctorId: string, patientId: string, caregiverId: string): Promise<PatientDetailsDTO>
-    updateClinicalStatus(doctorId: string, patientId: string, clinicalStatus: ClinicalStatus): Promise<PatientDetailsDTO>
+    updateClinicalStatus(
+        doctorId: string,
+        patientId: string,
+        clinicalStatus: ClinicalStatus,
+    ): Promise<PatientDetailsDTO>
 }
