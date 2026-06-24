@@ -24,8 +24,20 @@ export class AlertService implements IAlertService {
 
     async getAlerts(
         userId: string,
-        filters?: { type?: string; severity?: string; status?: string; limit?: number },
-    ): Promise<AlertDocument[]> {
+        role: string,
+        filters?: { type?: string; severity?: string; status?: string; limit?: number; page?: number },
+    ): Promise<{
+        alerts: AlertDocument[]
+        pagination: { page: number; limit: number; totalCount: number; totalPages: number }
+    }> {
+        const filter: Record<string, unknown> = { targetRole: { $in: [role] } }
+        if (filters?.type) filter.type = filters.type
+        if (filters?.severity) filter.severity = filters.severity
+        if (filters?.status) filter.status = filters.status
+
+        const page = Math.max(1, filters?.page || 1)
+        const limit = Math.max(1, filters?.limit || 8)
+
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
@@ -39,15 +51,15 @@ export class AlertService implements IAlertService {
         })
 
         const patientIds = patientsResult.data.map((p) => p._id.toString())
-        if (patientIds.length === 0) return []
+        if (patientIds.length === 0) {
+            return { alerts: [], pagination: { page, limit, totalCount: 0, totalPages: 0 } }
+        }
 
-        const filter: Record<string, unknown> = {}
-        if (filters?.type) filter.type = filters.type
-        if (filters?.severity) filter.severity = filters.severity
-        if (filters?.status) filter.status = filters.status
-        else filter.status = 'open'
-
-        return this._alertRepo.findByPatientIds(patientIds, filter, filters?.limit)
+        const [alerts, total] = await Promise.all([
+            this._alertRepo.findByPatientIds(patientIds, filter, limit, page),
+            this._alertRepo.countByPatientIds(patientIds, filter),
+        ])
+        return { alerts, pagination: { page, limit, totalCount: total, totalPages: Math.ceil(total / limit) } }
     }
 
     async acknowledgeAlert(userId: string, alertId: string, note?: string): Promise<AlertDocument> {
@@ -97,7 +109,7 @@ export class AlertService implements IAlertService {
     ): Promise<AlertDocument[]> {
         if (patientIds.length === 0) return []
 
-        const filter: Record<string, unknown> = {}
+        const filter: Record<string, unknown> = { targetRole: { $in: ['caregiver'] } }
         if (filters?.type) filter.type = filters.type
         if (filters?.severity) filter.severity = filters.severity
         if (filters?.status) filter.status = filters.status
