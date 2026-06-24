@@ -4,6 +4,7 @@ import AdminLayout from '../components/AdminLayout'
 import ActivityLogsPage from '../pages/ActivityLogsPage'
 import AdminAppointmentsPage from '../pages/AdminAppointmentsPage'
 import AdminDashboard from '../pages/AdminDashboard'
+import AdminPaymentsPage from '../pages/AdminPaymentsPage'
 import AdminLoginPage from '../pages/AdminLoginPage'
 import AdminSettings from '../pages/AdminSettings'
 import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
@@ -49,6 +50,10 @@ export const AdminRoutes: RouteObject[] = [
             {
                 path: 'appointments',
                 element: <AdminAppointmentsPage />,
+            },
+            {
+                path: 'payments',
+                element: <AdminPaymentsPage />,
             },
             {
                 path: 'activity-logs',
