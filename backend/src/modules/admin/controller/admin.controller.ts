@@ -86,6 +86,17 @@ export class AdminController {
         res.status(HTTP_STATUS.OK).json(result)
     }
 
+    getAdminAppointments = async (req: Request, res: Response) => {
+        const page = Number(req.query.page ?? 1)
+        const limit = Number(req.query.limit ?? 10)
+        const search = req.query.search as string | undefined
+        const status = req.query.status as string | undefined
+        const startDate = req.query.startDate as string | undefined
+        const endDate = req.query.endDate as string | undefined
+        const result = await this._adminService.getAdminAppointments(page, limit, search, status, startDate, endDate)
+        res.status(HTTP_STATUS.OK).json(result)
+    }
+
     getDashboardChartData = async (req: Request, res: Response) => {
         const limit = Number(req.query.limit) || 10
         const startDate = req.query.startDate as string | undefined
