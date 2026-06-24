@@ -11,18 +11,20 @@ export class AlertController {
     constructor(@inject(TOKENS.IAlertService) private _alertService: IAlertService) {}
 
     getAlerts = async (req: Request, res: Response) => {
-        const userId = req.user?.userId
-        if (!userId) throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+        const { userId, role } = req.user ?? {}
+        if (!userId || !role) throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
 
-        const { type, severity, status, limit } = req.query as Record<string, string | undefined>
+        const { type, severity, status, limit, page } = req.query as Record<string, string | undefined>
         const parsedLimit = limit ? parseInt(limit, 10) : undefined
-        const alerts = await this._alertService.getAlerts(userId, {
+        const parsedPage = page ? parseInt(page, 10) : undefined
+        const result = await this._alertService.getAlerts(userId, role, {
             type,
             severity,
             status,
             limit: Number.isFinite(parsedLimit) ? parsedLimit : undefined,
+            page: Number.isFinite(parsedPage) ? parsedPage : undefined,
         })
-        res.status(HTTP_STATUS.OK).json({ success: true, data: alerts })
+        res.status(HTTP_STATUS.OK).json({ success: true, data: result })
     }
 
     getMyAlertCount = async (req: Request, res: Response) => {
