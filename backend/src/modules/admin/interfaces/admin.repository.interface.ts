@@ -1,5 +1,6 @@
 import {
     AdminVerificationStatus,
+    DashboardChartData,
     PendingCaregiversResponse,
     PendingCountResponse,
     PendingDoctorsResponse,
@@ -10,6 +11,7 @@ import {
 } from '../types/admin.types'
 
 export interface IAdminRepository {
+    getDashboardChartData(limit?: number, startDate?: string, endDate?: string): Promise<DashboardChartData>
     findByUserId(userId: string): Promise<{ profileImage?: string } | null>
 
     getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse>
@@ -22,7 +24,6 @@ export interface IAdminRepository {
         doctorId: string,
         specIndex: number,
         verified: boolean,
-        adminId: string,
     ): Promise<{ message: string }>
 
     getPendingCaregivers(page: number, limit: number, search: string): Promise<PendingCaregiversResponse>
