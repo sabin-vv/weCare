@@ -156,6 +156,41 @@ export interface DashboardChartData {
     totalPatients: number
 }
 
+export type AdminAppointmentStatus = 'pending_payment' | 'confirmed' | 'cancelled' | 'missed' | 'in_consultation' | 'completed'
+
+export interface AdminAppointmentRowDTO {
+    _id: string
+    appointmentId: string
+    patientId: string
+    patientName: string
+    patientEmail: string
+    patientMobile: string
+    patientProfileImage?: string
+    doctorId: string
+    doctorName: string
+    doctorProfileImage?: string
+    specialization: string
+    appointmentDate: string
+    slotStart: string
+    slotEnd: string
+    status: AdminAppointmentStatus
+    consultationFee: number
+    paymentStatus?: string
+    createdAt: string
+}
+
+export interface AdminAppointmentsPaginationDTO {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+}
+
+export interface AdminAppointmentsResponseDTO {
+    appointments: AdminAppointmentRowDTO[]
+    pagination: AdminAppointmentsPaginationDTO
+}
+
 export interface PlatformSettingsDocument extends Document {
     platformName: string
     contactEmail: string
