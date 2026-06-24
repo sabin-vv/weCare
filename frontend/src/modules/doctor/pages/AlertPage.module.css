@@ -13,6 +13,50 @@
     font-weight: 500;
 }
 
+.filterBar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-end;
+}
+
+.filterFields {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filterFields > * {
+    min-width: 160px;
+    max-width: 200px;
+}
+
+.clearBtn {
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+    background: #fff1f2;
+    color: #e11d48;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.clearBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.clearBtn:not(:disabled):hover {
+    background: #ffe4e6;
+    border-color: #fda4af;
+}
+
 .spinner {
     animation: spin 1s linear infinite;
 }
@@ -21,10 +65,4 @@
     to {
         transform: rotate(360deg);
     }
-}
-
-.list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
 }
