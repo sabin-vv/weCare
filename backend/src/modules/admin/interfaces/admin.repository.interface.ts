@@ -1,5 +1,6 @@
 import {
     AdminAppointmentsResponseDTO,
+    AdminPaymentsResponseDTO,
     AdminVerificationStatus,
     DashboardChartData,
     PendingCaregiversResponse,
@@ -21,6 +22,15 @@ export interface IAdminRepository {
         startDate?: string,
         endDate?: string,
     ): Promise<AdminAppointmentsResponseDTO>
+    getPayments(
+        page: number,
+        limit: number,
+        search?: string,
+        status?: string,
+        paymentType?: string,
+        startDate?: string,
+        endDate?: string,
+    ): Promise<AdminPaymentsResponseDTO>
     findByUserId(userId: string): Promise<{ profileImage?: string } | null>
 
     getPendingDoctors(page: number, limit: number, search: string): Promise<PendingDoctorsResponse>
