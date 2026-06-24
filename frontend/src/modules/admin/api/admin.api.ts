@@ -1,6 +1,7 @@
 import type { PresignUploadParams, PresignUploadResponse } from '../../auth/api/auth.api.types'
 import type {
     ActivityLogsResponse,
+    DashboardChartData,
     PendingCaregiversResponse,
     PendingDoctorsResponse,
     PlatformSettings,
@@ -73,6 +74,15 @@ export const verifyCaregiver = async (
 ): Promise<{ message: string }> => {
     const res = await api.patch(`${ADMIN_API}/verify-caregiver/${caregiverId}`, { status })
     return res.data
+}
+
+export const getDashboardChartData = async (limit?: number, startDate?: string, endDate?: string): Promise<DashboardChartData> => {
+    const params: Record<string, string | number> = {}
+    if (limit) params.limit = limit
+    if (startDate) params.startDate = startDate
+    if (endDate) params.endDate = endDate
+    const res = await api.get(`${ADMIN_API}/dashboard-charts`, { params })
+    return res.data.data
 }
 
 export const getPendingCount = async (): Promise<{ count: number }> => {
