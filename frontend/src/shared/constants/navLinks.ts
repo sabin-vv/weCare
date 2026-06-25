@@ -11,6 +11,7 @@ export const patientNavLinks: NavLink[] = [
 export const caregiverNavLinks: NavLink[] = [
     { label: 'Dashboard', path: '/caregiver/dashboard' },
     { label: 'Patients', path: '/caregiver/patients' },
+    { label: 'Alerts', path: '/caregiver/alerts' },
     { label: 'Reminders', path: '/caregiver/reminders' },
     { label: 'Activity Log', path: '/caregiver/activity-log' },
 ]

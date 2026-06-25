@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router-dom'
 
 import CaregiverActivityLog from '../pages/CaregiverActivityLog'
+import CaregiverAlertsPage from '../pages/CaregiverAlertsPage'
 import CaregiverDashboard from '../pages/CaregiverDashboard'
 import CaregiverPatients from '../pages/CaregiverPatients'
 import CaregiverReminders from '../pages/CaregiverReminders'
@@ -35,6 +36,10 @@ export const CaregiverRoutes: RouteObject[] = [
             {
                 path: 'reminders',
                 element: <CaregiverReminders />,
+            },
+            {
+                path: 'alerts',
+                element: <CaregiverAlertsPage />,
             },
             {
                 path: 'activity-log',
