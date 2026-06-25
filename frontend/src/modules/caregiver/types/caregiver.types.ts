@@ -223,6 +223,13 @@ export interface CaregiverActivityLogItem {
     updatedAt: string
 }
 
+export interface PaginationData {
+    page: number
+    limit: number
+    totalCount: number
+    totalPages: number
+}
+
 export interface CaregiverActivityLogPagination {
     page: number
     limit: number
