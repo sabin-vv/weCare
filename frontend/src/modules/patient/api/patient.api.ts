@@ -26,6 +26,7 @@ import { api } from '@/services/api'
 import {
     ALERTS_API,
     APPOINTMENT_API,
+    ASSISTANT_API,
     DOCTORS_API,
     FEEDBACK_API,
     MEDICATIONS_API,
@@ -189,4 +190,9 @@ export const getCareTeam = async (): Promise<CareTeamMember[]> => {
 export const createFeedback = async (data: CreateFeedbackDTO): Promise<{ id: string }> => {
     const response = await api.post<{ success: boolean; data: { id: string } }>(FEEDBACK_API, data)
     return response.data.data
+}
+
+export const chatWithAssistant = async (message: string): Promise<string> => {
+    const response = await api.post<{ success: boolean; data: { text: string } }>(`${ASSISTANT_API}/chat`, { message })
+    return response.data.data.text
 }
