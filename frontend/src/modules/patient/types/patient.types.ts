@@ -342,3 +342,23 @@ export interface FeedbackProfileCardProps {
     profile: Profiledata
     onFeedback?: () => void
 }
+
+export interface TeamMember {
+    id: string
+    name: string
+    role: string
+    profileImage?: string
+    specialization?: string[]
+    status: boolean
+    rating?: number
+    email?: string
+    mobile?: string
+}
+
+export interface FeedbackTarget {
+    id: string
+    name: string
+    role: 'doctor' | 'caregiver'
+    initialRating?: number
+    initialComment?: string
+}

@@ -4,7 +4,6 @@ import toast from 'react-hot-toast'
 
 import styles from './PatientSettings.module.css'
 
-import AuthLayout from '@/layout/AuthLayout'
 import {
     changePassword,
     getCurrentUser,
@@ -274,156 +273,154 @@ const PatientSettings = () => {
             : profileImageSrc
 
     return (
-        <AuthLayout>
-            <MainWrapper>
-                <h2 className={styles.title}>Settings</h2>
-                <div className={styles.profileCard}>
-                    <div className={styles.left}>
-                        <div className={styles.avatarWrap}>
-                            <input
-                                type="file"
-                                id="patientProfileImageInput"
-                                accept="image/*"
-                                hidden
-                                onChange={handleImageSelect}
+        <MainWrapper>
+            <h2 className={styles.title}>Settings</h2>
+            <div className={styles.profileCard}>
+                <div className={styles.left}>
+                    <div className={styles.avatarWrap}>
+                        <input
+                            type="file"
+                            id="patientProfileImageInput"
+                            accept="image/*"
+                            hidden
+                            onChange={handleImageSelect}
+                        />
+
+                        {resolvedProfileImage ? (
+                            <img
+                                src={resolvedProfileImage}
+                                className={styles.avatar}
+                                alt={form.name || 'Patient profile'}
                             />
+                        ) : (
+                            <div className={styles.avatarFallback}>
+                                {(form.name || user?.name || 'P').charAt(0).toUpperCase()}
+                            </div>
+                        )}
 
-                            {resolvedProfileImage ? (
-                                <img
-                                    src={resolvedProfileImage}
-                                    className={styles.avatar}
-                                    alt={form.name || 'Patient profile'}
-                                />
-                            ) : (
-                                <div className={styles.avatarFallback}>
-                                    {(form.name || user?.name || 'P').charAt(0).toUpperCase()}
-                                </div>
-                            )}
-
-                            <label
-                                htmlFor="patientProfileImageInput"
-                                className={`${styles.avatarBadge} ${isUploadingImage ? styles.uploading : ''}`}
-                            >
-                                <Camera size={14} />
-                            </label>
-                        </div>
-                        <div>
-                            <h3 className={styles.name}>{savedState.name || user?.name}</h3>
-
-                            <p className={styles.conditions}>
-                                Conditions:{' '}
-                                {patientProfile?.conditions?.length
-                                    ? patientProfile.conditions.join(', ')
-                                    : 'No conditions'}
-                            </p>
-                        </div>
+                        <label
+                            htmlFor="patientProfileImageInput"
+                            className={`${styles.avatarBadge} ${isUploadingImage ? styles.uploading : ''}`}
+                        >
+                            <Camera size={14} />
+                        </label>
                     </div>
+                    <div>
+                        <h3 className={styles.name}>{savedState.name || user?.name}</h3>
 
-                    <div className={styles.right}>
-                        <span className={styles.label}>Patient ID</span>
-                        <p className={styles.patientId}>
-                            {patientProfile?.patientId ? `#${patientProfile.patientId}` : '--'}
+                        <p className={styles.conditions}>
+                            Conditions:{' '}
+                            {patientProfile?.conditions?.length
+                                ? patientProfile.conditions.join(', ')
+                                : 'No conditions'}
                         </p>
                     </div>
                 </div>
 
-                <Section
-                    title="Profile Information"
-                    actions={
-                        <button
-                            type="button"
-                            className={`${styles.editButton} ${isEditing ? styles.editButtonActive : ''}`}
-                            onClick={handleToggleEditing}
-                            aria-label="Toggle personal information editing"
-                        >
-                            <Pencil size={16} />
-                        </button>
-                    }
-                >
-                    <div className={styles.grid}>
-                        <InputField
-                            name="name"
-                            placeholder="Full Name"
-                            value={form.name}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                        />
-                        <InputField
-                            name="email"
-                            placeholder="Email"
-                            value={form.email}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                        />
-                        <InputField
-                            name="mobile"
-                            placeholder="Phone Number"
-                            value={form.mobile}
-                            onChange={handleChange}
-                            disabled={!isEditing}
-                        />
-                        <InputField
-                            name="dateOfBirth"
-                            type="date"
-                            placeholder="Date of Birth"
-                            value={form.dateOfBirth}
-                            onChange={handleChange}
-                            disabled
-                        />
-                        <InputField
-                            name="gender"
-                            placeholder="gender"
-                            value={form.gender}
-                            onChange={handleChange}
-                            disabled
-                        />
-                    </div>
-                </Section>
-                <DoctorSecuritySection onResetPassword={handleResetPassword} />
+                <div className={styles.right}>
+                    <span className={styles.label}>Patient ID</span>
+                    <p className={styles.patientId}>
+                        {patientProfile?.patientId ? `#${patientProfile.patientId}` : '--'}
+                    </p>
+                </div>
+            </div>
 
-                <DoctorSettingsActions
-                    hasChanges={hasChanges}
-                    isSaving={isSaving}
-                    isLoadingProfile={isLoadingProfile}
-                    onDiscard={handleDiscard}
-                    onSave={handleSave}
-                />
-
-                <ChangePasswordForm
-                    isOpen={showPasswordModal}
-                    onClose={() => setShowPasswordModal(false)}
-                    onSubmit={handleChangePassword}
-                    isLoading={isChangingPassword}
-                />
-
-                {showEmailOtpModal && (
-                    <Modal
-                        isOpen={showEmailOtpModal}
-                        onClose={() => {
-                            setShowEmailOtpModal(false)
-                            setOtpSent(false)
-                        }}
-                        title=""
+            <Section
+                title="Profile Information"
+                actions={
+                    <button
+                        type="button"
+                        className={`${styles.editButton} ${isEditing ? styles.editButtonActive : ''}`}
+                        onClick={handleToggleEditing}
+                        aria-label="Toggle personal information editing"
                     >
-                        <OtpVerification
-                            email={pendingEmail}
-                            onVerify={handleVerifyEmailOtp}
-                            onResend={handleResendEmailOtp}
-                            onBack={() => setShowEmailOtpModal(false)}
-                            loading={isVerifyingEmail}
-                        />
-                    </Modal>
-                )}
-
-                {imageCrop && (
-                    <ImageCropper
-                        image={imageCrop}
-                        onCropComplete={handleCropComplete}
-                        onClose={() => setImageCrop(null)}
+                        <Pencil size={16} />
+                    </button>
+                }
+            >
+                <div className={styles.grid}>
+                    <InputField
+                        name="name"
+                        placeholder="Full Name"
+                        value={form.name}
+                        onChange={handleChange}
+                        disabled={!isEditing}
                     />
-                )}
-            </MainWrapper>
-        </AuthLayout>
+                    <InputField
+                        name="email"
+                        placeholder="Email"
+                        value={form.email}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                    />
+                    <InputField
+                        name="mobile"
+                        placeholder="Phone Number"
+                        value={form.mobile}
+                        onChange={handleChange}
+                        disabled={!isEditing}
+                    />
+                    <InputField
+                        name="dateOfBirth"
+                        type="date"
+                        placeholder="Date of Birth"
+                        value={form.dateOfBirth}
+                        onChange={handleChange}
+                        disabled
+                    />
+                    <InputField
+                        name="gender"
+                        placeholder="gender"
+                        value={form.gender}
+                        onChange={handleChange}
+                        disabled
+                    />
+                </div>
+            </Section>
+            <DoctorSecuritySection onResetPassword={handleResetPassword} />
+
+            <DoctorSettingsActions
+                hasChanges={hasChanges}
+                isSaving={isSaving}
+                isLoadingProfile={isLoadingProfile}
+                onDiscard={handleDiscard}
+                onSave={handleSave}
+            />
+
+            <ChangePasswordForm
+                isOpen={showPasswordModal}
+                onClose={() => setShowPasswordModal(false)}
+                onSubmit={handleChangePassword}
+                isLoading={isChangingPassword}
+            />
+
+            {showEmailOtpModal && (
+                <Modal
+                    isOpen={showEmailOtpModal}
+                    onClose={() => {
+                        setShowEmailOtpModal(false)
+                        setOtpSent(false)
+                    }}
+                    title=""
+                >
+                    <OtpVerification
+                        email={pendingEmail}
+                        onVerify={handleVerifyEmailOtp}
+                        onResend={handleResendEmailOtp}
+                        onBack={() => setShowEmailOtpModal(false)}
+                        loading={isVerifyingEmail}
+                    />
+                </Modal>
+            )}
+
+            {imageCrop && (
+                <ImageCropper
+                    image={imageCrop}
+                    onCropComplete={handleCropComplete}
+                    onClose={() => setImageCrop(null)}
+                />
+            )}
+        </MainWrapper>
     )
 }
 

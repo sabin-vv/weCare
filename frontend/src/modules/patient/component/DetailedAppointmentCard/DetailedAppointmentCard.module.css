@@ -1,0 +1,326 @@
+.appointmentCard {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.appointmentCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cardTopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.doctorDetails {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.profilePic {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.avatarPlaceholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #1d4ed8;
+    flex-shrink: 0;
+}
+
+.doctorInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.nameRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.doctorName {
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #1a1a1a;
+}
+
+.specialtyRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.doctorSpecialize {
+    font-size: 0.9rem;
+    color: #64748b;
+    text-transform: capitalize;
+}
+
+.appointmentId {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: #f1f5f9;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+}
+
+.statusText {
+    display: flex;
+    width: fit-content;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.statusConfirmed {
+    background: #e6fcf5;
+    color: #0ca678;
+}
+
+.statusPending {
+    background: #fff9db;
+    color: #f08c00;
+}
+
+.statusCancelled {
+    background: #fff5f5;
+    color: #fa5252;
+}
+
+.inConsultation {
+    background: #e7f5ff;
+    color: #1c7ed6;
+}
+
+.completed {
+    background: #edf2ff;
+    color: #364fc7;
+}
+
+.detailsRow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    font-size: 0.95rem;
+    color: #475569;
+    padding: 0.85rem 0;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+}
+
+.detailItem {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.detailValue {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    gap: 4px;
+    color: #364fc7;
+}
+
+.detailsSeparator {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+}
+
+.paymentStatus {
+    text-transform: capitalize;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footerLeft {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.footerLeft span {
+    font-size: 13px;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.footerLeft strong {
+    color: #475569;
+    font-weight: 600;
+}
+
+.footerRight {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.bookAgainButton {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #1d4ed8;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.bookAgainButton:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+}
+
+.bookAgainButton:active {
+    transform: scale(0.98);
+}
+
+.retryButton {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.retryButton:hover {
+    background: #fde68a;
+    transform: translateY(-1px);
+}
+
+.retryButton:active {
+    transform: scale(0.98);
+}
+
+.rescheduleButton {
+    padding: 10px 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.rescheduleButton:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.rescheduleButton:active {
+    transform: scale(0.98);
+}
+
+.cancelButton {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.cancelButton:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+.cancelButton:active {
+    transform: scale(0.98);
+}
+
+.cancelButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .appointmentCard {
+        padding: 1.25rem;
+    }
+
+    .detailsRow {
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .detailsSeparator {
+        display: none;
+    }
+
+    .profilePic,
+    .avatarPlaceholder {
+        width: 60px;
+        height: 60px;
+    }
+
+    .avatarPlaceholder {
+        font-size: 1.15rem;
+    }
+}

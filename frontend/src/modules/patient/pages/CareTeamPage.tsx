@@ -5,32 +5,12 @@ import toast from 'react-hot-toast'
 import { getCareTeam, createFeedback } from '../api/patient.api'
 import FeedbackModal from '../component/FeedbackModal/FeedbackModal'
 import FeedbackProfileCard from '../component/FeedbackProfileCard'
+import type { FeedbackTarget, TeamMember } from '../types/patient.types'
 
 import styles from './CareTeamPage.module.css'
 
-import PatientLayout from '@/layout/PatientLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-
-interface TeamMember {
-    id: string
-    name: string
-    role: string
-    profileImage?: string
-    specialization?: string[]
-    status: boolean
-    rating?: number
-    email?: string
-    mobile?: string
-}
-
-interface FeedbackTarget {
-    id: string
-    name: string
-    role: 'doctor' | 'caregiver'
-    initialRating?: number
-    initialComment?: string
-}
 
 const CareTeamPage = () => {
     const [doctor, setDoctor] = useState<TeamMember | null>(null)
@@ -100,59 +80,55 @@ const CareTeamPage = () => {
 
     if (isLoading) {
         return (
-            <PatientLayout>
-                <MainWrapper title="Care Team" subtitle="Your Primary healthcare support team">
-                    <div className={styles.loadingContainer}>
-                        <div className={styles.spinner} />
-                    </div>
-                </MainWrapper>
-            </PatientLayout>
+            <MainWrapper title="Care Team" subtitle="Your Primary healthcare support team">
+                <div className={styles.loadingContainer}>
+                    <div className={styles.spinner} />
+                </div>
+            </MainWrapper>
         )
     }
 
     const hasNoMembers = !doctor && !caregiver
 
     return (
-        <PatientLayout>
-            <MainWrapper title="Care Team" subtitle="Your Primary healthcare support team">
-                {hasNoMembers ? (
-                    <div className={styles.emptyState}>
-                        <Activity size={42} />
-                        <p>No care team members assigned yet.</p>
-                    </div>
-                ) : (
-                    <div className={styles.cardWrap}>
-                        {doctor && (
-                            <FeedbackProfileCard
-                                profile={doctor}
-                                onFeedback={() =>
-                                    setFeedbackTarget({
-                                        id: doctor.id,
-                                        name: doctor.name,
-                                        role: 'doctor',
-                                        initialRating: doctor.rating,
-                                        initialComment: undefined,
-                                    })
-                                }
-                            />
-                        )}
-                        {caregiver && (
-                            <FeedbackProfileCard
-                                profile={caregiver}
-                                onFeedback={() =>
-                                    setFeedbackTarget({
-                                        id: caregiver.id,
-                                        name: caregiver.name,
-                                        role: 'caregiver',
-                                        initialRating: caregiver.rating,
-                                        initialComment: undefined,
-                                    })
-                                }
-                            />
-                        )}
-                    </div>
-                )}
-            </MainWrapper>
+        <MainWrapper title="Care Team" subtitle="Your Primary healthcare support team">
+            {hasNoMembers ? (
+                <div className={styles.emptyState}>
+                    <Activity size={42} />
+                    <p>No care team members assigned yet.</p>
+                </div>
+            ) : (
+                <div className={styles.cardWrap}>
+                    {doctor && (
+                        <FeedbackProfileCard
+                            profile={doctor}
+                            onFeedback={() =>
+                                setFeedbackTarget({
+                                    id: doctor.id,
+                                    name: doctor.name,
+                                    role: 'doctor',
+                                    initialRating: doctor.rating,
+                                    initialComment: undefined,
+                                })
+                            }
+                        />
+                    )}
+                    {caregiver && (
+                        <FeedbackProfileCard
+                            profile={caregiver}
+                            onFeedback={() =>
+                                setFeedbackTarget({
+                                    id: caregiver.id,
+                                    name: caregiver.name,
+                                    role: 'caregiver',
+                                    initialRating: caregiver.rating,
+                                    initialComment: undefined,
+                                })
+                            }
+                        />
+                    )}
+                </div>
+            )}
 
             {feedbackTarget && (
                 <FeedbackModal
@@ -165,7 +141,7 @@ const CareTeamPage = () => {
                     onSubmit={handleFeedback}
                 />
             )}
-        </PatientLayout>
+        </MainWrapper>
     )
 }
 

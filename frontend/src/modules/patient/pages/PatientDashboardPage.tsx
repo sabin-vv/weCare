@@ -31,7 +31,6 @@ import {
 
 import styles from './PatientDashboardPage.module.css'
 
-import PatientLayout from '@/layout/PatientLayout'
 import { getPlatformSettings } from '@/modules/admin/api/admin.api'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { Section } from '@/shared/components/Section/Section'
@@ -237,11 +236,9 @@ const PatientDashboardPage = () => {
 
     if (isLoading) {
         return (
-            <PatientLayout>
-                <div className={styles.loadingContainer}>
-                    <div className={styles.spinner}></div>
-                </div>
-            </PatientLayout>
+            <div className={styles.loadingContainer}>
+                <div className={styles.spinner}></div>
+            </div>
         )
     }
 
@@ -272,333 +269,316 @@ const PatientDashboardPage = () => {
     }
 
     return (
-        <PatientLayout>
-            <MainWrapper title={`Good ${timePeriod}, ${user?.name} `} subtitle="Here's your status Today.">
-                {hasCaregiverId && subscription && subscription.status !== 'active' && (
-                    <div className={styles.subscriptionCard}>
-                        <div className={styles.subscriptionHeader}>
-                            <span className={styles.subscriptionLabel}>Subscription</span>
-                            <span className={`${styles.subscriptionStatus} ${styles[subscription.status]}`}>
-                                {subscription.status}
-                            </span>
-                        </div>
-                        <div className={styles.subscriptionInfo}>
-                            <span className={styles.caregiverName}>
-                                {subscription.caregiver?.name || 'No Caregiver'}
-                            </span>
-                            <span className={styles.dot}>•</span>
-                            <span className={styles.billingCycle}>
-                                {subscription.billingCycle === 'monthly' ? 'Monthly' : 'Yearly'}
-                            </span>
-                            <span className={styles.dot}>•</span>
-                            <span className={styles.fee}>₹{subscription.subscriptionFee}</span>
-                        </div>
-                        <div className={styles.subscriptionExpiry}>Ends: {formatDate(subscription.endDate)}</div>
+        <MainWrapper title={`Good ${timePeriod}, ${user?.name} `} subtitle="Here's your status Today.">
+            {hasCaregiverId && subscription && subscription.status !== 'active' && (
+                <div className={styles.subscriptionCard}>
+                    <div className={styles.subscriptionHeader}>
+                        <span className={styles.subscriptionLabel}>Subscription</span>
+                        <span className={`${styles.subscriptionStatus} ${styles[subscription.status]}`}>
+                            {subscription.status}
+                        </span>
                     </div>
-                )}
+                    <div className={styles.subscriptionInfo}>
+                        <span className={styles.caregiverName}>{subscription.caregiver?.name || 'No Caregiver'}</span>
+                        <span className={styles.dot}>•</span>
+                        <span className={styles.billingCycle}>
+                            {subscription.billingCycle === 'monthly' ? 'Monthly' : 'Yearly'}
+                        </span>
+                        <span className={styles.dot}>•</span>
+                        <span className={styles.fee}>₹{subscription.subscriptionFee}</span>
+                    </div>
+                    <div className={styles.subscriptionExpiry}>Ends: {formatDate(subscription.endDate)}</div>
+                </div>
+            )}
 
-                {hasCaregiverId && subscription === null && (
-                    <>
-                        <div className={styles.subscriptionBanner}>
-                            <div className={styles.leftSection}>
-                                <div className={styles.content}>
-                                    <h2 className={styles.title}>Caregiver Assigned & Ready</h2>
-                                    <p className={styles.description}>
-                                        Your doctor has assigned a dedicated caregiver to manage your daily health
-                                        needs. To activate your personalized care plan, please complete the monthly
-                                        subscription payment.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className={styles.rightSection}>
-                                <div className={styles.priceContainer}>
-                                    <span className={styles.price}>₹{subscriptionAmount.toLocaleString()}</span>
-                                    <span className={styles.duration}>
-                                        /{billingCycle === 'monthly' ? 'month' : 'year'}
-                                    </span>
-                                </div>
-                                <button className={styles.payButton} onClick={handleOpenSubscriptionModal}>
-                                    Subscribe
-                                </button>
+            {hasCaregiverId && subscription === null && (
+                <>
+                    <div className={styles.subscriptionBanner}>
+                        <div className={styles.leftSection}>
+                            <div className={styles.content}>
+                                <h2 className={styles.title}>Caregiver Assigned & Ready</h2>
+                                <p className={styles.description}>
+                                    Your doctor has assigned a dedicated caregiver to manage your daily health needs. To
+                                    activate your personalized care plan, please complete the monthly subscription
+                                    payment.
+                                </p>
                             </div>
                         </div>
-                        <SubscriptionModal
-                            isOpen={isSubscriptionModalOpen}
-                            onClose={handleCloseSubscriptionModal}
-                            caregiverName={'Your Caregiver'}
-                            amount={subscriptionAmount}
-                            onSelectRazorpay={handleRazorpaySubscription}
-                            onSelectWallet={handleWalletSubscription}
-                            walletBalance={walletBalance}
-                        />
-                    </>
-                )}
+                        <div className={styles.rightSection}>
+                            <div className={styles.priceContainer}>
+                                <span className={styles.price}>₹{subscriptionAmount.toLocaleString()}</span>
+                                <span className={styles.duration}>
+                                    /{billingCycle === 'monthly' ? 'month' : 'year'}
+                                </span>
+                            </div>
+                            <button className={styles.payButton} onClick={handleOpenSubscriptionModal}>
+                                Subscribe
+                            </button>
+                        </div>
+                    </div>
+                    <SubscriptionModal
+                        isOpen={isSubscriptionModalOpen}
+                        onClose={handleCloseSubscriptionModal}
+                        caregiverName={'Your Caregiver'}
+                        amount={subscriptionAmount}
+                        onSelectRazorpay={handleRazorpaySubscription}
+                        onSelectWallet={handleWalletSubscription}
+                        walletBalance={walletBalance}
+                    />
+                </>
+            )}
 
-                <div className={styles.summaryCards}>
-                    <div className={styles.summaryCard}>
-                        <div className={`${styles.summaryIcon} ${styles.summaryIconAppointments}`}>
-                            <Calendar size={20} />
-                        </div>
-                        <div className={styles.summaryInfo}>
-                            <span className={styles.summaryValue}>{activeAppointments.length}</span>
-                            <span className={styles.summaryLabel}>Upcoming Appointments</span>
-                        </div>
+            <div className={styles.summaryCards}>
+                <div className={styles.summaryCard}>
+                    <div className={`${styles.summaryIcon} ${styles.summaryIconAppointments}`}>
+                        <Calendar size={20} />
                     </div>
-                    <div className={styles.summaryCard}>
-                        <div className={`${styles.summaryIcon} ${styles.summaryIconMedications}`}>
-                            <Pill size={20} />
-                        </div>
-                        <div className={styles.summaryInfo}>
-                            <span className={styles.summaryValue}>{pendingMedsCount}</span>
-                            <span className={styles.summaryLabel}>Medications Due Today</span>
-                        </div>
-                    </div>
-                    <div className={styles.summaryCard}>
-                        <div className={`${styles.summaryIcon} ${styles.summaryIconPrescriptions}`}>
-                            <Activity size={20} />
-                        </div>
-                        <div className={styles.summaryInfo}>
-                            <span className={styles.summaryValue}>{activeRxCount}</span>
-                            <span className={styles.summaryLabel}>Active Prescriptions</span>
-                        </div>
-                    </div>
-                    <div className={styles.summaryCard}>
-                        <div className={`${styles.summaryIcon} ${styles.summaryIconAlerts}`}>
-                            <Bell size={20} />
-                        </div>
-                        <div className={styles.summaryInfo}>
-                            <span className={styles.summaryValue}>{alertCount}</span>
-                            <span className={styles.summaryLabel}>Active Alerts</span>
-                        </div>
+                    <div className={styles.summaryInfo}>
+                        <span className={styles.summaryValue}>{activeAppointments.length}</span>
+                        <span className={styles.summaryLabel}>Upcoming Appointments</span>
                     </div>
                 </div>
+                <div className={styles.summaryCard}>
+                    <div className={`${styles.summaryIcon} ${styles.summaryIconMedications}`}>
+                        <Pill size={20} />
+                    </div>
+                    <div className={styles.summaryInfo}>
+                        <span className={styles.summaryValue}>{pendingMedsCount}</span>
+                        <span className={styles.summaryLabel}>Medications Due Today</span>
+                    </div>
+                </div>
+                <div className={styles.summaryCard}>
+                    <div className={`${styles.summaryIcon} ${styles.summaryIconPrescriptions}`}>
+                        <Activity size={20} />
+                    </div>
+                    <div className={styles.summaryInfo}>
+                        <span className={styles.summaryValue}>{activeRxCount}</span>
+                        <span className={styles.summaryLabel}>Active Prescriptions</span>
+                    </div>
+                </div>
+                <div className={styles.summaryCard}>
+                    <div className={`${styles.summaryIcon} ${styles.summaryIconAlerts}`}>
+                        <Bell size={20} />
+                    </div>
+                    <div className={styles.summaryInfo}>
+                        <span className={styles.summaryValue}>{alertCount}</span>
+                        <span className={styles.summaryLabel}>Active Alerts</span>
+                    </div>
+                </div>
+            </div>
 
-                {hasActiveSubscription && nextAppointment && (
-                    <Section title="Upcoming Appointment">
-                        <AppointmentCard
-                            date={formatDate(nextAppointment.appointmentDate)}
-                            doctorName={nextAppointment.doctorId.userId.name}
-                            time={nextAppointment.slotStart}
-                            status={nextAppointment.status}
-                        />
-                    </Section>
-                )}
+            {hasActiveSubscription && nextAppointment && (
+                <Section title="Upcoming Appointment">
+                    <AppointmentCard
+                        date={formatDate(nextAppointment.appointmentDate)}
+                        doctorName={nextAppointment.doctorId.userId.name}
+                        time={nextAppointment.slotStart}
+                        status={nextAppointment.status}
+                    />
+                </Section>
+            )}
 
-                {hasActiveSubscription && medications.length > 0 && (
-                    <Section title="Today's Medications">
-                        <div className={styles.medicationList}>
-                            {[...medications]
-                                .sort((a, b) => new Date(a.scheduleTime).getTime() - new Date(b.scheduleTime).getTime())
-                                .map((med) => {
-                                    const timeStr = formatTime(med.scheduleTime)
-                                    return (
-                                        <div key={med._id} className={styles.medicationCard}>
-                                            <div className={styles.medicationDetails}>
-                                                <span className={styles.medicineName}>{med.medicineName}</span>
-                                                <span className={styles.medicineDosage}>
-                                                    {med.dosage} • {med.route}
-                                                </span>
-                                            </div>
-                                            <div className={styles.medicationRight}>
-                                                <span className={styles.medicationTime}>{timeStr}</span>
-                                                <span className={`${styles.medicationStatus} ${styles[med.status]}`}>
-                                                    {med.status}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                        </div>
-                    </Section>
-                )}
-
-                {hasActiveSubscription && groupedVitals.size > 0 && (
-                    <Section title="Today's Vitals">
-                        <div className={styles.vitalGroupList}>
-                            {Array.from(groupedVitals.entries()).map(([vitalType, schedules]) => {
-                                const Icon = vitalIcons[vitalType] || Activity
-                                const label = vitalType.replace(/_/g, ' ')
+            {hasActiveSubscription && medications.length > 0 && (
+                <Section title="Today's Medications">
+                    <div className={styles.medicationList}>
+                        {[...medications]
+                            .sort((a, b) => new Date(a.scheduleTime).getTime() - new Date(b.scheduleTime).getTime())
+                            .map((med) => {
+                                const timeStr = formatTime(med.scheduleTime)
                                 return (
-                                    <div key={vitalType} className={styles.vitalGroup}>
-                                        <div className={styles.vitalGroupHeader}>
-                                            <Icon size={18} className={styles.vitalGroupIcon} />
-                                            <span className={styles.vitalGroupLabel}>
-                                                {label.charAt(0).toUpperCase() + label.slice(1)}
+                                    <div key={med._id} className={styles.medicationCard}>
+                                        <div className={styles.medicationDetails}>
+                                            <span className={styles.medicineName}>{med.medicineName}</span>
+                                            <span className={styles.medicineDosage}>
+                                                {med.dosage} • {med.route}
                                             </span>
                                         </div>
-                                        <div className={styles.vitalGroupItems}>
-                                            {schedules.map((s) => {
-                                                const st = formatTime(s.scheduleTime)
-                                                const isRecorded = s.status === 'recorded'
-                                                const isPending = s.status === 'pending'
-                                                const isMissed = s.status === 'missed'
-                                                const getValue = () => {
-                                                    const rv = s.recordedValue
-                                                    if (!rv) return ''
-                                                    switch (s.vitalType) {
-                                                        case 'blood_pressure':
-                                                            return ` ${rv.systolic || '--'}/${rv.diastolic || '--'}`
-                                                        default:
-                                                            return rv.value ? ` ${rv.value}` : ''
-                                                    }
-                                                }
-                                                return (
-                                                    <div
-                                                        key={s._id}
-                                                        className={`${styles.vitalGroupItem} ${
-                                                            isRecorded
-                                                                ? styles.vitalGroupItemRecorded
-                                                                : isPending
-                                                                  ? styles.vitalGroupItemPending
-                                                                  : styles.vitalGroupItemMissed
-                                                        }`}
-                                                    >
-                                                        <span className={styles.vitalGroupItemTime}>{st}</span>
-                                                        {isRecorded && (
-                                                            <>
-                                                                <CheckCircle2
-                                                                    size={14}
-                                                                    className={styles.vitalStatusRecorded}
-                                                                />
-                                                                <span className={styles.vitalStatusRecorded}>
-                                                                    {getValue()}
-                                                                </span>
-                                                            </>
-                                                        )}
-                                                        {isPending && (
-                                                            <>
-                                                                <Clock
-                                                                    size={14}
-                                                                    className={styles.vitalStatusPending}
-                                                                />
-                                                                <span className={styles.vitalStatusPending}>
-                                                                    Pending
-                                                                </span>
-                                                            </>
-                                                        )}
-                                                        {isMissed && (
-                                                            <>
-                                                                <XCircle
-                                                                    size={14}
-                                                                    className={styles.vitalStatusMissed}
-                                                                />
-                                                                <span className={styles.vitalStatusMissed}>Missed</span>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                )
-                                            })}
+                                        <div className={styles.medicationRight}>
+                                            <span className={styles.medicationTime}>{timeStr}</span>
+                                            <span className={`${styles.medicationStatus} ${styles[med.status]}`}>
+                                                {med.status}
+                                            </span>
                                         </div>
                                     </div>
                                 )
                             })}
-                        </div>
-                    </Section>
-                )}
-
-                {hasActiveSubscription && prescriptions.filter((p) => p.status === 'active').length > 0 && (
-                    <Section title="Active Prescriptions">
-                        <div className={styles.prescriptionList}>
-                            {prescriptions
-                                .filter((p) => p.status === 'active')
-                                .map((rx) => (
-                                    <div key={rx._id} className={styles.prescriptionCard}>
-                                        <div className={styles.prescriptionHeader}>
-                                            <span className={`${styles.prescriptionStatus} ${styles[rx.status]}`}>
-                                                {rx.status.replace(/_/g, ' ')}
-                                            </span>
-                                            <span className={styles.prescriptionDate}>
-                                                {new Date(rx.prescribedAt).toLocaleDateString('en-GB', {
-                                                    day: '2-digit',
-                                                    month: 'short',
-                                                    year: 'numeric',
-                                                })}
-                                            </span>
-                                        </div>
-                                        <div className={styles.prescriptionBody}>
-                                            <span className={styles.prescriptionDoctor}>
-                                                Dr. {rx.prescribedBy?.userId?.name || 'Unknown'}
-                                            </span>
-                                            <span className={styles.prescriptionMeds}>
-                                                {rx.medications.map((m) => `${m.name} - ${m.dosage}`)}
-                                            </span>
-                                        </div>
-                                        {rx.note && <div className={styles.prescriptionNote}>{rx.note}</div>}
-                                    </div>
-                                ))}
-                        </div>
-                    </Section>
-                )}
-
-                {careTeam.length > 0 && (
-                    <Section title="Care Team">
-                        <div className={styles.careTeamList}>
-                            {careTeam.map((member) => (
-                                <div key={member.id} className={styles.careTeamCard}>
-                                    <div className={styles.careTeamLeft}>
-                                        <div className={styles.careTeamAvatar}>{member.name.charAt(0)}</div>
-                                        <div className={styles.careTeamInfo}>
-                                            <span className={styles.careTeamName}>{member.name}</span>
-                                            <span className={styles.careTeamRole}>
-                                                {member.role === 'doctor' ? 'Doctor' : 'Caregiver'}
-                                            </span>
-                                            {member.specialization && member.specialization.length > 0 && (
-                                                <span className={styles.careTeamSpecialty}>
-                                                    {member.specialization.join(', ')}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    {member.myRating ? (
-                                        <span className={styles.careTeamRating}>★ {member.myRating}</span>
-                                    ) : (
-                                        <span
-                                            className={styles.careTeamProvideRating}
-                                            onClick={() => navigate('/care-team')}
-                                        >
-                                            Provide Feedback
-                                        </span>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    </Section>
-                )}
-
-                <Section title="Recent Notifications">
-                    {notifications.length > 0 ? (
-                        <div className={styles.notificationList}>
-                            {notifications.slice(0, 5).map((n) => (
-                                <div
-                                    key={n._id}
-                                    className={`${styles.notificationItem} ${!n.isRead ? styles.unread : ''}`}
-                                >
-                                    <div className={styles.notificationDot}>
-                                        {!n.isRead && <div className={styles.unreadDot}></div>}
-                                    </div>
-                                    <div className={styles.notificationContent}>
-                                        <span className={styles.notificationTitle}>{n.title}</span>
-                                        <span className={styles.notificationMessage}>{n.message}</span>
-                                    </div>
-                                    <span className={styles.notificationTime}>
-                                        {formatNotificationTime(n.createdAt)}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className={styles.emptyText}>No notifications</p>
-                    )}
-                </Section>
-
-                {nextAppointment === null && !hasActiveSubscription && (
-                    <div className={styles.noAppointments}>
-                        <p>No active appointments</p>
-                        <p>Book an appointment with a doctor to get started</p>
                     </div>
+                </Section>
+            )}
+
+            {hasActiveSubscription && groupedVitals.size > 0 && (
+                <Section title="Today's Vitals">
+                    <div className={styles.vitalGroupList}>
+                        {Array.from(groupedVitals.entries()).map(([vitalType, schedules]) => {
+                            const Icon = vitalIcons[vitalType] || Activity
+                            const label = vitalType.replace(/_/g, ' ')
+                            return (
+                                <div key={vitalType} className={styles.vitalGroup}>
+                                    <div className={styles.vitalGroupHeader}>
+                                        <Icon size={18} className={styles.vitalGroupIcon} />
+                                        <span className={styles.vitalGroupLabel}>
+                                            {label.charAt(0).toUpperCase() + label.slice(1)}
+                                        </span>
+                                    </div>
+                                    <div className={styles.vitalGroupItems}>
+                                        {schedules.map((s) => {
+                                            const st = formatTime(s.scheduleTime)
+                                            const isRecorded = s.status === 'recorded'
+                                            const isPending = s.status === 'pending'
+                                            const isMissed = s.status === 'missed'
+                                            const getValue = () => {
+                                                const rv = s.recordedValue
+                                                if (!rv) return ''
+                                                switch (s.vitalType) {
+                                                    case 'blood_pressure':
+                                                        return ` ${rv.systolic || '--'}/${rv.diastolic || '--'}`
+                                                    default:
+                                                        return rv.value ? ` ${rv.value}` : ''
+                                                }
+                                            }
+                                            return (
+                                                <div
+                                                    key={s._id}
+                                                    className={`${styles.vitalGroupItem} ${
+                                                        isRecorded
+                                                            ? styles.vitalGroupItemRecorded
+                                                            : isPending
+                                                              ? styles.vitalGroupItemPending
+                                                              : styles.vitalGroupItemMissed
+                                                    }`}
+                                                >
+                                                    <span className={styles.vitalGroupItemTime}>{st}</span>
+                                                    {isRecorded && (
+                                                        <>
+                                                            <CheckCircle2
+                                                                size={14}
+                                                                className={styles.vitalStatusRecorded}
+                                                            />
+                                                            <span className={styles.vitalStatusRecorded}>
+                                                                {getValue()}
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                    {isPending && (
+                                                        <>
+                                                            <Clock size={14} className={styles.vitalStatusPending} />
+                                                            <span className={styles.vitalStatusPending}>Pending</span>
+                                                        </>
+                                                    )}
+                                                    {isMissed && (
+                                                        <>
+                                                            <XCircle size={14} className={styles.vitalStatusMissed} />
+                                                            <span className={styles.vitalStatusMissed}>Missed</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </Section>
+            )}
+
+            {hasActiveSubscription && prescriptions.filter((p) => p.status === 'active').length > 0 && (
+                <Section title="Active Prescriptions">
+                    <div className={styles.prescriptionList}>
+                        {prescriptions
+                            .filter((p) => p.status === 'active')
+                            .map((rx) => (
+                                <div key={rx._id} className={styles.prescriptionCard}>
+                                    <div className={styles.prescriptionHeader}>
+                                        <span className={`${styles.prescriptionStatus} ${styles[rx.status]}`}>
+                                            {rx.status.replace(/_/g, ' ')}
+                                        </span>
+                                        <span className={styles.prescriptionDate}>
+                                            {new Date(rx.prescribedAt).toLocaleDateString('en-GB', {
+                                                day: '2-digit',
+                                                month: 'short',
+                                                year: 'numeric',
+                                            })}
+                                        </span>
+                                    </div>
+                                    <div className={styles.prescriptionBody}>
+                                        <span className={styles.prescriptionDoctor}>
+                                            Dr. {rx.prescribedBy?.userId?.name || 'Unknown'}
+                                        </span>
+                                        <span className={styles.prescriptionMeds}>
+                                            {rx.medications.map((m) => `${m.name} - ${m.dosage}`)}
+                                        </span>
+                                    </div>
+                                    {rx.note && <div className={styles.prescriptionNote}>{rx.note}</div>}
+                                </div>
+                            ))}
+                    </div>
+                </Section>
+            )}
+
+            {careTeam.length > 0 && (
+                <Section title="Care Team">
+                    <div className={styles.careTeamList}>
+                        {careTeam.map((member) => (
+                            <div key={member.id} className={styles.careTeamCard}>
+                                <div className={styles.careTeamLeft}>
+                                    <div className={styles.careTeamAvatar}>{member.name.charAt(0)}</div>
+                                    <div className={styles.careTeamInfo}>
+                                        <span className={styles.careTeamName}>{member.name}</span>
+                                        <span className={styles.careTeamRole}>
+                                            {member.role === 'doctor' ? 'Doctor' : 'Caregiver'}
+                                        </span>
+                                        {member.specialization && member.specialization.length > 0 && (
+                                            <span className={styles.careTeamSpecialty}>
+                                                {member.specialization.join(', ')}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                {member.myRating ? (
+                                    <span className={styles.careTeamRating}>★ {member.myRating}</span>
+                                ) : (
+                                    <span
+                                        className={styles.careTeamProvideRating}
+                                        onClick={() => navigate('/care-team')}
+                                    >
+                                        Provide Feedback
+                                    </span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </Section>
+            )}
+
+            <Section title="Recent Notifications">
+                {notifications.length > 0 ? (
+                    <div className={styles.notificationList}>
+                        {notifications.slice(0, 5).map((n) => (
+                            <div key={n._id} className={`${styles.notificationItem} ${!n.isRead ? styles.unread : ''}`}>
+                                <div className={styles.notificationDot}>
+                                    {!n.isRead && <div className={styles.unreadDot}></div>}
+                                </div>
+                                <div className={styles.notificationContent}>
+                                    <span className={styles.notificationTitle}>{n.title}</span>
+                                    <span className={styles.notificationMessage}>{n.message}</span>
+                                </div>
+                                <span className={styles.notificationTime}>{formatNotificationTime(n.createdAt)}</span>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p className={styles.emptyText}>No notifications</p>
                 )}
-            </MainWrapper>
-        </PatientLayout>
+            </Section>
+
+            {nextAppointment === null && !hasActiveSubscription && (
+                <div className={styles.noAppointments}>
+                    <p>No active appointments</p>
+                    <p>Book an appointment with a doctor to get started</p>
+                </div>
+            )}
+        </MainWrapper>
     )
 }
 
