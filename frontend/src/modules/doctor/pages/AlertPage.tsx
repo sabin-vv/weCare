@@ -8,7 +8,6 @@ import type { AlertData, PaginationData } from '../types/doctor.types'
 
 import styles from './AlertPage.module.css'
 
-import DoctorLayout from '@/layout/DoctorLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import { Section } from '@/shared/components/Section/Section'
@@ -125,94 +124,92 @@ const AlertPage = () => {
     }
 
     return (
-        <DoctorLayout>
-            <MainWrapper title="Alerts" subtitle="Alerts awaiting acknowledgement">
-                {isLoading && (
-                    <div className={styles.centerState}>
-                        <Loader2 size={32} className={styles.spinner} />
-                        <p>Loading alerts...</p>
-                    </div>
-                )}
+        <MainWrapper title="Alerts" subtitle="Alerts awaiting acknowledgement">
+            {isLoading && (
+                <div className={styles.centerState}>
+                    <Loader2 size={32} className={styles.spinner} />
+                    <p>Loading alerts...</p>
+                </div>
+            )}
 
-                {!isLoading && (
-                    <div className={styles.filterBar}>
-                        <div className={styles.filterFields}>
-                            <SelectField
-                                label="Status"
-                                options={STATUS_OPTIONS}
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                            />
-                            <SelectField
-                                label="Type"
-                                options={TYPE_OPTIONS}
-                                value={typeFilter}
-                                onChange={(e) => setTypeFilter(e.target.value)}
-                            />
-                            <SelectField
-                                label="Severity"
-                                options={SEVERITY_OPTIONS}
-                                value={severityFilter}
-                                onChange={(e) => setSeverityFilter(e.target.value)}
-                            />
-                        </div>
-                        {(statusFilter || typeFilter || severityFilter) && (
-                            <button
-                                className={styles.clearBtn}
-                                onClick={() => {
-                                    setStatusFilter('')
-                                    setTypeFilter('')
-                                    setSeverityFilter('')
-                                }}
-                                disabled={!statusFilter && !typeFilter && !severityFilter}
-                            >
-                                <XCircle size={16} /> Clear
-                            </button>
-                        )}
+            {!isLoading && (
+                <div className={styles.filterBar}>
+                    <div className={styles.filterFields}>
+                        <SelectField
+                            label="Status"
+                            options={STATUS_OPTIONS}
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        />
+                        <SelectField
+                            label="Type"
+                            options={TYPE_OPTIONS}
+                            value={typeFilter}
+                            onChange={(e) => setTypeFilter(e.target.value)}
+                        />
+                        <SelectField
+                            label="Severity"
+                            options={SEVERITY_OPTIONS}
+                            value={severityFilter}
+                            onChange={(e) => setSeverityFilter(e.target.value)}
+                        />
                     </div>
-                )}
+                    {(statusFilter || typeFilter || severityFilter) && (
+                        <button
+                            className={styles.clearBtn}
+                            onClick={() => {
+                                setStatusFilter('')
+                                setTypeFilter('')
+                                setSeverityFilter('')
+                            }}
+                            disabled={!statusFilter && !typeFilter && !severityFilter}
+                        >
+                            <XCircle size={16} /> Clear
+                        </button>
+                    )}
+                </div>
+            )}
 
-                {!isLoading && alerts.length === 0 && (
-                    <div className={styles.centerState}>
-                        <Inbox size={48} />
-                        <p>No alerts</p>
-                    </div>
-                )}
+            {!isLoading && alerts.length === 0 && (
+                <div className={styles.centerState}>
+                    <Inbox size={48} />
+                    <p>No alerts</p>
+                </div>
+            )}
 
-                {!isLoading && alerts.length > 0 && (
-                    <Section>
-                        {alerts.map((alert) => (
-                            <AlertCard
-                                key={alert._id}
-                                patientName={alert.patientId?.userId?.name ?? 'Unknown'}
-                                message={alert.triggerReason}
-                                timestamp={formatTimestamp(alert.triggeredAt)}
-                                severity={alert.severity}
-                                status={alert.status}
-                                icon={ALERT_ICONS[alert.type] ?? <AlertTriangle size={24} />}
-                                onAcknowledge={alert.status === 'open' ? () => handleAcknowledge(alert._id) : undefined}
-                                acknowledgedBy={
-                                    alert.status === 'acknowledged'
-                                        ? alert.acknowledgeAt
-                                            ? formatTimestamp(alert.acknowledgeAt)
-                                            : 'Acknowledged'
-                                        : undefined
-                                }
-                            />
-                        ))}
-                        {!isLoading && (
-                            <Pagination
-                                currentPage={pagination.page}
-                                totalPages={pagination.totalPages}
-                                totalCount={pagination.totalCount}
-                                limit={pagination.limit}
-                                onPageChange={(p) => fetchAlerts(p)}
-                            />
-                        )}
-                    </Section>
-                )}
-            </MainWrapper>
-        </DoctorLayout>
+            {!isLoading && alerts.length > 0 && (
+                <Section>
+                    {alerts.map((alert) => (
+                        <AlertCard
+                            key={alert._id}
+                            patientName={alert.patientId?.userId?.name ?? 'Unknown'}
+                            message={alert.triggerReason}
+                            timestamp={formatTimestamp(alert.triggeredAt)}
+                            severity={alert.severity}
+                            status={alert.status}
+                            icon={ALERT_ICONS[alert.type] ?? <AlertTriangle size={24} />}
+                            onAcknowledge={alert.status === 'open' ? () => handleAcknowledge(alert._id) : undefined}
+                            acknowledgedBy={
+                                alert.status === 'acknowledged'
+                                    ? alert.acknowledgeAt
+                                        ? formatTimestamp(alert.acknowledgeAt)
+                                        : 'Acknowledged'
+                                    : undefined
+                            }
+                        />
+                    ))}
+                    {!isLoading && (
+                        <Pagination
+                            currentPage={pagination.page}
+                            totalPages={pagination.totalPages}
+                            totalCount={pagination.totalCount}
+                            limit={pagination.limit}
+                            onPageChange={(p) => fetchAlerts(p)}
+                        />
+                    )}
+                </Section>
+            )}
+        </MainWrapper>
     )
 }
 
