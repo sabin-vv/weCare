@@ -9,72 +9,52 @@ import PatientList from '../pages/PatientList'
 import PatientMedicalRecordPage from '../pages/PatientMedicalRecordPage'
 import PatientViewPage from '../pages/PatientViewPage'
 
+import DoctorLayout from '@/layout/DoctorLayout'
 import { Role } from '@/modules/auth/types/auth.types'
 import ProtectedRoute from '@/shared/components/ProtectedRoute/ProtectedRoute'
 
 export const DoctorRoutes: RouteObject[] = [
     {
-        path: '/doctor/dashboard',
+        path: '/doctor',
         element: (
             <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <DoctorDashboard />
+                <DoctorLayout />
             </ProtectedRoute>
         ),
-    },
-    {
-        path: '/doctor/settings',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <DoctorSettings />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/doctor/availability',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <AvailabilityPage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/doctor/appointments',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <DoctorAppointmentsPage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/doctor/patients',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <PatientList />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/doctor/patients/:patientId',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <PatientViewPage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/doctor/patients/:patientId/medical-record',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <PatientMedicalRecordPage />
-            </ProtectedRoute>
-        ),
-    },
-    {
-        path: '/doctor/alerts',
-        element: (
-            <ProtectedRoute allowedRoles={[Role.DOCTOR]}>
-                <AlertPage />
-            </ProtectedRoute>
-        ),
+
+        children: [
+            {
+                path: '/doctor/dashboard',
+                element: <DoctorDashboard />,
+            },
+            {
+                path: '/doctor/settings',
+                element: <DoctorSettings />,
+            },
+            {
+                path: '/doctor/availability',
+                element: <AvailabilityPage />,
+            },
+            {
+                path: '/doctor/appointments',
+                element: <DoctorAppointmentsPage />,
+            },
+            {
+                path: '/doctor/patients',
+                element: <PatientList />,
+            },
+            {
+                path: '/doctor/patients/:patientId',
+                element: <PatientViewPage />,
+            },
+            {
+                path: '/doctor/patients/:patientId/medical-record',
+                element: <PatientMedicalRecordPage />,
+            },
+            {
+                path: '/doctor/alerts',
+                element: <AlertPage />,
+            },
+        ],
     },
 ]
