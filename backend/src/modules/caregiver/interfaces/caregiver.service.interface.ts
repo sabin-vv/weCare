@@ -21,8 +21,8 @@ export interface ICaregiverService {
     getMyPatients(caregiverId: Types.ObjectId): Promise<PatientSummary[]>
     getAlerts(
         caregiverId: Types.ObjectId,
-        filters?: { type?: string; severity?: string; status?: string; limit?: number },
-    ): Promise<AlertDocument[]>
+        filters?: { type?: string; severity?: string; status?: string; limit?: number; page?: number },
+    ): Promise<{ alerts: AlertDocument[]; pagination: { page: number; limit: number; totalCount: number; totalPages: number } }>
     logMedication(
         caregiverId: Types.ObjectId,
         patientId: string,

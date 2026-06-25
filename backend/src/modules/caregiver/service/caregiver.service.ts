@@ -221,7 +221,7 @@ export class CaregiverService implements ICaregiverService {
 
     async getAlerts(
         caregiverId: Types.ObjectId,
-        filters?: { type?: string; severity?: string; status?: string; limit?: number },
+        filters?: { type?: string; severity?: string; status?: string; limit?: number; page?: number },
     ) {
         const patients = await this._caregiverRepo.findPatientsByCaregiver(caregiverId)
         const patientIds = patients.map((p) => p._id.toString())

@@ -170,23 +170,25 @@ export class CaregiverController {
             throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
         }
 
-        const { type, severity, status, limit } = req.query as {
+        const { type, severity, status, limit, page } = req.query as {
             type?: string
             severity?: string
             status?: string
             limit?: string
+            page?: string
         }
 
-        const alerts = await this._caregiverService.getAlerts(caregiver._id, {
+        const result = await this._caregiverService.getAlerts(caregiver._id, {
             type,
             severity,
             status,
             limit: limit ? Number(limit) : undefined,
+            page: page ? Number(page) : undefined,
         })
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            data: alerts,
+            data: result,
             message: 'Alerts fetched',
         })
     }
