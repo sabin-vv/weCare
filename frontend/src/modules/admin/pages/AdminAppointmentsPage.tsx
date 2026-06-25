@@ -1,5 +1,6 @@
 import { X } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import { getAdminAppointments } from '../api/admin.api'
 import type { AdminAppointment } from '../types/admin.types'
@@ -13,7 +14,6 @@ import SelectField from '@/shared/components/SelectField/SelectField'
 import DataTable from '@/shared/components/Table/DataTable'
 import type { Column } from '@/shared/components/Table/dataTable.types'
 import { getErrorMessage } from '@/utils/getErrorMessage'
-import toast from 'react-hot-toast'
 
 const STATUS_OPTIONS = [
     { value: 'all', label: 'All Statuses' },
@@ -39,11 +39,6 @@ const formatDate = (iso: string) => {
     return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-const formatTime = (iso: string) => {
-    const d = new Date(iso)
-    return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false })
-}
-
 const statusLabel = (status: AdminAppointment['status']) =>
     status
         .split('_')
@@ -56,8 +51,8 @@ const PaymentBadge = ({ status }: { status?: string }) => {
         status === 'success'
             ? styles.paymentSuccess
             : status === 'failed' || status === 'refunded'
-                ? styles.paymentFailed
-                : styles.paymentPending
+              ? styles.paymentFailed
+              : styles.paymentPending
     return <span className={`${styles.paymentBadge} ${cls}`}>{status}</span>
 }
 
@@ -236,7 +231,12 @@ const AdminAppointmentsPage = () => {
                 </div>
             </div>
 
-            <DataTable data={appointments} columns={columns} keyExtractor={(item) => item.appointmentId} isLoading={loading}>
+            <DataTable
+                data={appointments}
+                columns={columns}
+                keyExtractor={(item) => item.appointmentId}
+                isLoading={loading}
+            >
                 {appointments.length > 0 && (
                     <Pagination
                         currentPage={pagination.page}
