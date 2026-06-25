@@ -105,17 +105,27 @@ export class AlertService implements IAlertService {
 
     async getAlertsByPatientIds(
         patientIds: string[],
-        filters?: { type?: string; severity?: string; status?: string; limit?: number },
-    ): Promise<AlertDocument[]> {
-        if (patientIds.length === 0) return []
+        filters?: { type?: string; severity?: string; status?: string; limit?: number; page?: number },
+    ): Promise<{ alerts: AlertDocument[]; pagination: { page: number; limit: number; totalCount: number; totalPages: number } }> {
+        if (patientIds.length === 0) {
+            const page = Math.max(1, filters?.page || 1)
+            const limit = Math.max(1, filters?.limit || 8)
+            return { alerts: [], pagination: { page, limit, totalCount: 0, totalPages: 0 } }
+        }
 
         const filter: Record<string, unknown> = { targetRole: { $in: ['caregiver'] } }
         if (filters?.type) filter.type = filters.type
         if (filters?.severity) filter.severity = filters.severity
         if (filters?.status) filter.status = filters.status
-        else filter.status = 'open'
 
-        return this._alertRepo.findByPatientIds(patientIds, filter, filters?.limit)
+        const page = Math.max(1, filters?.page || 1)
+        const limit = Math.max(1, filters?.limit || 8)
+
+        const [alerts, total] = await Promise.all([
+            this._alertRepo.findByPatientIds(patientIds, filter, limit, page),
+            this._alertRepo.countByPatientIds(patientIds, filter),
+        ])
+        return { alerts, pagination: { page, limit, totalCount: total, totalPages: Math.ceil(total / limit) } }
     }
 
     async getPatientAlertCount(userId: string): Promise<number> {
