@@ -18,6 +18,8 @@ import { IAppointmentRepository } from '../modules/appointment/interfaces/appoin
 import { IAppointmentService } from '../modules/appointment/interfaces/appointment.service.interface'
 import { AppointmentRepository } from '../modules/appointment/repository/appointment.repository'
 import { AppointmentService } from '../modules/appointment/service/appointment.service'
+import { IAssistantService } from '../modules/assistant/interfaces/assistant.service.interface'
+import { AssistantService } from '../modules/assistant/service/assistant.service'
 import { IAuthService } from '../modules/auth/interfaces/auth.service.interface'
 import { IOtpService } from '../modules/auth/interfaces/otp.service.interface'
 import { IUserRepository } from '../modules/auth/interfaces/user.repository.interface'
@@ -111,6 +113,7 @@ container.register<IPatientRepository>(TOKENS.IPatientRepository, { useClass: Pa
 container.register<IPatientService>(TOKENS.IPatientService, { useClass: PatientService })
 
 container.register<IAuthService>(TOKENS.IAuthService, { useClass: AuthService })
+container.register<IAssistantService>(TOKENS.IAssistantService, { useClass: AssistantService })
 container.register<IOtpService>(TOKENS.IOtpService, { useClass: OtpService })
 
 container.register<IAdminRepository>(TOKENS.IAdminRepository, { useClass: AdminRepository })
