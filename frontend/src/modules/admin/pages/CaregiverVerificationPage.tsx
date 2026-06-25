@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 
 import { getPendingCaregivers, getRecentCaregiverVerifications, verifyCaregiver } from '../api/admin.api'
 import { pendingCaregiverColumns, recentCaregiverColumns } from '../columns/caregiverVerification.columns'
-import type { PendingCaregiver, RecentCaregiver } from '../interfaces/admin.interface'
+import type { PendingCaregiver, RecentCaregiver } from '../types/admin.types'
 
 import styles from './DoctorVerification.module.css'
 
