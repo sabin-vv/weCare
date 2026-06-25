@@ -7,6 +7,7 @@ import { createActivityLogRoutes } from './modules/activityLog/routes/activityLo
 import { createAdminRoutes } from './modules/admin/routes/admin.route'
 import { createAlertRoutes } from './modules/alert/routes/alert.route'
 import { createAppointmentRoutes } from './modules/appointment/routes/appointment.route'
+import { createAssistantRoutes } from './modules/assistant/routes/assistant.route'
 import { createAuthRoutes } from './modules/auth/routes/auth.route'
 import { createCaregiverRoutes } from './modules/caregiver/routes/caregiver.route'
 import { createCaregiverActivityRoutes } from './modules/caregiverActivity/routes/caregiverActivity.route'
@@ -41,6 +42,8 @@ app.use(cookieParser())
 app.use('/api/auth', createAuthRoutes())
 
 app.use('/api/doctors', createDoctorRoutes())
+
+app.use('/api/assistant', createAssistantRoutes())
 
 app.use('/api/caregivers', createCaregiverRoutes())
 
