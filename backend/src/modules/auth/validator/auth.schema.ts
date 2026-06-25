@@ -5,7 +5,7 @@ import { UserRole } from '../types/auth.types'
 
 export const loginSchema = z.object({
     email: emailschema,
-    password: passwordSchema,
+    password: z.string().min(8, 'The password must bt atleast 8 character'),
     role: z.enum([UserRole.DOCTOR, UserRole.ADMIN, UserRole.CAREGIVER, UserRole.PATIENT]),
 })
 
