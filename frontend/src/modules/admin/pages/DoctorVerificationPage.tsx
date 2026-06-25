@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { getPendingDoctors, getRecentDoctorVerifications, verifyDoctor, verifySpecialization } from '../api/admin.api'
-import type { PendingDoctor } from '../interfaces/admin.interface'
+import type { PendingDoctor } from '../types/admin.types'
 
 import styles from './DoctorVerification.module.css'
 
