@@ -10,7 +10,6 @@ import type { DoctorDocuments, Specialization } from '../types/doctor.types'
 import styles from './DoctorDashboard.module.css'
 
 import { env } from '@/config/env'
-import DoctorLayout from '@/layout/DoctorLayout'
 import { VerificationStatus } from '@/modules/auth/types/auth.types'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import { useAuth } from '@/shared/context/AuthContext'
@@ -89,45 +88,41 @@ const DoctorDashboard = () => {
     else timePeriod = 'Night'
 
     return (
-        <DoctorLayout>
-            <MainWrapper title={`Good ${timePeriod},${user?.name}`}>
-                {!user?.isProfileComplete || user.verificationStatus === 'rejected' ? (
-                    <>
-                        {user && user.verificationStatus === 'rejected' && (
-                            <div className={styles.rejectBox}>
-                                <strong>Profile Rejected</strong>
-                                <p>{rejectReason}</p>
-                            </div>
-                        )}
-
-                        <DoctorDetailsForm document={documents} specialization={specializations} />
-                    </>
-                ) : user.verificationStatus === VerificationStatus.Verified ? (
-                    <Dashboard />
-                ) : (
-                    <section className={styles.statusPanel}>
-                        <span className={`${styles.badge} ${styles.pendingBadge}`}>Verification In Progress</span>
-                        <h1 className={styles.heading}>Account under verification</h1>
-                        <p className={styles.sub}>
-                            We are reviewing your profile, medical council registration, and uploaded documents. Once
-                            approved, your full doctor dashboard will be unlocked.
-                        </p>
-                        <div className={styles.infoGrid}>
-                            <div className={styles.infoCard}>
-                                <h2>Current status</h2>
-                                <p>Submitted successfully and waiting for admin approval.</p>
-                            </div>
-                            <div className={styles.infoCard}>
-                                <h2>What to expect</h2>
-                                <p>
-                                    You will be able to access patients and appointments after verification is complete.
-                                </p>
-                            </div>
+        <MainWrapper title={`Good ${timePeriod},${user?.name}`}>
+            {!user?.isProfileComplete || user.verificationStatus === 'rejected' ? (
+                <>
+                    {user && user.verificationStatus === 'rejected' && (
+                        <div className={styles.rejectBox}>
+                            <strong>Profile Rejected</strong>
+                            <p>{rejectReason}</p>
                         </div>
-                    </section>
-                )}
-            </MainWrapper>
-        </DoctorLayout>
+                    )}
+
+                    <DoctorDetailsForm document={documents} specialization={specializations} />
+                </>
+            ) : user.verificationStatus === VerificationStatus.Verified ? (
+                <Dashboard />
+            ) : (
+                <section className={styles.statusPanel}>
+                    <span className={`${styles.badge} ${styles.pendingBadge}`}>Verification In Progress</span>
+                    <h1 className={styles.heading}>Account under verification</h1>
+                    <p className={styles.sub}>
+                        We are reviewing your profile, medical council registration, and uploaded documents. Once
+                        approved, your full doctor dashboard will be unlocked.
+                    </p>
+                    <div className={styles.infoGrid}>
+                        <div className={styles.infoCard}>
+                            <h2>Current status</h2>
+                            <p>Submitted successfully and waiting for admin approval.</p>
+                        </div>
+                        <div className={styles.infoCard}>
+                            <h2>What to expect</h2>
+                            <p>You will be able to access patients and appointments after verification is complete.</p>
+                        </div>
+                    </div>
+                </section>
+            )}
+        </MainWrapper>
     )
 }
 

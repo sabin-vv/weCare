@@ -3,11 +3,10 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 import { getDoctorAppointments } from '../api/doctor.api'
-import type { DoctorAppointment, Pagination as PaginationMeta } from '../types/doctor.types'
+import type { DoctorAppointment, PaginationData } from '../types/doctor.types'
 
 import styles from './DoctorAppointmentsPage.module.css'
 
-import DoctorLayout from '@/layout/DoctorLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
@@ -28,7 +27,7 @@ const DoctorAppointmentsPage = () => {
     const [search, setSearch] = useState('')
     const [consultationStatus, setConsultationStatus] = useState('all')
     const [page, setPage] = useState(1)
-    const [pagination, setPagination] = useState<PaginationMeta>({
+    const [pagination, setPagination] = useState<PaginationData>({
         page: 1,
         limit: 8,
         totalCount: 0,
@@ -148,51 +147,45 @@ const DoctorAppointmentsPage = () => {
     ]
 
     return (
-        <DoctorLayout>
-            <MainWrapper title="Appointments" subtitle="Track consultations and payment progress">
-                <div className={styles.filterSection}>
-                    <div className={styles.searchWrapper}>
-                        <SearchField
-                            value={search}
-                            onSearch={setSearch}
-                            placeholder="Search by patient name or email..."
-                        />
-                    </div>
-                    <div className={styles.filtersWrapper}>
-                        <div className={styles.filterGroup}>
-                            <ul className={styles.filterList}>
-                                {CONSULTATION_STATUS_OPTIONS.map((option) => (
-                                    <li
-                                        key={option.value}
-                                        className={styles.filterItem}
-                                        onClick={() => setConsultationStatus(option.value)}
-                                        aria-current={consultationStatus === option.value}
-                                    >
-                                        {option.label}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+        <MainWrapper title="Appointments" subtitle="Track consultations and payment progress">
+            <div className={styles.filterSection}>
+                <div className={styles.searchWrapper}>
+                    <SearchField value={search} onSearch={setSearch} placeholder="Search by patient name or email..." />
+                </div>
+                <div className={styles.filtersWrapper}>
+                    <div className={styles.filterGroup}>
+                        <ul className={styles.filterList}>
+                            {CONSULTATION_STATUS_OPTIONS.map((option) => (
+                                <li
+                                    key={option.value}
+                                    className={styles.filterItem}
+                                    onClick={() => setConsultationStatus(option.value)}
+                                    aria-current={consultationStatus === option.value}
+                                >
+                                    {option.label}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
-                <DataTable
-                    data={filteredAppointments}
-                    columns={columns}
-                    keyExtractor={(item) => item.appointmentId}
-                    isLoading={isLoading}
-                >
-                    {!isLoading && appointments.length > 0 && (
-                        <Pagination
-                            currentPage={pagination.page}
-                            totalPages={pagination.totalPages}
-                            totalCount={pagination.totalCount}
-                            limit={pagination.limit}
-                            onPageChange={setPage}
-                        />
-                    )}
-                </DataTable>
-            </MainWrapper>
-        </DoctorLayout>
+            </div>
+            <DataTable
+                data={filteredAppointments}
+                columns={columns}
+                keyExtractor={(item) => item.appointmentId}
+                isLoading={isLoading}
+            >
+                {!isLoading && appointments.length > 0 && (
+                    <Pagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPages}
+                        totalCount={pagination.totalCount}
+                        limit={pagination.limit}
+                        onPageChange={setPage}
+                    />
+                )}
+            </DataTable>
+        </MainWrapper>
     )
 }
 

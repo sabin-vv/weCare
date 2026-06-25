@@ -3,11 +3,10 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 import { listPatients } from '../api/doctor.api'
-import type { Pagination as PaginationMeta, Patients, RiskLevel } from '../types/doctor.types'
+import type { PaginationData, Patients, RiskLevel } from '../types/doctor.types'
 
 import styles from './PatientList.module.css'
 
-import DoctorLayout from '@/layout/DoctorLayout'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
@@ -50,7 +49,7 @@ const PatientList = () => {
     const [riskLevel, setRiskLevel] = useState('all')
     const [page, setPage] = useState(1)
     const [patients, setPatients] = useState<Patients[]>([])
-    const [pagination, setPagination] = useState<PaginationMeta>({
+    const [pagination, setPagination] = useState<PaginationData>({
         page: 1,
         limit: 10,
         totalCount: 0,
@@ -167,60 +166,53 @@ const PatientList = () => {
     ]
 
     return (
-        <DoctorLayout>
-            <MainWrapper title="Patient Directory" subtitle="Monitoring all patients">
-                <div className={styles.filterSection}>
-                    <div className={styles.searchWrapper}>
-                        <SearchField value={search} onSearch={setSearch} placeholder="Search patients..." />
-                    </div>
-                    <div className={styles.filtersPanel}>
-                        <div className={styles.filterGroup}>
-                            <ul className={styles.filterList}>
-                                {CLINICAL_STATUS_OPTIONS.map((option) => (
-                                    <li
-                                        key={option.value}
-                                        className={styles.filterItem}
-                                        onClick={() => setClinicalStatus(option.value)}
-                                        aria-current={clinicalStatus === option.value}
-                                    >
-                                        {option.label}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className={styles.filterGroup}>
-                            <ul className={styles.filterList}>
+        <MainWrapper title="Patient Directory" subtitle="Monitoring all patients">
+            <div className={styles.filterSection}>
+                <div className={styles.searchWrapper}>
+                    <SearchField value={search} onSearch={setSearch} placeholder="Search patients..." />
+                </div>
+                <div className={styles.filtersPanel}>
+                    <div className={styles.filterGroup}>
+                        <ul className={styles.filterList}>
+                            {CLINICAL_STATUS_OPTIONS.map((option) => (
                                 <li
+                                    key={option.value}
                                     className={styles.filterItem}
-                                    onClick={() =>
-                                        setRiskLevel((current) => (current === 'high_risk' ? 'all' : 'high_risk'))
-                                    }
-                                    aria-current={riskLevel === 'high_risk'}
+                                    onClick={() => setClinicalStatus(option.value)}
+                                    aria-current={clinicalStatus === option.value}
                                 >
-                                    High Risk
+                                    {option.label}
                                 </li>
-                            </ul>
-                        </div>
+                            ))}
+                        </ul>
+                    </div>
+                    <div className={styles.filterGroup}>
+                        <ul className={styles.filterList}>
+                            <li
+                                className={styles.filterItem}
+                                onClick={() =>
+                                    setRiskLevel((current) => (current === 'high_risk' ? 'all' : 'high_risk'))
+                                }
+                                aria-current={riskLevel === 'high_risk'}
+                            >
+                                High Risk
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <DataTable
-                    data={patients}
-                    columns={columns}
-                    keyExtractor={(item) => item.patientId}
-                    isLoading={isLoading}
-                >
-                    {!isLoading && patients.length > 0 && (
-                        <Pagination
-                            currentPage={pagination.page}
-                            totalPages={pagination.totalPages}
-                            totalCount={pagination.totalCount}
-                            limit={pagination.limit}
-                            onPageChange={setPage}
-                        />
-                    )}
-                </DataTable>
-            </MainWrapper>
-        </DoctorLayout>
+            </div>
+            <DataTable data={patients} columns={columns} keyExtractor={(item) => item.patientId} isLoading={isLoading}>
+                {!isLoading && patients.length > 0 && (
+                    <Pagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPages}
+                        totalCount={pagination.totalCount}
+                        limit={pagination.limit}
+                        onPageChange={setPage}
+                    />
+                )}
+            </DataTable>
+        </MainWrapper>
     )
 }
 export default PatientList

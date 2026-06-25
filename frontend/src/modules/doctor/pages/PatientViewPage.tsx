@@ -21,7 +21,6 @@ import type { CaregiverOption, PatientDetails, RiskLevel, PatientVitalPlan } fro
 
 import styles from './PatientViewPage.module.css'
 
-import DoctorLayout from '@/layout/DoctorLayout'
 import { type ConditionResult, searchConditions } from '@/modules/doctor/api/conditionsApi'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
@@ -233,21 +232,17 @@ const PatientViewPage = () => {
 
     if (isLoading) {
         return (
-            <DoctorLayout>
-                <MainWrapper>
-                    <div className="loading">Loading patient details...</div>
-                </MainWrapper>
-            </DoctorLayout>
+            <MainWrapper>
+                <div className="loading">Loading patient details...</div>
+            </MainWrapper>
         )
     }
 
     if (!patient) {
         return (
-            <DoctorLayout>
-                <MainWrapper>
-                    <div className="error">Patient not found</div>
-                </MainWrapper>
-            </DoctorLayout>
+            <MainWrapper>
+                <div className="error">Patient not found</div>
+            </MainWrapper>
         )
     }
 
@@ -307,234 +302,230 @@ const PatientViewPage = () => {
     const vitals = flatVital.map((vital) => vital.type)
 
     return (
-        <DoctorLayout>
-            <MainWrapper>
-                <ProfileCard
-                    name={patient.name}
-                    age={patient.age}
-                    gender={patient.gender}
-                    patinetId={patient.patientId}
-                    riskLevel={patient.riskLevel}
-                    conditions={patient.conditions}
-                    profileImage={patient.profileImage}
-                    appointmentStatus={patient.appointmentStatus}
-                    caregiver={patient.caregiver}
-                    clinicalStatus={patient.clinicalStatus}
-                    onClinicalStatusChange={handleClinicalStatusChange}
-                    onStartConsultation={handleStartConsultation}
-                    onCompleteConsultation={handleCompleteConsultation}
-                    onAddCondition={() => {
-                        resetConditionModal()
-                        setShowConditionModal(true)
-                    }}
-                    onAssignCaregiver={handleCaregiverModalOpen}
-                    onMedicalRecord={handleMedicalRecord}
-                />
-                <div className={styles.vitalsLogGrid}>
-                    {patient.vitals.length > 0 &&
-                        patient.vitals.map((vital) => (
-                            <VitalCard
-                                key={vital._id}
-                                vitalName={vitalNameFormat(vital.type)}
-                                value={vital.value?.toString() || `${vital.systolic}/${vital.diastolic}`}
-                                unit={vital.unit}
-                                icon={vitalIcons[vital.type]}
-                                status={vital.recordedAt}
-                            />
-                        ))}
-                </div>
-                <Section title="Vitals Check Requests">
-                    {vitalPlans.length === 0 ? (
-                        <p className={styles.emptyVitalPlans}>No active vitals check requests.</p>
-                    ) : (
-                        <div className={styles.vitalPlansTable}>
-                            <div className={styles.vitalsGrid}>
-                                {vitalPlans.map((plan) => (
-                                    <div key={plan._id} className={styles.vitalCard}>
-                                        {plan.vitals.map((vital) => (
-                                            <>
-                                                <div className={styles.header}>
-                                                    <span className={styles.vitalName}>
-                                                        {vitalNameFormat(vital.type)}
+        <MainWrapper>
+            <ProfileCard
+                name={patient.name}
+                age={patient.age}
+                gender={patient.gender}
+                patinetId={patient.patientId}
+                riskLevel={patient.riskLevel}
+                conditions={patient.conditions}
+                profileImage={patient.profileImage}
+                appointmentStatus={patient.appointmentStatus}
+                caregiver={patient.caregiver}
+                clinicalStatus={patient.clinicalStatus}
+                onClinicalStatusChange={handleClinicalStatusChange}
+                onStartConsultation={handleStartConsultation}
+                onCompleteConsultation={handleCompleteConsultation}
+                onAddCondition={() => {
+                    resetConditionModal()
+                    setShowConditionModal(true)
+                }}
+                onAssignCaregiver={handleCaregiverModalOpen}
+                onMedicalRecord={handleMedicalRecord}
+            />
+            <div className={styles.vitalsLogGrid}>
+                {patient.vitals.length > 0 &&
+                    patient.vitals.map((vital) => (
+                        <VitalCard
+                            key={vital._id}
+                            vitalName={vitalNameFormat(vital.type)}
+                            value={vital.value?.toString() || `${vital.systolic}/${vital.diastolic}`}
+                            unit={vital.unit}
+                            icon={vitalIcons[vital.type]}
+                            status={vital.recordedAt}
+                        />
+                    ))}
+            </div>
+            <Section title="Vitals Check Requests">
+                {vitalPlans.length === 0 ? (
+                    <p className={styles.emptyVitalPlans}>No active vitals check requests.</p>
+                ) : (
+                    <div className={styles.vitalPlansTable}>
+                        <div className={styles.vitalsGrid}>
+                            {vitalPlans.map((plan) => (
+                                <div key={plan._id} className={styles.vitalCard}>
+                                    {plan.vitals.map((vital) => (
+                                        <>
+                                            <div className={styles.header}>
+                                                <span className={styles.vitalName}>{vitalNameFormat(vital.type)}</span>
+
+                                                <button
+                                                    onClick={() => handleCancelVitalPlan(plan._id)}
+                                                    className={styles.deleteButton}
+                                                    disabled={cancellingPlanId === plan._id}
+                                                >
+                                                    <Trash2 size={18} color="red" />
+                                                </button>
+                                            </div>
+
+                                            <div className={styles.details}>
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.label}>Frequency</span>
+
+                                                    <span className={styles.value}>
+                                                        {formatFrequency(vital.frequencyValue, vital.frequencyUnit)}
                                                     </span>
-
-                                                    <button
-                                                        onClick={() => handleCancelVitalPlan(plan._id)}
-                                                        className={styles.deleteButton}
-                                                        disabled={cancellingPlanId === plan._id}
-                                                    >
-                                                        <Trash2 size={18} color="red" />
-                                                    </button>
                                                 </div>
 
-                                                <div className={styles.details}>
-                                                    <div className={styles.detailRow}>
-                                                        <span className={styles.label}>Frequency</span>
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.label}>Duration</span>
 
-                                                        <span className={styles.value}>
-                                                            {formatFrequency(vital.frequencyValue, vital.frequencyUnit)}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className={styles.detailRow}>
-                                                        <span className={styles.label}>Duration</span>
-
-                                                        <span className={styles.value}>
-                                                            {formatDuration(vital.durationValue, vital.durationUnit)}
-                                                        </span>
-                                                    </div>
-
-                                                    <div className={styles.detailRow}>
-                                                        <span className={styles.label}>Requested On</span>
-
-                                                        <span className={styles.value}>
-                                                            {new Date(plan.createdAt).toLocaleDateString('en-IN', {
-                                                                day: '2-digit',
-                                                                month: 'short',
-                                                                year: 'numeric',
-                                                            })}
-                                                        </span>
-                                                    </div>
+                                                    <span className={styles.value}>
+                                                        {formatDuration(vital.durationValue, vital.durationUnit)}
+                                                    </span>
                                                 </div>
-                                            </>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </Section>
-                <MedicationTable
-                    patientId={patient._id}
-                    patientName={patient.name}
-                    clinicalStatus={patient.clinicalStatus}
-                    prescriptions={patient.prescriptions}
-                    hasConditions={(patient.conditions?.length ?? 0) > 0}
-                    vitalPlan={vitals}
-                    onSuccess={fetchPatient}
-                />
 
-                <Modal
-                    isOpen={showConditionModal}
-                    onClose={handleConditionModalClose}
-                    title="Search Condition"
-                    footer={
-                        <div className={styles.modalFooter}>
-                            <button type="button" className={styles.closeBtn} onClick={handleConditionModalClose}>
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className={styles.applyBtn}
-                                onClick={applyConditionUpdate}
-                                disabled={selectedConditions.length === 0 || !selectedSeverity || isApplyingCondition}
-                            >
-                                {isApplyingCondition ? 'Saving...' : 'Apply'}
-                            </button>
-                        </div>
-                    }
-                >
-                    <div className={styles.modalBody}>
-                        <div className={styles.searchWrapper}>
-                            <SearchField
-                                placeholder="Search condition..."
-                                value={conditionQuery}
-                                onChange={setConditionQuery}
-                                onSearch={handleConditionSearch}
-                                suggestions={conditionSuggestions.map((condition) => condition.name)}
-                                isLoading={isSearchingConditions}
-                                onSelect={handleConditionSelect}
-                            />
-                        </div>
-                        {selectedConditions.length > 0 && (
-                            <div className={styles.selectedCondition}>
-                                <div className={styles.conditionChips}>
-                                    {selectedConditions.map((condition) => (
-                                        <button
-                                            key={condition.name}
-                                            type="button"
-                                            className={styles.conditionChip}
-                                            onClick={() => handleConditionRemove(condition.name)}
-                                        >
-                                            {condition.name}
-                                            <span className={styles.conditionChipRemove}>x</span>
-                                        </button>
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.label}>Requested On</span>
+
+                                                    <span className={styles.value}>
+                                                        {new Date(plan.createdAt).toLocaleDateString('en-IN', {
+                                                            day: '2-digit',
+                                                            month: 'short',
+                                                            year: 'numeric',
+                                                        })}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </>
                                     ))}
                                 </div>
-                            </div>
-                        )}
-                        <div className={styles.severitySection}>
-                            <span className={styles.severityLabel}>Overall Severity Level</span>
-                            <div className={styles.severityOptions}>
-                                {SEVERITY_OPTIONS.map((option) => (
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </Section>
+            <MedicationTable
+                patientId={patient._id}
+                patientName={patient.name}
+                clinicalStatus={patient.clinicalStatus}
+                prescriptions={patient.prescriptions}
+                hasConditions={(patient.conditions?.length ?? 0) > 0}
+                vitalPlan={vitals}
+                onSuccess={fetchPatient}
+            />
+
+            <Modal
+                isOpen={showConditionModal}
+                onClose={handleConditionModalClose}
+                title="Search Condition"
+                footer={
+                    <div className={styles.modalFooter}>
+                        <button type="button" className={styles.closeBtn} onClick={handleConditionModalClose}>
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.applyBtn}
+                            onClick={applyConditionUpdate}
+                            disabled={selectedConditions.length === 0 || !selectedSeverity || isApplyingCondition}
+                        >
+                            {isApplyingCondition ? 'Saving...' : 'Apply'}
+                        </button>
+                    </div>
+                }
+            >
+                <div className={styles.modalBody}>
+                    <div className={styles.searchWrapper}>
+                        <SearchField
+                            placeholder="Search condition..."
+                            value={conditionQuery}
+                            onChange={setConditionQuery}
+                            onSearch={handleConditionSearch}
+                            suggestions={conditionSuggestions.map((condition) => condition.name)}
+                            isLoading={isSearchingConditions}
+                            onSelect={handleConditionSelect}
+                        />
+                    </div>
+                    {selectedConditions.length > 0 && (
+                        <div className={styles.selectedCondition}>
+                            <div className={styles.conditionChips}>
+                                {selectedConditions.map((condition) => (
                                     <button
-                                        key={option.value}
+                                        key={condition.name}
                                         type="button"
-                                        className={`${styles.severityBtn} ${
-                                            selectedSeverity === option.value ? styles.severityBtnActive : ''
-                                        }`}
-                                        onClick={() => setSelectedSeverity(option.value)}
+                                        className={styles.conditionChip}
+                                        onClick={() => handleConditionRemove(condition.name)}
                                     >
-                                        {option.label}
+                                        {condition.name}
+                                        <span className={styles.conditionChipRemove}>x</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
+                    )}
+                    <div className={styles.severitySection}>
+                        <span className={styles.severityLabel}>Overall Severity Level</span>
+                        <div className={styles.severityOptions}>
+                            {SEVERITY_OPTIONS.map((option) => (
+                                <button
+                                    key={option.value}
+                                    type="button"
+                                    className={`${styles.severityBtn} ${
+                                        selectedSeverity === option.value ? styles.severityBtnActive : ''
+                                    }`}
+                                    onClick={() => setSelectedSeverity(option.value)}
+                                >
+                                    {option.label}
+                                </button>
+                            ))}
+                        </div>
                     </div>
-                </Modal>
+                </div>
+            </Modal>
 
-                <Modal
-                    isOpen={showCaregiverModal}
-                    onClose={handleCaregiverModalClose}
-                    title="Assign Caregiver"
-                    footer={
-                        <div className={styles.modalFooter}>
-                            <button type="button" className={styles.closeBtn} onClick={handleCaregiverModalClose}>
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className={styles.applyBtn}
-                                onClick={handleAssignCaregiver}
-                                disabled={!selectedCaregiver || isAssigningCaregiver}
-                            >
-                                {isAssigningCaregiver ? 'Assigning...' : 'Assign'}
-                            </button>
-                        </div>
-                    }
-                >
-                    <div className={styles.modalBody}>
-                        <div className={styles.searchWrapper}>
-                            <SearchField
-                                placeholder="Search caregiver..."
-                                value={caregiverSearch}
-                                onChange={setCaregiverSearch}
-                                onSearch={handleCaregiverSearch}
-                                suggestions={caregivers.map((cg) => cg.fullName)}
-                                isLoading={isLoadingCaregivers}
-                                onSelect={(name) => {
-                                    const caregiver = caregivers.find((cg) => cg.fullName === name)
-                                    setSelectedCaregiver(caregiver || null)
-                                }}
-                            />
-                        </div>
-                        {selectedCaregiver && (
-                            <div className={styles.selectedCaregiver}>
-                                <p>
-                                    <strong>Selected:</strong> {selectedCaregiver.fullName}
-                                </p>
-                                <p>
-                                    <strong>Email:</strong> {selectedCaregiver.email}
-                                </p>
-                                <p>
-                                    <strong>Phone:</strong> {selectedCaregiver.phoneNumber}
-                                </p>
-                            </div>
-                        )}
+            <Modal
+                isOpen={showCaregiverModal}
+                onClose={handleCaregiverModalClose}
+                title="Assign Caregiver"
+                footer={
+                    <div className={styles.modalFooter}>
+                        <button type="button" className={styles.closeBtn} onClick={handleCaregiverModalClose}>
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.applyBtn}
+                            onClick={handleAssignCaregiver}
+                            disabled={!selectedCaregiver || isAssigningCaregiver}
+                        >
+                            {isAssigningCaregiver ? 'Assigning...' : 'Assign'}
+                        </button>
                     </div>
-                </Modal>
-            </MainWrapper>
-        </DoctorLayout>
+                }
+            >
+                <div className={styles.modalBody}>
+                    <div className={styles.searchWrapper}>
+                        <SearchField
+                            placeholder="Search caregiver..."
+                            value={caregiverSearch}
+                            onChange={setCaregiverSearch}
+                            onSearch={handleCaregiverSearch}
+                            suggestions={caregivers.map((cg) => cg.fullName)}
+                            isLoading={isLoadingCaregivers}
+                            onSelect={(name) => {
+                                const caregiver = caregivers.find((cg) => cg.fullName === name)
+                                setSelectedCaregiver(caregiver || null)
+                            }}
+                        />
+                    </div>
+                    {selectedCaregiver && (
+                        <div className={styles.selectedCaregiver}>
+                            <p>
+                                <strong>Selected:</strong> {selectedCaregiver.fullName}
+                            </p>
+                            <p>
+                                <strong>Email:</strong> {selectedCaregiver.email}
+                            </p>
+                            <p>
+                                <strong>Phone:</strong> {selectedCaregiver.phoneNumber}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </Modal>
+        </MainWrapper>
     )
 }
 export default PatientViewPage
