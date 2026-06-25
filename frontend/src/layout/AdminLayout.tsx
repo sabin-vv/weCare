@@ -1,8 +1,9 @@
 import { Outlet } from 'react-router-dom'
 
-import AdminHeader from './AdminHeader'
+import AdminHeader from '../modules/admin/components/AdminHeader'
+import AdminSidebar from '../modules/admin/components/AdminSidebar'
+
 import styles from './AdminLayout.module.css'
-import AdminSidebar from './AdminSidebar'
 
 import { PendingCountProvider } from '@/shared/context/PendingCountContext'
 

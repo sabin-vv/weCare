@@ -1,11 +1,11 @@
 import type { RouteObject } from 'react-router-dom'
 
-import AdminLayout from '../components/AdminLayout'
+import AdminLayout from '../../../layout/AdminLayout'
 import ActivityLogsPage from '../pages/ActivityLogsPage'
 import AdminAppointmentsPage from '../pages/AdminAppointmentsPage'
 import AdminDashboard from '../pages/AdminDashboard'
-import AdminPaymentsPage from '../pages/AdminPaymentsPage'
 import AdminLoginPage from '../pages/AdminLoginPage'
+import AdminPaymentsPage from '../pages/AdminPaymentsPage'
 import AdminSettings from '../pages/AdminSettings'
 import CaregiverVerificationPage from '../pages/CaregiverVerificationPage'
 import DoctorVerificationPage from '../pages/DoctorVerificationPage'
