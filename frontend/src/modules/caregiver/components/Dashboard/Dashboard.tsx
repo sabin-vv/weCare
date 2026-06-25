@@ -148,7 +148,7 @@ const Dashboard = () => {
                     getCaregiverActivityLogs(1, 4),
                 ])
                 setPatients(patientsData)
-                setAlerts(alertsData)
+                setAlerts(alertsData.alerts)
                 setActivities(activityData.data)
 
                 const medPromises = patientsData.map(async (p) => {
