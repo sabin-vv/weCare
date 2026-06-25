@@ -10,6 +10,8 @@ export const UPLOADS_API = '/uploads'
 
 export const ADMIN_API = '/admin'
 
+export const ASSISTANT_API = '/assistant'
+
 export const PAYMENTS_API = '/payments'
 
 export const WALLET_API = '/wallet'
