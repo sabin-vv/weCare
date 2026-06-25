@@ -1,5 +1,5 @@
-import type { PendingCaregiver, RecentCaregiver } from '../interfaces/admin.interface'
 import styles from '../pages/DoctorVerification.module.css'
+import type { PendingCaregiver, RecentCaregiver } from '../types/admin.types'
 
 import { getFileUrl } from '@/utils/getFileUrl'
 
