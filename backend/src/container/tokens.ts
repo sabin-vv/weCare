@@ -10,6 +10,7 @@ export const TOKENS = {
     IPatientService: Symbol('IPatientService'),
     IAuthService: Symbol('IAuthService'),
     IOtpService: Symbol('IOtpService'),
+    IAssistantService: Symbol('IAssistantService'),
     IAdminRepository: Symbol('IAdminRepository'),
     IAdminService: Symbol('IAdminService'),
     IAppointmentRepository: Symbol('IAppointmentRepository'),
