@@ -19,5 +19,6 @@ export const env = {
     AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || 'rzp_test_YourKeyHere',
     RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || 'YourSecretHere',
-
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_MODEL: process.env.GEMINI_MODEL,
 }
