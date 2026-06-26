@@ -2,8 +2,8 @@ import { BadgeCheck, UserRound, Loader2, X, Star } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { getDoctors } from '../api/patient.api'
-import type { Specialist } from '../types/patient.types'
+import { getDoctors } from '../../patient/api/patient.api'
+import type { Specialist } from '../../patient/types/patient.types'
 
 import styles from './DoctorBookingPage.module.css'
 

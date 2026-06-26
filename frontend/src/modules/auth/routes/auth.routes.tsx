@@ -5,15 +5,10 @@ import DoctorRegisterPage from '../pages/DoctorRegisterPage'
 import ForgotPasswordNewPasswordPage from '../pages/ForgotPasswordNewPasswordPage'
 import ForgotPasswordOtpPage from '../pages/ForgotPasswordOtpPage'
 import ForgotPasswordPage from '../pages/ForgotPasswordPage'
-import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
 import PatientRegisterPage from '../pages/PatientRegisterPage'
 
 export const AuthRoutes: RouteObject[] = [
-    {
-        path: '/',
-        element: <LandingPage />,
-    },
     {
         path: '/auth/login',
         element: <LoginPage />,

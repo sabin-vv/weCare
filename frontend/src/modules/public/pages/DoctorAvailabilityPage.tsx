@@ -9,8 +9,13 @@ import {
     getWallet,
     getAppointmentById,
     rescheduleAppointment,
-} from '../api/patient.api'
-import { type Appointment, type DoctorInfo, type DoctorSlot, type RazorpayResponse } from '../types/patient.types'
+} from '../../patient/api/patient.api'
+import {
+    type Appointment,
+    type DoctorInfo,
+    type DoctorSlot,
+    type RazorpayResponse,
+} from '../../patient/types/patient.types'
 
 import styles from './DoctorAvailabilityPage.module.css'
 

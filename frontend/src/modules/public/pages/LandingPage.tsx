@@ -1,40 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 
-import { Role } from '../types/auth.types'
-
 import styles from './LandingPage.module.css'
 
 import Button from '@/shared/components/Button/Button'
-import Footer from '@/shared/components/Footer/Footer'
-import Header from '@/shared/components/Header/Header'
-import type { NavLink } from '@/shared/components/Header/Header.types'
-import { caregiverNavLinks, doctorNavLinks, patientNavLinks } from '@/shared/constants/navLinks'
-import { useAuth } from '@/shared/context/AuthContext'
 
 const LandingPage = () => {
     const navigate = useNavigate()
-    const { user } = useAuth()
-    let navLinks: NavLink[] = []
-
-    if (user) {
-        switch (user.role) {
-            case Role.CAREGIVER:
-                navLinks = caregiverNavLinks
-                break
-            case Role.PATIENT:
-                navLinks = patientNavLinks
-                break
-            case Role.DOCTOR:
-                navLinks = doctorNavLinks
-                break
-            default:
-                navLinks = []
-        }
-    }
 
     return (
         <div className={styles.landingContainer}>
-            <Header navLinks={navLinks} />
             <section className={styles.heroSection}>
                 <div className={styles.heroInner}>
                     <h1 className={styles.heroTitle}>
@@ -102,7 +76,6 @@ const LandingPage = () => {
                     </div>
                 </div>
             </section>
-            <Footer />
         </div>
     )
 }
