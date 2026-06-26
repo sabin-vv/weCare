@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IPatientService } from '../interfaces/patient.service.interface'
 
 @injectable()
@@ -16,14 +17,14 @@ export class PatientController {
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
             data: result,
-            message: 'Patient registered successfully',
+            message: MSG.REGISTERED,
         })
     }
 
     getProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._patientService.getProfile(userId)
@@ -31,14 +32,14 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Patient profile fetched',
+            message: MSG.PROFILE_FETCHED,
         })
     }
 
     updateProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._patientService.updateProfile(userId, req.body)
@@ -46,7 +47,7 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Patient profile updated successfully',
+            message: MSG.PROFILE_UPDATED,
         })
     }
 
@@ -54,7 +55,7 @@ export class PatientController {
         const doctorId = req.user?.userId
 
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHORIZED)
         }
         const { search, clinicalStatus, riskLevel, page, limit } = req.query
 
@@ -69,7 +70,7 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Patient list fetched succesfully',
+            message: MSG.LIST_FETCHED,
         })
     }
 
@@ -77,7 +78,7 @@ export class PatientController {
         const doctorId = req.user?.userId
 
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHORIZED)
         }
 
         const { patientId } = req.params
@@ -87,7 +88,7 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Patient details fetched successfully',
+            message: MSG.DETAILS_FETCHED,
         })
     }
 
@@ -95,7 +96,7 @@ export class PatientController {
         const doctorId = req.user?.userId
 
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHORIZED)
         }
 
         const { patientId } = req.params
@@ -105,7 +106,7 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Patient condition updated successfully',
+            message: MSG.CONDITION_UPDATED,
         })
     }
 
@@ -113,7 +114,7 @@ export class PatientController {
         const doctorId = req.user?.userId
 
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHORIZED)
         }
 
         const { patientId } = req.params
@@ -124,14 +125,14 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Caregiver assigned successfully',
+            message: MSG.CAREGIVER_ASSIGNED,
         })
     }
 
     getCareTeam = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._patientService.getCareTeam(userId)
@@ -139,7 +140,7 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Care team fetched successfully',
+            message: MSG.CARE_TEAM_FETCHED,
         })
     }
 
@@ -147,7 +148,7 @@ export class PatientController {
         const doctorId = req.user?.userId
 
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authorized')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHORIZED)
         }
 
         const { patientId } = req.params
@@ -158,7 +159,7 @@ export class PatientController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Clinical status updated successfully',
+            message: MSG.CLINICAL_STATUS_UPDATED,
         })
     }
 }

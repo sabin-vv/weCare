@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAppointmentRepository } from '../../appointment/interfaces/appointment.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
@@ -90,16 +91,16 @@ export class PatientService implements IPatientService {
     private async resolveDoctorPatientContext(doctorId: string, patientId: string) {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (patient.primaryDoctorId?.toString() !== doctor._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to view this patient')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_AUTHORIZED_TO_VIEW)
         }
 
         return { doctor, patient }
@@ -108,7 +109,7 @@ export class PatientService implements IPatientService {
     private async buildPatientDetails(doctorId: string, patient: PatientDocument) {
         const user = await this._userRepo.findById(patient.userId.toString())
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const [appointment] = await this._appointmentRepo.findDoctorVisibleAppointmentsByDoctorAndPatientIds(doctorId, [
@@ -149,7 +150,7 @@ export class PatientService implements IPatientService {
     private async cancelPatientWorkFlow(patientId: string, discontinuedBy: string, reason: string) {
         const result = await this._patientRepo.updateById(patientId, { accountStatus: 'archived' })
         if (!result) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Update account status failed')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.UPDATE_ACCOUNT_STATUS_FAILED)
         }
         await this._prescriptionRepo.discontinuePrescriptionByPatientId(patientId, discontinuedBy)
         await this._medicationRepo.cancelMedicationSchedulesByPatient(patientId, reason)
@@ -165,7 +166,7 @@ export class PatientService implements IPatientService {
 
     async registerPatient(dto: RegisterPatientDTO): Promise<PatientResponseDTO> {
         const existing = await this._userRepo.findByEmail(dto.email)
-        if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'User already exist')
+        if (existing) throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.USER_ALREADY_EXISTS)
 
         const userData = await toUserEntity(dto, UserRole.PATIENT)
         const user = await this._userRepo.create(userData)
@@ -179,12 +180,12 @@ export class PatientService implements IPatientService {
     async getProfile(userId: string): Promise<PatientProfileResponseDTO> {
         const user = await this._userRepo.findById(userId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         return toPatientProfileResponseDTO(user, patient)
@@ -193,7 +194,7 @@ export class PatientService implements IPatientService {
     async getCareTeam(userId: string): Promise<CareTeamResponseDTO> {
         const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         let doctor: CareTeamMemberDTO | null = null
@@ -251,7 +252,7 @@ export class PatientService implements IPatientService {
     async updateProfile(userId: string, dto: UpdatePatientSettingsDTO): Promise<PatientProfileResponseDTO> {
         const existingPatient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
         if (!existingPatient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const userUpdates: Record<string, string> = {}
@@ -274,12 +275,12 @@ export class PatientService implements IPatientService {
 
         const patient = await this._patientRepo.updateByUserId(new Types.ObjectId(userId), patientUpdates)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const updatedUser = await this._userRepo.findById(userId)
         if (!updatedUser) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         return toPatientProfileResponseDTO(updatedUser, patient)
@@ -297,7 +298,7 @@ export class PatientService implements IPatientService {
     ): Promise<ListPatientsResponse> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const page = Math.max(1, params.page || 1)
@@ -440,7 +441,7 @@ export class PatientService implements IPatientService {
         })
 
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         return await this.buildPatientDetails(doctor._id.toString(), patient)
@@ -451,11 +452,11 @@ export class PatientService implements IPatientService {
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(caregiverId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.CAREGIVER_NOT_FOUND)
         }
 
         if (!caregiver.isActive) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Caregiver is not active')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.CAREGIVER_NOT_ACTIVE)
         }
 
         const patient = await this._patientRepo.updateById(patientId, {
@@ -463,7 +464,7 @@ export class PatientService implements IPatientService {
         })
 
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         const caregiverUser = await this._userRepo.findById(caregiver.userId.toString())
@@ -514,11 +515,11 @@ export class PatientService implements IPatientService {
         const { doctor, patient } = await this.resolveDoctorPatientContext(doctorId, patientId)
 
         if (!patient.clinicalStatus) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Patient has no current clinical status')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.NO_CURRENT_CLINICAL_STATUS)
         }
 
         if (patient.clinicalStatus === clinicalStatus) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Patient is already in this clinical status')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.ALREADY_IN_CLINICAL_STATUS)
         }
 
         const isAllowed = this.transitionClinicalStatus(patient.clinicalStatus, clinicalStatus)
@@ -552,7 +553,7 @@ export class PatientService implements IPatientService {
 
         const updatedPatient = await this._patientRepo.updateById(patientId, { clinicalStatus })
         if (!updatedPatient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         return await this.buildPatientDetails(doctor._id.toString(), updatedPatient)
