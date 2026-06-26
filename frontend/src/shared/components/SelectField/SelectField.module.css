@@ -130,6 +130,10 @@
     overflow-y: auto;
 }
 
+.dropdown::-webkit-scrollbar {
+    display: none;
+}
+
 .option {
     width: 100%;
     border: 0;

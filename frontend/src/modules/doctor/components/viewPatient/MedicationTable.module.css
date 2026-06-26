@@ -29,7 +29,7 @@
 
 .searchSection {
     display: grid;
-    grid-template-columns: 1fr 250px;
+    grid-template-columns: 1fr auto;
     gap: 24px;
     margin-bottom: 32px;
 }
@@ -76,23 +76,6 @@
     font-size: 14px;
     color: #64748b;
     font-weight: 500;
-}
-
-.dosageSelect {
-    padding: 12px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #0f172a;
-    background: #f8fafc;
-    font-family: inherit;
-    cursor: pointer;
-}
-
-.dosageSelect:focus {
-    outline: none;
-    border-color: #3b82f6;
-    background: #ffffff;
 }
 
 .selectedMedicationsSection {
@@ -223,6 +206,7 @@
 
 .durationInput {
     flex: 1;
+    min-width: 70px;
 }
 
 .durationUnit {
@@ -447,6 +431,29 @@
     margin: 6px 0 0;
     color: #64748b;
     font-size: 14px;
+}
+
+.scheduleTimeChips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    min-width: 120px;
+}
+
+.scheduleTimeChip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 62px;
+    padding: 4px 8px;
+    border: 1px solid #bfdbfe;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
 .prescriptionNote {

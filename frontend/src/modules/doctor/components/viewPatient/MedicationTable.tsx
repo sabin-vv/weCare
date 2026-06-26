@@ -4,7 +4,8 @@ import toast from 'react-hot-toast'
 
 import { addPrescription, createVitalPlan, updatePrescriptionStatus } from '../../api/doctor.api'
 import { getMedicineNames, getMedicineStrengths } from '../../api/medicine.api'
-import type { MedicationProps, PatientPrescription, SelectedMedication } from '../../types/doctor.types'
+import { ADMINISTRATION_ROUTE, DURATION, FREQUENCY, MEDICAL_PRIORITY } from '../../constants/prescriptions.Constants'
+import type { MedicationProps, PatientPrescription, ScheduleTime, SelectedMedication } from '../../types/doctor.types'
 
 import styles from './MedicationTable.module.css'
 
@@ -12,11 +13,43 @@ import Button from '@/shared/components/Button/Button'
 import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { Section } from '@/shared/components/Section/Section'
+import SelectField from '@/shared/components/SelectField/SelectField'
 import DataTable from '@/shared/components/Table/DataTable'
 import type { Column } from '@/shared/components/Table/dataTable.types'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 type VitalPlanOptionId = 'blood_pressure' | 'heart_rate' | 'spo2' | 'blood_sugar'
+
+const getFrequencySlotCount = (frequency: string) => {
+    const map: Record<string, number> = {
+        'Once daily': 1,
+        'Twice daily': 2,
+        'Three times daily': 3,
+        'Four times daily': 4,
+    }
+
+    return map[frequency] ?? 1
+}
+
+const createScheduleTime = (medicationId: string, index: number): ScheduleTime => ({
+    id: `${medicationId}-schedule-${index}-${Date.now()}`,
+    time: '',
+})
+
+const normalizeScheduleTimes = (
+    medicationId: string,
+    frequency: string,
+    scheduleTimes: ScheduleTime[],
+): ScheduleTime[] => {
+    const requiredCount = getFrequencySlotCount(frequency)
+    const normalizedTimes = scheduleTimes.slice(0, requiredCount)
+
+    while (normalizedTimes.length < requiredCount) {
+        normalizedTimes.push(createScheduleTime(medicationId, normalizedTimes.length))
+    }
+
+    return normalizedTimes
+}
 
 const MedicationTable = ({
     patientId,
@@ -75,6 +108,25 @@ const MedicationTable = ({
             header: 'Frequency',
             key: 'frequency' as keyof (typeof flattenedMedications)[number],
             render: (item) => item.frequency,
+        },
+        {
+            header: 'Schedule Times',
+            key: 'scheduleTimes' as keyof (typeof flattenedMedications)[number],
+            render: (item) =>
+                item.scheduleTimes.length > 0 ? (
+                    <div className={styles.scheduleTimeChips}>
+                        {item.scheduleTimes.map((time, index) => (
+                            <span
+                                key={`${item.prescriptionId}-${item.name}-${time}-${index}`}
+                                className={styles.scheduleTimeChip}
+                            >
+                                {time}
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    'N/A'
+                ),
         },
         {
             header: 'End Time',
@@ -180,20 +232,6 @@ const MedicationTable = ({
         setSelectedMedications(selectedMedications.filter((med) => med.id !== id))
     }
 
-    const handleAddScheduleTime = (medicationId: string) => {
-        setSelectedMedications(
-            selectedMedications.map((med) => {
-                if (med.id === medicationId) {
-                    return {
-                        ...med,
-                        scheduleTimes: [...med.scheduleTimes, { id: Date.now().toString(), time: '' }],
-                    }
-                }
-                return med
-            }),
-        )
-    }
-
     const handleUpdateScheduleTime = (medicationId: string, timeId: string, newTime: string) => {
         setSelectedMedications(
             selectedMedications.map((med) => {
@@ -210,20 +248,6 @@ const MedicationTable = ({
         )
     }
 
-    const handleRemoveScheduleTime = (medicationId: string, timeId: string) => {
-        setSelectedMedications(
-            selectedMedications.map((med) => {
-                if (med.id === medicationId) {
-                    return {
-                        ...med,
-                        scheduleTimes: med.scheduleTimes.filter((time) => time.id !== timeId),
-                    }
-                }
-                return med
-            }),
-        )
-    }
-
     const handleEditPrescription = async (prescription: PatientPrescription | undefined) => {
         if (!prescription || prescription.medications.length === 0) return
         setEditingPrescription(prescription)
@@ -231,21 +255,26 @@ const MedicationTable = ({
 
         const firstMed = prescription.medications[0]
 
-        const mappedMedications: SelectedMedication[] = prescription.medications.map((med, index) => ({
-            id: `${prescription._id}-${index}`,
-            name: med.name,
-            dosage: med.dosage,
-            frequency: med.frequency,
-            duration: med.duration || 7,
-            durationUnit: med.durationUnit || 'Days',
-            priority: med.priority || '',
-            route: med.route === 'IV' ? 'Intravenous' : med.route === 'injection' ? 'Intramuscular' : med.route,
-            scheduleTimes: med.scheduleTimes.map((time, i) => ({
-                id: `${prescription._id}-${index}-${i}`,
+        const mappedMedications: SelectedMedication[] = prescription.medications.map((med, index) => {
+            const medicationId = `${prescription._id}-${index}`
+            const scheduleTimes = med.scheduleTimes.map((time, i) => ({
+                id: `${medicationId}-${i}`,
                 time: time,
-            })),
-            instructions: med.instructions || '',
-        }))
+            }))
+
+            return {
+                id: medicationId,
+                name: med.name,
+                dosage: med.dosage,
+                frequency: med.frequency,
+                duration: med.duration || 7,
+                durationUnit: med.durationUnit || 'Days',
+                priority: med.priority || '',
+                route: med.route === 'IV' ? 'Intravenous' : med.route === 'injection' ? 'Intramuscular' : med.route,
+                scheduleTimes: normalizeScheduleTimes(medicationId, med.frequency, scheduleTimes),
+                instructions: med.instructions || '',
+            }
+        })
 
         setSelectedMedications(mappedMedications)
         setOriginalPrescription([...mappedMedications])
@@ -325,16 +354,18 @@ const MedicationTable = ({
     const handleAddMedicationToList = () => {
         if (!selectedMedicineName) return
 
+        const medicationId = Date.now().toString()
+        const frequency = 'Once daily'
         const newMedication: SelectedMedication = {
-            id: Date.now().toString(),
+            id: medicationId,
             name: selectedMedicineName,
             dosage: dosage,
-            frequency: 'Once daily',
+            frequency,
             duration: 7,
             durationUnit: 'Days',
             priority: 'Medium',
             route: 'Oral',
-            scheduleTimes: [],
+            scheduleTimes: normalizeScheduleTimes(medicationId, frequency, []),
         }
 
         setSelectedMedications([...selectedMedications, newMedication])
@@ -352,6 +383,14 @@ const MedicationTable = ({
         setSelectedMedications(
             selectedMedications.map((med) => {
                 if (med.id === medicationId) {
+                    if (field === 'frequency' && typeof value === 'string') {
+                        return {
+                            ...med,
+                            frequency: value,
+                            scheduleTimes: normalizeScheduleTimes(med.id, value, med.scheduleTimes),
+                        }
+                    }
+
                     return { ...med, [field]: value }
                 }
                 return med
@@ -601,9 +640,10 @@ const MedicationTable = ({
                         </div>
                         <div className={styles.dosageField}>
                             <label className={styles.dosageLabel}>Dosage</label>
+
                             <div className={styles.dosageRow}>
-                                <select
-                                    className={styles.dosageSelect}
+                                <SelectField
+                                    options={availableStrengths.map((s) => ({ label: s, value: s }))}
                                     value={dosage}
                                     onChange={(e) => {
                                         setDosage(e.target.value)
@@ -616,16 +656,8 @@ const MedicationTable = ({
                                         }
                                     }}
                                     disabled={availableStrengths.length === 0}
-                                >
-                                    <option value="" disabled>
-                                        Select dosage
-                                    </option>
-                                    {availableStrengths.map((strength, index) => (
-                                        <option key={index} value={strength}>
-                                            {strength}
-                                        </option>
-                                    ))}
-                                </select>
+                                />
+
                                 {!isEditMode && (
                                     <Button
                                         onClick={handleAddMedicationToList}
@@ -664,9 +696,9 @@ const MedicationTable = ({
 
                                     <div className={styles.medicationGrid}>
                                         <div className={styles.fieldGroup}>
-                                            <label className={styles.fieldLabel}>Frequency</label>
-                                            <select
-                                                className={styles.fieldSelect}
+                                            <SelectField
+                                                label="Frequency"
+                                                options={FREQUENCY}
                                                 value={medication.frequency}
                                                 onChange={(e) =>
                                                     handleUpdateMedicationField(
@@ -675,12 +707,7 @@ const MedicationTable = ({
                                                         e.target.value,
                                                     )
                                                 }
-                                            >
-                                                <option>Once daily</option>
-                                                <option>Twice daily</option>
-                                                <option>Three times daily</option>
-                                                <option>Four times daily</option>
-                                            </select>
+                                            />
                                         </div>
                                         <div className={styles.fieldGroup}>
                                             <label className={styles.fieldLabel}>Duration</label>
@@ -697,8 +724,8 @@ const MedicationTable = ({
                                                         )
                                                     }
                                                 />
-                                                <select
-                                                    className={`${styles.fieldSelect} ${styles.durationUnit}`}
+                                                <SelectField
+                                                    options={DURATION}
                                                     value={medication.durationUnit}
                                                     onChange={(e) =>
                                                         handleUpdateMedicationField(
@@ -707,22 +734,16 @@ const MedicationTable = ({
                                                             e.target.value,
                                                         )
                                                     }
-                                                >
-                                                    <option>Days</option>
-                                                    <option>Weeks</option>
-                                                    <option>Months</option>
-                                                </select>
+                                                />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className={styles.medicationGrid}>
                                         <div className={styles.fieldGroup}>
-                                            <label className={`${styles.fieldLabel} ${styles.required}`}>
-                                                Medication Priority
-                                            </label>
-                                            <select
-                                                className={styles.fieldSelect}
+                                            <SelectField
+                                                label="Medication Priority"
+                                                options={MEDICAL_PRIORITY}
                                                 value={medication.priority}
                                                 onChange={(e) =>
                                                     handleUpdateMedicationField(
@@ -731,27 +752,17 @@ const MedicationTable = ({
                                                         e.target.value,
                                                     )
                                                 }
-                                            >
-                                                <option>Critical</option>
-                                                <option>High</option>
-                                                <option>Medium</option>
-                                                <option>Low</option>
-                                            </select>
+                                            />
                                         </div>
                                         <div className={styles.fieldGroup}>
-                                            <label className={styles.fieldLabel}>Administration Route</label>
-                                            <select
-                                                className={styles.fieldSelect}
+                                            <SelectField
+                                                label="Administration Route"
+                                                options={ADMINISTRATION_ROUTE}
                                                 value={medication.route}
                                                 onChange={(e) =>
                                                     handleUpdateMedicationField(medication.id, 'route', e.target.value)
                                                 }
-                                            >
-                                                <option value="Oral">Oral</option>
-                                                <option value="Intravenous">Intravenous (IV)</option>
-                                                <option value="Intramuscular">Injection</option>
-                                                <option value="Inhalation">Inhalation</option>
-                                            </select>
+                                            />
                                         </div>
                                     </div>
 
@@ -772,22 +783,8 @@ const MedicationTable = ({
                                                             )
                                                         }
                                                     />
-                                                    <button
-                                                        className={styles.removeTimeBtn}
-                                                        onClick={() => handleRemoveScheduleTime(medication.id, time.id)}
-                                                        type="button"
-                                                    >
-                                                        ✕
-                                                    </button>
                                                 </div>
                                             ))}
-                                            <button
-                                                className={styles.addTimeBtn}
-                                                onClick={() => handleAddScheduleTime(medication.id)}
-                                                type="button"
-                                            >
-                                                +
-                                            </button>
                                         </div>
                                     </div>
                                     <div className={styles.instructionsSection}>
