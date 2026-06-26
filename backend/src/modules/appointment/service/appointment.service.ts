@@ -6,6 +6,7 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
@@ -48,7 +49,7 @@ export class AppointmentService implements IAppointmentService {
     private async validateAppointmentRequest(dto: CreateAppointmentDTO & { patientId: string }) {
         const doctor = await this._doctorRepo.findById(dto.doctorId)
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_NOT_FOUND)
         }
 
         const existingAppointment = await this._appointmentRepo.findActiveByPatientAndDoctor(
@@ -56,7 +57,7 @@ export class AppointmentService implements IAppointmentService {
             doctor._id.toString(),
         )
         if (existingAppointment) {
-            throw new AppError(HTTP_STATUS.CONFLICT, 'You already have an active appointment with this doctor')
+            throw new AppError(HTTP_STATUS.CONFLICT, MSG.ALREADY_ACTIVE_APPOINTMENT)
         }
 
         const activeAppointments = await this._appointmentRepo.findActiveAppointments(
@@ -72,7 +73,7 @@ export class AppointmentService implements IAppointmentService {
         })
 
         if (isAlreadyBooked) {
-            throw new AppError(HTTP_STATUS.CONFLICT, 'This slot is already booked or being processed.')
+            throw new AppError(HTTP_STATUS.CONFLICT, MSG.SLOT_ALREADY_BOOKED_OR_PROCESSING)
         }
 
         const settings = await this._adminRepo.getPlatformSettings()
@@ -180,7 +181,7 @@ export class AppointmentService implements IAppointmentService {
         })
 
         if (!updatedRazorpayPayment || !updatedRazorpayAppointment) {
-            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to prepare Razorpay appointment payment')
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_PREPARE_RAZORPAY)
         }
 
         return { paymentMethod: 'razorpay', order, paymentId: payment._id.toString() }
@@ -213,7 +214,7 @@ export class AppointmentService implements IAppointmentService {
                 paymentId: payment._id,
             })
             if (!appointmentWithPayment) {
-                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to attach payment to appointment')
+                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_ATTACH_PAYMENT)
             }
 
             const doctor = await this._doctorRepo.findByIdWithUser(dto.doctorId)
@@ -242,7 +243,7 @@ export class AppointmentService implements IAppointmentService {
                 paidAt: new Date(),
             })
             if (!updatedWalletPayment) {
-                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to finalize wallet payment')
+                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_FINALIZE_WALLET)
             }
 
             await this._activityLogService.logActivity({
@@ -262,7 +263,7 @@ export class AppointmentService implements IAppointmentService {
                 expiredAt: undefined,
             })
             if (!confirmedAppointment) {
-                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to confirm wallet appointment')
+                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_CONFIRM_WALLET)
             }
 
             await this._patientRepo.updateByUserId(new Types.ObjectId(dto.patientId), {
@@ -365,11 +366,11 @@ export class AppointmentService implements IAppointmentService {
     async getAppointmentById(appointmentId: string, patientId: string): Promise<AppointmentResponseDTO> {
         const appointment = await this._appointmentRepo.findByIdPopulated(appointmentId)
         if (!appointment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         if (appointment.patientId.toString() !== patientId) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'Not your appointment')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_YOUR_APPOINTMENT)
         }
 
         return toAppointmentResponseDTO(appointment)
@@ -382,22 +383,22 @@ export class AppointmentService implements IAppointmentService {
     ): Promise<AppointmentResponseDTO> {
         const appointment = await this._appointmentRepo.findById(appointmentId)
         if (!appointment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         if (appointment.patientId.toString() !== patientId) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'Not your appointment')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_YOUR_APPOINTMENT)
         }
 
         if (appointment.status !== 'confirmed') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Only confirmed appointments can be rescheduled')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.ONLY_CONFIRMED_CAN_RESCHEDULE)
         }
 
         const appointmentDate = new Date(appointment.appointmentDate)
         const now = new Date()
         const hoursBefore = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60)
         if (hoursBefore <= 2) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Cannot reschedule within 2 hours of appointment')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.CANNOT_RESCHEDULE_WITHIN_2H)
         }
 
         const activeAppointments = await this._appointmentRepo.findActiveAppointments(
@@ -408,7 +409,7 @@ export class AppointmentService implements IAppointmentService {
             (a) => a.slotStart === dto.slotStart && a.status !== 'cancelled',
         )
         if (isSlotBooked) {
-            throw new AppError(HTTP_STATUS.CONFLICT, 'This slot is already booked')
+            throw new AppError(HTTP_STATUS.CONFLICT, MSG.SLOT_ALREADY_BOOKED)
         }
 
         const updated = await this._appointmentRepo.update(appointmentId, {
@@ -418,7 +419,7 @@ export class AppointmentService implements IAppointmentService {
             rescheduledAt: new Date(),
         })
         if (!updated) {
-            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to reschedule appointment')
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_RESCHEDULE)
         }
 
         const doctor = await this._doctorRepo.findByIdWithUser(appointment.doctorId.toString()).catch(() => null)
@@ -453,7 +454,7 @@ export class AppointmentService implements IAppointmentService {
     ): Promise<DoctorAppointmentsResponseDTO> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const normalizedSearch = params.search.trim().toLowerCase()
@@ -518,7 +519,7 @@ export class AppointmentService implements IAppointmentService {
         const appointment = await this._appointmentRepo.findById(id)
 
         if (!appointment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const appointmentDate = new Date(appointment.appointmentDate)
@@ -526,7 +527,7 @@ export class AppointmentService implements IAppointmentService {
         const hoursBeforeCancellation = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60)
 
         if (hoursBeforeCancellation <= 0) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Cannot cancel this appointment')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.CANNOT_CANCEL)
         }
 
         let refundAmount = 0
@@ -590,12 +591,12 @@ export class AppointmentService implements IAppointmentService {
     async startConsultation(doctorId: string, patientId: string): Promise<void> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
@@ -604,11 +605,11 @@ export class AppointmentService implements IAppointmentService {
         )
 
         if (!appointment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'No active appointment found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NO_ACTIVE_APPOINTMENT)
         }
 
         if (appointment.status !== 'confirmed') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not confirmed')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.NOT_CONFIRMED)
         }
 
         await this._appointmentRepo.update(appointment._id.toString(), { status: 'in_consultation' })
@@ -617,12 +618,12 @@ export class AppointmentService implements IAppointmentService {
     async completeConsultation(doctorId: string, patientId: string): Promise<void> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         const appointment = await this._appointmentRepo.findDoctorVisibleCurrentAppointment(
@@ -631,11 +632,11 @@ export class AppointmentService implements IAppointmentService {
         )
 
         if (!appointment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'No active appointment found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NO_ACTIVE_APPOINTMENT)
         }
 
         if (appointment.status !== 'in_consultation') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not in consultation')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.NOT_IN_CONSULTATION)
         }
 
         await this._appointmentRepo.update(appointment._id.toString(), { status: 'completed' })
@@ -661,18 +662,18 @@ export class AppointmentService implements IAppointmentService {
         const appointment = await this._appointmentRepo.findById(appointmentId)
 
         if (!appointment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Appointment not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patientExists = await this._patientRepo.findUserByUserId(appointment.patientId as Types.ObjectId)
         const patientName = (patientExists?.userId as unknown as { name: string })?.name
 
         if (appointment.status !== 'pending_payment') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Appointment is not pending payment')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.NOT_PENDING_PAYMENT)
         }
 
         if (appointment.patientId.toString() !== dto.patientId) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to retry payment for this appointment')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_AUTHORIZED_RETRY_PAYMENT)
         }
 
         const settings = await this._adminRepo.getPlatformSettings()

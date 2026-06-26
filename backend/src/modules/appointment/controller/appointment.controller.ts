@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IAppointmentService } from '../interfaces/appointment.service.interface'
 
 @injectable()
@@ -13,7 +14,7 @@ export class AppointmentController {
     createAppointment = async (req: Request, res: Response) => {
         const patientId = req.user?.userId
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const order = await this._appointmentService.createAppointment({
@@ -30,14 +31,14 @@ export class AppointmentController {
     getPatientAppointments = async (req: Request, res: Response) => {
         const patientId = req.user?.userId
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const appointments = await this._appointmentService.getPatientAppointments(patientId)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Appointments fetched successfully',
+            message: MSG.FETCHED,
             data: appointments,
         })
     }
@@ -45,7 +46,7 @@ export class AppointmentController {
     getDoctorAppointments = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const appointments = await this._appointmentService.getDoctorAppointments(doctorId, {
@@ -57,7 +58,7 @@ export class AppointmentController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Doctor appointments fetched successfully',
+            message: MSG.DOCTOR_FETCHED,
             data: appointments,
         })
     }
@@ -73,7 +74,7 @@ export class AppointmentController {
             message:
                 result.refundAmount > 0
                     ? `Appointment cancelled. Refund of ₹${result.refundAmount} initiated.`
-                    : 'Appointment cancelled successfully',
+                    : MSG.CANCELLED,
             data: { refundAmount: result.refundAmount },
         })
     }
@@ -81,7 +82,7 @@ export class AppointmentController {
     getAppointmentById = async (req: Request, res: Response) => {
         const patientId = req.user?.userId
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { appointmentId } = req.params as { appointmentId: string }
@@ -96,7 +97,7 @@ export class AppointmentController {
     rescheduleAppointment = async (req: Request, res: Response) => {
         const patientId = req.user?.userId
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { appointmentId } = req.params as { appointmentId: string }
@@ -109,7 +110,7 @@ export class AppointmentController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Appointment rescheduled successfully',
+            message: MSG.RESCHEDULED,
             data: appointment,
         })
     }
@@ -117,7 +118,7 @@ export class AppointmentController {
     retryPayment = async (req: Request, res: Response) => {
         const patientId = req.user?.userId
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { appointmentId } = req.params as { appointmentId: string }
