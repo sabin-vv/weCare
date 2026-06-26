@@ -93,10 +93,20 @@ export class PaymentService implements IPaymentService {
                     performedBy: payment.patientId.toString(),
                     performedByRole: 'patient',
                     category: 'appointment',
+                    action: 'appointment_booked',
+                    targetId: appointment._id.toString(),
+                    targetType: 'appointment',
+                    description: `Booked Appointment with Dr. ${doctorName} (Appointment ID: ${appointment._id})`,
+                })
+
+                await this._activityLogService.logActivity({
+                    performedBy: payment.patientId.toString(),
+                    performedByRole: 'patient',
+                    category: 'appointment',
                     action: 'appointment_confirmed',
                     targetId: appointment._id.toString(),
                     targetType: 'appointment',
-                    description: `Confirmed with Dr. ${doctorName} after razorpay payment`,
+                    description: `Confirmed appointment with Dr. ${doctorName} (Appointment ID: ${appointment._id})`,
                 })
             }
         }
@@ -130,7 +140,7 @@ export class PaymentService implements IPaymentService {
             action: 'payment_success',
             targetId: payment._id.toString(),
             targetType: 'payment',
-            description: `Appointment payment completed via Razorpay`,
+            description: `Appointment payment completed via Razorpay (Appointment ID: ${payment.appointmentId})`,
         })
 
         return updatedPayment

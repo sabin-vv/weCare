@@ -149,16 +149,6 @@ export class AppointmentService implements IAppointmentService {
 
         const appointment = await this.createBaseAppointment(dto, consultationFee, 'pending_payment', expiredAt)
 
-        await this._activityLogService.logActivity({
-            performedBy: dto.patientId,
-            performedByRole: 'patient',
-            category: 'appointment',
-            action: 'appointment_booked',
-            targetId: appointment._id.toString(),
-            targetType: 'appointment',
-            description: `Booked Appointment with Dr. ${doctorName} via Razorpay `,
-        })
-
         const payment = await this.createBasePayment(
             dto,
             appointment._id as Types.ObjectId,
@@ -184,7 +174,7 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_PREPARE_RAZORPAY)
         }
 
-        return { paymentMethod: 'razorpay', order, paymentId: payment._id.toString() }
+        return { paymentMethod: 'razorpay', order, paymentId: payment._id.toString(), appointmentId: appointment._id.toString() }
     }
 
     private async createWalletAppointment(
@@ -784,6 +774,7 @@ export class AppointmentService implements IAppointmentService {
             paymentMethod: 'razorpay',
             order: razorpayOrder,
             paymentId: appointment.paymentId?.toString() ?? '',
+            appointmentId: appointment._id.toString(),
         }
     }
 }

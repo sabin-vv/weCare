@@ -1,6 +1,7 @@
 import cron from 'node-cron'
 
 import { AppointmentModel } from '../../modules/appointment/models/appointment.model'
+import { ActivityLogModel } from '../../modules/activityLog/models/activityLog.model'
 
 export const startAppointmentCron = () => {
     cron.schedule('*/5 * * * *', async () => {
@@ -13,6 +14,7 @@ export const startAppointmentCron = () => {
 
             const missedIds: string[] = []
             const cancelledIds: string[] = []
+            const cancelledAppointments: Array<{ _id: string; patientId: string }> = []
 
             for (const apt of appointments) {
                 const [hours, minutes] = apt.slotEnd.split(':').map(Number)
@@ -24,6 +26,10 @@ export const startAppointmentCron = () => {
                         missedIds.push(apt._id.toString())
                     } else if (apt.status === 'pending_payment') {
                         cancelledIds.push(apt._id.toString())
+                        cancelledAppointments.push({
+                            _id: apt._id.toString(),
+                            patientId: apt.patientId?.toString() || '',
+                        })
                     }
                 }
             }
@@ -46,6 +52,31 @@ export const startAppointmentCron = () => {
                         },
                     },
                 )
+
+                const logs = cancelledAppointments.flatMap((apt) => [
+                    {
+                        performedBy: apt.patientId,
+                        performedByRole: 'patient' as const,
+                        category: 'appointment' as const,
+                        action: 'appointment_cancelled' as const,
+                        targetId: apt._id,
+                        targetType: 'appointment' as const,
+                        description: `Auto-cancelled — Payment not completed (Appointment ID: ${apt._id})`,
+                    },
+                    {
+                        performedBy: apt.patientId,
+                        performedByRole: 'patient' as const,
+                        category: 'payment' as const,
+                        action: 'payment_failed' as const,
+                        targetId: apt._id,
+                        targetType: 'appointment' as const,
+                        description: `Payment failed for appointment (Appointment ID: ${apt._id})`,
+                    },
+                ])
+
+                if (logs.length > 0) {
+                    await ActivityLogModel.insertMany(logs)
+                }
             }
         } catch (error) {
             console.error('Appointment cron failed:', error)

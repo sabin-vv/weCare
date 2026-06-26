@@ -18,6 +18,7 @@ export interface RazorpayAppointmentResponse {
     paymentMethod: 'razorpay'
     order: RazorpayOrder
     paymentId: string
+    appointmentId: string
 }
 
 export interface WalletAppointmentResponse {
