@@ -5,6 +5,7 @@ import { BaseRepository } from '../../../core/base/base.repository'
 import { UserModel } from '../../auth/models/user.model'
 import { DoctorModel } from '../../doctor/models/doctor.model'
 import { PatientModel } from '../../patient/models/patient.model'
+import { SubscriptionModel } from '../../subscription/models/subscription.model'
 import { ICaregiverRepository, PatientSummary } from '../interfaces/caregiver.repository.interface'
 import { CaregiverModel } from '../models/caregiver.model'
 import { CaregiverDocument, CaregiverWithUser } from '../types/caregiver.types'
@@ -74,11 +75,21 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
 
         if (patients.length === 0) return []
 
-        const userIds = patients.map((p) => p.userId)
+        const patientIds = patients.map((p) => p._id)
+        const activeSubscriptions = await SubscriptionModel.find({
+            patientId: { $in: patientIds },
+            status: 'active',
+        }).lean()
+        const activePatientIdSet = new Set(activeSubscriptions.map((s) => s.patientId.toString()))
+        const subscribedPatients = patients.filter((p) => activePatientIdSet.has(p._id.toString()))
+
+        if (subscribedPatients.length === 0) return []
+
+        const userIds = subscribedPatients.map((p) => p.userId)
         const users = await UserModel.find({ _id: { $in: userIds } }).lean()
         const userMap = new Map(users.map((u) => [u._id.toString(), u]))
 
-        const doctorIds = patients.filter((p) => p.primaryDoctorId).map((p) => p.primaryDoctorId!)
+        const doctorIds = subscribedPatients.filter((p) => p.primaryDoctorId).map((p) => p.primaryDoctorId!)
         const doctorNameMap = new Map<string, string>()
         if (doctorIds.length > 0) {
             const doctors = await DoctorModel.find({ _id: { $in: doctorIds } }).lean()
@@ -93,7 +104,7 @@ export class CaregiverRepository extends BaseRepository<CaregiverDocument> imple
             }
         }
 
-        return patients
+        return subscribedPatients
             .map((p) => {
                 const user = userMap.get(p.userId.toString())
                 return {
