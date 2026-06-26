@@ -40,10 +40,10 @@ const getInitials = (name: string) =>
 
 const DetailedAppointmentCard = ({ appointment, onRetryPayment, onCancel }: DetailedAppointmentCardProps) => {
     const navigate = useNavigate()
-    const appointmentTime = new Date(appointment.appointmentDate).getTime()
-    const currentTime = Date.now()
-
-    const diffInHours = (appointmentTime - currentTime) / (1000 * 60 * 60)
+    const appointmentDateTime = new Date(appointment.appointmentDate)
+    const [hours, minutes] = (appointment.slotStart || '00:00').split(':').map(Number)
+    appointmentDateTime.setHours(hours, minutes, 0, 0)
+    const diffInHours = (appointmentDateTime.getTime() - Date.now()) / (1000 * 60 * 60)
 
     const canCancel = diffInHours > 2 && appointment.status === 'confirmed'
     const canRetryPayment = appointment.status === 'pending_payment' && appointment.paymentStatus === 'pending'
