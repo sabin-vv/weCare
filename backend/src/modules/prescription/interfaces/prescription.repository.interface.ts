@@ -6,6 +6,12 @@ export interface IPrescriptionRepository {
     create(data: Partial<PrescriptionDocument>): Promise<PrescriptionDocument>
     findById(id: string): Promise<PrescriptionDocument | null>
     findByPatientId(patientId: string): Promise<PrescriptionDocument[]>
+    findByPatientIdWithPagination(
+        patientId: string,
+        page: number,
+        limit: number,
+        status?: string,
+    ): Promise<{ data: PrescriptionDocument[]; total: number }>
     updateStatus(
         id: string,
         data: Partial<Pick<PrescriptionDocument, 'status' | 'discontinuedAt' | 'discontinuedBy' | 'endDate'>>,

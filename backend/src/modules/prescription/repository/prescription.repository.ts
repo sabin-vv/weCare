@@ -19,6 +19,30 @@ export class PrescriptionRepository extends BaseRepository<PrescriptionDocument>
             .populate({ path: 'prescribedBy', populate: { path: 'userId', select: 'name email' } })
     }
 
+    async findByPatientIdWithPagination(
+        patientId: string,
+        page: number,
+        limit: number,
+        status?: string,
+    ): Promise<{ data: PrescriptionDocument[]; total: number }> {
+        const filter: Record<string, unknown> = { patientId }
+        if (status) {
+            filter.status = status
+        }
+
+        const [data, total] = await Promise.all([
+            this.model
+                .find(filter)
+                .sort({ prescribedAt: -1, createdAt: -1 })
+                .populate({ path: 'prescribedBy', populate: { path: 'userId', select: 'name email' } })
+                .skip((page - 1) * limit)
+                .limit(limit),
+            this.model.countDocuments(filter),
+        ])
+
+        return { data, total }
+    }
+
     async updateStatus(
         id: string,
         data: Partial<Pick<PrescriptionDocument, 'status' | 'discontinuedAt' | 'discontinuedBy' | 'endDate'>>,

@@ -33,11 +33,14 @@ export class PrescriptionController {
         }
 
         const status = typeof req.query.status === 'string' ? req.query.status : undefined
-        const result = await this._prescriptionService.getPatientPrescriptions(patientId, status)
+        const page = typeof req.query.page === 'string' ? parseInt(req.query.page, 10) : undefined
+        const limit = typeof req.query.limit === 'string' ? parseInt(req.query.limit, 10) : undefined
+        const result = await this._prescriptionService.getPatientPrescriptions(patientId, page, limit, status)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            data: result,
+            data: 'data' in result ? result.data : result,
+            ...('pagination' in result ? { pagination: result.pagination } : {}),
         })
     }
 

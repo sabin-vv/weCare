@@ -12,7 +12,7 @@ import { CreateNotificationPayload } from '../../notification/types/notification
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { MSG } from '../constants/messages'
 import { IPrescriptionRepository } from '../interfaces/prescription.repository.interface'
-import { IPrescriptionService } from '../interfaces/prescription.service.interface'
+import { IPrescriptionService, PaginatedPrescriptions } from '../interfaces/prescription.service.interface'
 import { PrescriptionDocument } from '../types/prescription.types'
 import { CreatePrescriptionDTO, UpdatePrescriptionStatusDTO } from '../validator/prescription.schema'
 
@@ -105,10 +105,35 @@ export class PrescriptionService implements IPrescriptionService {
         return prescription
     }
 
-    async getPatientPrescriptions(patientId: string, status?: string): Promise<PrescriptionDocument[]> {
+    async getPatientPrescriptions(
+        patientId: string,
+        page?: number,
+        limit?: number,
+        status?: string,
+    ): Promise<PaginatedPrescriptions | PrescriptionDocument[]> {
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
             throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
+        }
+
+        if (page) {
+            const safePage = Math.max(1, page)
+            const safeLimit = Math.min(Math.max(1, limit ?? 8), 100)
+            const { data, total } = await this._prescriptionRepo.findByPatientIdWithPagination(
+                patientId,
+                safePage,
+                safeLimit,
+                status,
+            )
+            return {
+                data,
+                pagination: {
+                    page: safePage,
+                    limit: safeLimit,
+                    total,
+                    totalPages: Math.ceil(total / safeLimit),
+                },
+            }
         }
 
         if (status) {
