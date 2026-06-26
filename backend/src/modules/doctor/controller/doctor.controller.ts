@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IAppointmentService } from '../../appointment/interfaces/appointment.service.interface'
 import { IDoctorService } from '../interfaces/doctor.service.interface'
 
@@ -17,56 +18,56 @@ export class DoctorController {
     getProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._doctorService.getProfile(userId)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Doctor profile fetched', data: result })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.PROFILE_FETCHED, data: result })
     }
 
     createProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._doctorService.createProfile(userId, req.body)
 
-        res.status(HTTP_STATUS.CREATED).json({ success: true, message: 'Profile updated', data: result })
+        res.status(HTTP_STATUS.CREATED).json({ success: true, message: MSG.PROFILE_UPDATED, data: result })
     }
 
     updateProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._doctorService.updateProfile(userId, req.body)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Profile updated', data: result })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.PROFILE_UPDATED, data: result })
     }
 
     getAvailability = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._doctorService.getAvailability(userId)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Doctor availability fetched', data: result })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.AVAILABILITY_FETCHED, data: result })
     }
 
     updateAvailability = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._doctorService.updateAvailability(userId, req.body)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Doctor availability updated', data: result })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.AVAILABILITY_UPDATED, data: result })
     }
 
     private validSortBy = ['rating', 'name', 'newest'] as const
@@ -100,7 +101,7 @@ export class DoctorController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Doctors fetched successfully',
+            message: MSG.DOCTORS_FETCHED,
             data: result.doctors,
             specialties: result.specialties,
             totalCount: result.totalCount,
@@ -126,7 +127,7 @@ export class DoctorController {
         const dateParam = typeof rawDate === 'string' ? rawDate : undefined
 
         if (!dateParam) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Date query parameter is required')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.DATE_REQUIRED)
         }
 
         const result = await this._doctorService.getDoctorSlots(doctorId, dateParam)
@@ -140,25 +141,25 @@ export class DoctorController {
     getDashboard = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._doctorService.getDashboardStats(userId)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Dashboard stats fetched', data: result })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.DASHBOARD_FETCHED, data: result })
     }
 
     getAppointmentStats = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const startDate = (req.query.startDate as string)?.trim()
         const endDate = (req.query.endDate as string)?.trim()
 
         if (!startDate || !endDate) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'startDate and endDate query parameters are required')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.START_END_DATE_REQUIRED)
         }
 
         const result = await this._doctorService.getAppointmentStats(userId, startDate, endDate)
@@ -169,38 +170,38 @@ export class DoctorController {
     startConsultation = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { patientId } = req.params
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Patient ID is required')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.PATIENT_ID_REQUIRED)
         }
 
         await this._appointmentService.startConsultation(doctorId, patientId as string)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Consultation started successfully',
+            message: MSG.CONSULTATION_STARTED,
         })
     }
 
     completeConsultation = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { patientId } = req.params
         if (!patientId) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Patient ID is required')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.PATIENT_ID_REQUIRED)
         }
 
         await this._appointmentService.completeConsultation(doctorId, patientId as string)
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Consultation completed successfully',
+            message: MSG.CONSULTATION_COMPLETED,
         })
     }
 }

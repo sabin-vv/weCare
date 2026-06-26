@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IActivityLogRepository } from '../../activityLog/interfaces/activityLog.repository.interface'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAlertRepository } from '../../alert/interfaces/alert.repository.interface'
@@ -116,7 +117,7 @@ export class DoctorService implements IDoctorService {
     async createProfile(userId: string, dto: DoctorDTO) {
         const existingDoctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (existingDoctor) {
-            throw new AppError(HTTP_STATUS.CONFLICT, 'Doctor profile already exists')
+            throw new AppError(HTTP_STATUS.CONFLICT, MSG.PROFILE_ALREADY_EXISTS)
         }
 
         const doctorData = toDoctorEntity(new Types.ObjectId(userId), dto)
@@ -126,7 +127,7 @@ export class DoctorService implements IDoctorService {
 
         const user = await this._userRepo.findById(userId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
         const admins = await this._userRepo.findAll({ role: 'admin' })
 
@@ -156,12 +157,12 @@ export class DoctorService implements IDoctorService {
     async getProfile(userId: string): Promise<DoctorProfileResponse> {
         const user = await this._userRepo.findById(userId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         return toDoctorProfileResponse(user, doctor)
@@ -170,12 +171,12 @@ export class DoctorService implements IDoctorService {
     async getDoctorById(doctorId: string): Promise<DoctorProfileResponse> {
         const doctor = await this._doctorRepo.findById(doctorId)
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const user = await this._userRepo.findById(doctor.userId.toString())
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         return toDoctorProfileResponse(user, doctor)
@@ -184,7 +185,7 @@ export class DoctorService implements IDoctorService {
     async updateProfile(userId: string, dto: UpdateDoctorSettingsDTO): Promise<DoctorProfileResponse> {
         const existingDoctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!existingDoctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const userUpdates: Record<string, string> = {}
@@ -238,7 +239,7 @@ export class DoctorService implements IDoctorService {
 
         const updatedUser = await this._userRepo.findById(userId)
         if (!updatedUser) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         return toDoctorProfileResponse(updatedUser, doctor)
@@ -247,7 +248,7 @@ export class DoctorService implements IDoctorService {
     async getAvailability(userId: string): Promise<DoctorAvailability> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const availability = await this._doctorAvailabilityRepo.findByDoctorId(doctor._id as Types.ObjectId)
@@ -261,12 +262,12 @@ export class DoctorService implements IDoctorService {
     ): Promise<UpdateDoctorAvailabilityResult> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const doctorUser = await this._userRepo.findById(userId)
         if (!doctorUser) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const futureAppointments = await this._appointmentRepo.findFutureCancellableAppointments(
@@ -427,7 +428,7 @@ export class DoctorService implements IDoctorService {
     async getDoctorSlots(doctorId: string, date: string): Promise<DoctorSlotsResponse> {
         const doctor = await this._doctorRepo.findById(doctorId)
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const availability = await this._doctorAvailabilityRepo.findByDoctorId(doctor._id as Types.ObjectId)
@@ -491,7 +492,7 @@ export class DoctorService implements IDoctorService {
     async getDashboardStats(userId: string): Promise<DashboardStats> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patientResult = await this._patientRepo.listPatientsByDoctor({
@@ -557,7 +558,7 @@ export class DoctorService implements IDoctorService {
     ): Promise<{ dailyStats: DailyAppointmentStat[] }> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const start = new Date(`${startDate}T00:00:00.000Z`)
