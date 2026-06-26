@@ -1,0 +1,21 @@
+export const MSG = {
+    USER_ALREADY_EXISTS: 'User already exist',
+    EMAIL_ALREADY_EXISTS: 'Email already exist',
+    USER_NOT_FOUND: 'User not found',
+    ACCOUNT_DISABLED: 'Your account has been temporarily disabled',
+    INVALID_CREDENTIALS: 'Invalid credentials',
+    ACCESS_DENIED: 'Access denied',
+    NO_REFRESH_TOKEN: 'No refresh token',
+    INCORRECT_PASSWORD: 'Current password is incorrect',
+    OTP_EXPIRED: 'OTP Expired',
+    INVALID_OTP: 'Invalid OTP',
+
+    USER_CREATED: 'User created successfully',
+    OTP_SENT: 'OTP send successfully',
+    OTP_VERIFIED: 'OTP verified Successfuly',
+    LOGIN_SUCCESS: 'Login successfull',
+    TOKEN_REFRESHED: 'Access token refreshed successfully',
+    PASSWORD_RESET: 'Password reset successfully',
+    PASSWORD_CHANGED: 'Password changed successfully',
+    LOGGED_OUT: 'Logged out successfully',
+}

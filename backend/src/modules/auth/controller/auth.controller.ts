@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
+import { MSG } from '../constants/messages'
 import { IAuthService } from '../interfaces/auth.service.interface'
 import { UserRole } from '../types/auth.types'
 
@@ -25,7 +26,7 @@ export class AuthController {
 
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
-            message: 'User created successfully',
+            message: MSG.USER_CREATED,
             data: result,
         })
     }
@@ -35,7 +36,7 @@ export class AuthController {
 
         await this._authService.sendOtp(email, purpose)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'OTP send successfully' })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.OTP_SENT })
     }
 
     verifyOtp = async (req: Request, res: Response) => {
@@ -45,7 +46,7 @@ export class AuthController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'OTP verified Successfuly',
+            message: MSG.OTP_VERIFIED,
         })
     }
 
@@ -59,7 +60,7 @@ export class AuthController {
         res.cookie('accessToken', accessToken, cookieOptions)
         res.cookie('refreshToken', refreshToken, cookieOptions)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Login successfull', data: result.user })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.LOGIN_SUCCESS, data: result.user })
     }
 
     refreshToken = async (req: Request, res: Response) => {
@@ -68,7 +69,7 @@ export class AuthController {
 
         res.cookie('accessToken', accessToken, cookieOptions)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Access token refreshed successfully' })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.TOKEN_REFRESHED })
     }
 
     resetPassword = async (req: Request, res: Response) => {
@@ -76,7 +77,7 @@ export class AuthController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Password reset successfully',
+            message: MSG.PASSWORD_RESET,
         })
     }
 
@@ -84,7 +85,7 @@ export class AuthController {
         res.clearCookie('accessToken', cookieOptions)
         res.clearCookie('refreshToken', cookieOptions)
 
-        res.status(HTTP_STATUS.OK).json({ success: true, message: 'Logged out successfully' })
+        res.status(HTTP_STATUS.OK).json({ success: true, message: MSG.LOGGED_OUT })
     }
 
     getCurrentUser = async (req: Request, res: Response) => {
@@ -103,7 +104,7 @@ export class AuthController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Password changed successfully',
+            message: MSG.PASSWORD_CHANGED,
         })
     }
 }

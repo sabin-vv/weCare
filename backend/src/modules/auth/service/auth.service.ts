@@ -5,6 +5,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../../core/utils/jwt'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repository.interface'
@@ -36,7 +37,7 @@ export class AuthService implements IAuthService {
         const existing = await this._userRepo.findByEmail(email)
 
         if (existing) {
-            throw new AppError(HTTP_STATUS.CONFLICT, 'User already exist')
+            throw new AppError(HTTP_STATUS.CONFLICT, MSG.USER_ALREADY_EXISTS)
         }
 
         const userData = await toUserEntity(dto, dto.role)
@@ -49,11 +50,11 @@ export class AuthService implements IAuthService {
         const user = await this._userRepo.findByEmail(email)
 
         if (purpose === OtpRequestPurpose.REGISTER && user) {
-            throw new AppError(HTTP_STATUS.CONFLICT, 'Email already exist')
+            throw new AppError(HTTP_STATUS.CONFLICT, MSG.EMAIL_ALREADY_EXISTS)
         }
 
         if (purpose === OtpRequestPurpose.PASSWORD_RESET && !user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
         await this._otpService.sendOtp(email, purpose)
     }
@@ -66,18 +67,18 @@ export class AuthService implements IAuthService {
         const user = await this._userRepo.findByEmail(email)
 
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
         if (!user.isActive) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'Your account has been temporarily disabled')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.ACCOUNT_DISABLED)
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid credentials')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INVALID_CREDENTIALS)
         }
         if (role !== user.role) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'Access denied')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.ACCESS_DENIED)
         }
 
         const payload = {
@@ -100,7 +101,7 @@ export class AuthService implements IAuthService {
 
     async refreshToken(token: string): Promise<{ accessToken: string }> {
         if (!token) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'No refresh token')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.NO_REFRESH_TOKEN)
         }
 
         const decoded = verifyRefreshToken(token)
@@ -116,7 +117,7 @@ export class AuthService implements IAuthService {
         const user = await this._userRepo.findByEmail(email)
 
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10)
@@ -130,12 +131,12 @@ export class AuthService implements IAuthService {
         const user = await this._userRepo.findById(userId)
 
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const isMatch = await bcrypt.compare(currentPassword, user.password)
         if (!isMatch) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Current password is incorrect')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INCORRECT_PASSWORD)
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10)
@@ -147,7 +148,7 @@ export class AuthService implements IAuthService {
         const user = await this._userRepo.findById(userId)
 
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         let profileImage: string | undefined

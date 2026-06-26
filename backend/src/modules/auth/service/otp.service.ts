@@ -5,6 +5,7 @@ import { transporter } from '../../../core/config/mailer'
 import { redis } from '../../../core/config/redis'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { OtpRequestPurpose } from '../types/otp.types'
 
 @injectable()
@@ -93,10 +94,10 @@ export class OtpService {
         const storedOtp = await redis.get(`otp:${email}`)
 
         if (!storedOtp) {
-            throw new AppError(HTTP_STATUS.GONE, 'OTP Expired')
+            throw new AppError(HTTP_STATUS.GONE, MSG.OTP_EXPIRED)
         }
         if (storedOtp !== otp) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid OTP')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INVALID_OTP)
         }
         await redis.del(`otp:${email}`)
     }
