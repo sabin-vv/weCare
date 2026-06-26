@@ -384,9 +384,11 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.ONLY_CONFIRMED_CAN_RESCHEDULE)
         }
 
-        const appointmentDate = new Date(appointment.appointmentDate)
+        const appointmentDateTime = new Date(appointment.appointmentDate)
+        const [hours, minutes] = appointment.slotStart.split(':').map(Number)
+        appointmentDateTime.setHours(hours, minutes, 0, 0)
         const now = new Date()
-        const hoursBefore = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60)
+        const hoursBefore = (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
         if (hoursBefore <= 2) {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.CANNOT_RESCHEDULE_WITHIN_2H)
         }
