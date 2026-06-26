@@ -44,6 +44,21 @@
     overflow-y: auto;
 }
 
+.list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.list::-webkit-scrollbar-thumb {
+    background: #d4dce8;
+    border-radius: 3px;
+}
+.list::-webkit-scrollbar-thumb:hover {
+    background: #b0b8c4;
+}
+
 .item {
     display: flex;
     align-items: flex-start;
