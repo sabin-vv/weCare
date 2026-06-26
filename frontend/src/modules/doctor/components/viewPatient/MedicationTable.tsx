@@ -815,7 +815,7 @@ const MedicationTable = ({
                 isOpen={showVitalsModal}
                 onClose={handleCloseVitalsModal}
                 title="Create Vitals Check Request"
-                size="lg"
+                size="md"
                 footer={
                     <div className={styles.modalFooter}>
                         <button className={styles.cancelBtn} onClick={handleCloseVitalsModal} type="button">
@@ -885,9 +885,9 @@ const MedicationTable = ({
 
                                             <div className={styles.vitalMonitorFields}>
                                                 <div className={styles.fieldGroup}>
-                                                    <label className={styles.vitalFieldLabel}>Frequency</label>
-                                                    <select
-                                                        className={styles.fieldSelect}
+                                                    <SelectField
+                                                        label="Frequency"
+                                                        options={frequencyOptions.map((f) => ({ label: f, value: f }))}
                                                         value={vitalsPreferences[vital.id].frequency}
                                                         onChange={(e) =>
                                                             handleUpdateVitalPreference(
@@ -896,19 +896,13 @@ const MedicationTable = ({
                                                                 e.target.value,
                                                             )
                                                         }
-                                                    >
-                                                        {frequencyOptions.map((option) => (
-                                                            <option key={option} value={option}>
-                                                                {option}
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                                    />
                                                 </div>
 
                                                 <div className={styles.fieldGroup}>
-                                                    <label className={styles.vitalFieldLabel}>Duration</label>
-                                                    <select
-                                                        className={styles.fieldSelect}
+                                                    <SelectField
+                                                        label="Duration"
+                                                        options={durationOptions.map((d) => ({ label: d, value: d }))}
                                                         value={vitalsPreferences[vital.id].duration}
                                                         onChange={(e) =>
                                                             handleUpdateVitalPreference(
@@ -917,13 +911,7 @@ const MedicationTable = ({
                                                                 e.target.value,
                                                             )
                                                         }
-                                                    >
-                                                        {durationOptions.map((option) => (
-                                                            <option key={option} value={option}>
-                                                                {option}
-                                                            </option>
-                                                        ))}
-                                                    </select>
+                                                    />
                                                 </div>
                                             </div>
                                         </div>
