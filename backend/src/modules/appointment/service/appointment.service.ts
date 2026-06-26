@@ -514,9 +514,11 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
-        const appointmentDate = new Date(appointment.appointmentDate)
+        const appointmentDateTime = new Date(appointment.appointmentDate)
+        const [hours, minutes] = appointment.slotStart.split(':').map(Number)
+        appointmentDateTime.setHours(hours, minutes, 0, 0)
         const now = new Date()
-        const hoursBeforeCancellation = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60)
+        const hoursBeforeCancellation = (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60)
 
         if (hoursBeforeCancellation <= 0) {
             throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.CANNOT_CANCEL)
