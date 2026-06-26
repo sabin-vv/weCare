@@ -78,21 +78,21 @@ export const doctorDetailesSchema = z.object({
 
 export const caregiverDetailsSchema = z.object({
     documents: z.object({
-        govId: z.instanceof(File, {
+        govId: fileOrUrlSchema.refine(Boolean, {
             message: 'Please upload a Government ID',
         }),
-        profileImage: z.instanceof(File, {
+        profileImage: fileOrUrlSchema.refine(Boolean, {
             message: 'Please upload your profile image',
         }),
         certificate: z.object({
             number: z.string().trim().min(1, 'Enter certificate number'),
-            document: z.instanceof(File, {
+            document: fileOrUrlSchema.refine(Boolean, {
                 message: 'Please upload your certificate document',
             }),
         }),
         license: z.object({
             number: z.string().trim().min(1, 'Enter license number'),
-            document: z.instanceof(File, {
+            document: fileOrUrlSchema.refine(Boolean, {
                 message: 'Please upload your license document',
             }),
         }),
