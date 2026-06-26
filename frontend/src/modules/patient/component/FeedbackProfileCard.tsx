@@ -1,4 +1,4 @@
-import { CircleCheck, CircleX, Mail, Phone, Star } from 'lucide-react'
+import { BriefcaseMedical, CircleCheck, CircleX, Mail, Phone, Star } from 'lucide-react'
 
 import type { FeedbackProfileCardProps } from '../types/patient.types'
 
@@ -59,7 +59,10 @@ const FeedbackProfileCard = ({ profile, onFeedback }: FeedbackProfileCardProps) 
                             </span>
                         )}
                         {profile.specialization && (
-                            <span className={styles.contactItem}>{profile.specialization.join(',')}</span>
+                            <span className={styles.contactItem}>
+                                <BriefcaseMedical size={14} />
+                                {profile.specialization.join(',')}
+                            </span>
                         )}
                     </div>
                 )}
