@@ -34,6 +34,7 @@ const CareTeamPage = () => {
                         specialization: doctorMember.specialization,
                         status: doctorMember.isActive,
                         rating: doctorMember.myRating,
+                        comment: doctorMember.myComment,
                         email: doctorMember.email,
                         mobile: doctorMember.mobile,
                     })
@@ -46,6 +47,7 @@ const CareTeamPage = () => {
                         profileImage: caregiverMember.profileImage,
                         status: caregiverMember.isActive,
                         rating: caregiverMember.myRating,
+                        comment: caregiverMember.myComment,
                         email: caregiverMember.email,
                         mobile: caregiverMember.mobile,
                     })
@@ -108,7 +110,7 @@ const CareTeamPage = () => {
                                     name: doctor.name,
                                     role: 'doctor',
                                     initialRating: doctor.rating,
-                                    initialComment: undefined,
+                                    initialComment: doctor.comment,
                                 })
                             }
                         />
@@ -122,7 +124,7 @@ const CareTeamPage = () => {
                                     name: caregiver.name,
                                     role: 'caregiver',
                                     initialRating: caregiver.rating,
-                                    initialComment: undefined,
+                                    initialComment: caregiver.comment,
                                 })
                             }
                         />

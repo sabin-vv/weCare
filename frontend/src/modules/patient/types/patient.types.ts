@@ -351,6 +351,7 @@ export interface TeamMember {
     specialization?: string[]
     status: boolean
     rating?: number
+    comment?: string
     email?: string
     mobile?: string
 }
