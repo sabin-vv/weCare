@@ -14,3 +14,20 @@
     padding: 24px;
     background: #f8fafc;
 }
+
+.overlay {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+    }
+    .content {
+        padding: 16px;
+    }
+}

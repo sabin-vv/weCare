@@ -6,6 +6,7 @@ import {
     History as HistoryIcon,
     CalendarDays,
     Banknote,
+    X,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
@@ -15,13 +16,18 @@ import { env } from '@/config/env'
 import { usePendingCount } from '@/shared/context/PendingCountContext'
 import { usePlatform } from '@/shared/context/PlatformContext'
 
-const AdminSidebar = () => {
+interface AdminSidebarProps {
+    isOpen: boolean
+    onClose: () => void
+}
+
+const AdminSidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     const { doctorCount, caregiverCount } = usePendingCount()
     const { settings } = usePlatform()
     const baseUrl = env.AWS_BASE_URL
 
     return (
-        <aside className={styles.sidebar}>
+        <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
             <div className={styles.header}>
                 <div className={styles.logoWrapper}>
                     <img src={`${baseUrl}${settings?.platformIcon}`} alt="/logo" />
@@ -30,6 +36,9 @@ const AdminSidebar = () => {
                     <h2 className={styles.title}>Admin Portal</h2>
                     <p className={styles.subtitle}>WeCare health</p>
                 </div>
+                <button onClick={onClose} className={styles.closeBtn} aria-label="Close sidebar">
+                    <X size={24} />
+                </button>
             </div>
 
             <nav className={styles.nav}>
