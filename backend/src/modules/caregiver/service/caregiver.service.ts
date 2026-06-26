@@ -17,6 +17,7 @@ import { IPatientRepository } from '../../patient/interfaces/patient.repository.
 import { SymptomLogModel } from '../../symptom/models/symptomLog.model'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
 import { VitalPlanItem, VitalScheduleDTO } from '../../vital/types/vital.types'
+import { MSG } from '../constants/messages'
 import { ICaregiverRepository, PatientSummary } from '../interfaces/caregiver.repository.interface'
 import { ICaregiverService } from '../interfaces/caregiver.service.interface'
 import {
@@ -48,7 +49,7 @@ export class CaregiverService implements ICaregiverService {
     async createProfile(userId: string, dto: CreateCaregiverProfileDTO): Promise<Partial<CaregiverProfileResponse>> {
         const existingCaregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (existingCaregiver) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Caregiver profile already exists')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.PROFILE_ALREADY_EXISTS)
         }
 
         const caregiverData = toCaregiverEntity(new Types.ObjectId(userId), dto, {})
@@ -86,12 +87,12 @@ export class CaregiverService implements ICaregiverService {
     async getProfile(userId: string): Promise<CaregiverProfileResponse> {
         const user = await this._userRepo.findById(userId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         return toCaregiverProfileResponse(user, caregiver)
@@ -100,7 +101,7 @@ export class CaregiverService implements ICaregiverService {
     async updateProfile(userId: string, dto: UpdateCaregiverSettingsDTO): Promise<CaregiverProfileResponse> {
         const existingCaregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!existingCaregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         await this._userRepo.update(userId, {
@@ -114,12 +115,12 @@ export class CaregiverService implements ICaregiverService {
             profileImage: dto.profileImage || existingCaregiver.profileImage,
         })
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const updatedUser = await this._userRepo.findById(userId)
         if (!updatedUser) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         return toCaregiverProfileResponse(updatedUser, caregiver)
@@ -135,17 +136,17 @@ export class CaregiverService implements ICaregiverService {
         const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
 
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
 
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_ASSIGNED_TO_PATIENT)
         }
 
         const schedules = await this._medicationRepo.findByPatientAndCaregiver(patient._id)
@@ -166,16 +167,16 @@ export class CaregiverService implements ICaregiverService {
     async getPatientVitalPlans(caregiverId: Types.ObjectId, patientId: string): Promise<VitalPlanItem[]> {
         const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_ASSIGNED_TO_PATIENT)
         }
 
         const plans = await this._vitalRepo.findVitalPlansByPatientIdAndStatus(patient._id.toString(), 'active')
@@ -189,16 +190,16 @@ export class CaregiverService implements ICaregiverService {
     async getPatientVitalSchedules(caregiverId: Types.ObjectId, patientId: string): Promise<VitalScheduleDTO[]> {
         const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_ASSIGNED_TO_PATIENT)
         }
 
         const schedules = await this._vitalRepo.findVitalSchedulesByPatientId(patient._id)
@@ -238,11 +239,11 @@ export class CaregiverService implements ICaregiverService {
         const schedule = await this._medicationRepo.findScheduleById(scheduleId)
 
         if (!schedule || schedule.patientId.toString() !== patient._id.toString()) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Medication schedule not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.MEDICATION_SCHEDULE_NOT_FOUND)
         }
 
         if (schedule.caregiverId.toString() !== caregiver._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this medication schedule')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_ASSIGNED_TO_MEDICATION)
         }
 
         const administeredAt = this._mergeTimeIntoDate(schedule.scheduleTime, dto.takenTime)
@@ -260,7 +261,7 @@ export class CaregiverService implements ICaregiverService {
         })
 
         if (!updated) {
-            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to save medication log')
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_SAVE_LOG)
         }
 
         await this._medicationLogRepo.create({
@@ -307,7 +308,7 @@ export class CaregiverService implements ICaregiverService {
             : await this._vitalRepo.findLoggableVitalScheduleByPatientAndType(patient._id, dto.vitalType)
 
         if (schedule && schedule.caregiverId?.toString() !== caregiver._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this vital schedule')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_ASSIGNED_TO_VITAL)
         }
 
         const recordedAtBase = schedule?.scheduleTime ?? new Date()
@@ -329,7 +330,7 @@ export class CaregiverService implements ICaregiverService {
             })
 
             if (!updatedSchedule) {
-                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update vital schedule')
+                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_UPDATE_VITAL)
             }
 
             updatedScheduleId = updatedSchedule._id.toString()
@@ -411,16 +412,16 @@ export class CaregiverService implements ICaregiverService {
     private async _getAssignedCaregiverAndPatient(caregiverId: Types.ObjectId, patientId: string) {
         const caregiver = await this._caregiverRepo.findById(caregiverId.toString())
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (patient.caregiverId?.toString() !== caregiver._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not assigned to this patient')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_ASSIGNED_TO_PATIENT)
         }
 
         return { caregiver, patient }
@@ -465,13 +466,13 @@ export class CaregiverService implements ICaregiverService {
         if (normalized.includes('inject')) return 'injection'
         if (normalized.includes('inhal')) return 'inhalation'
 
-        throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Unsupported medication route')
+        throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.UNSUPPORTED_ROUTE)
     }
 
     private _buildRecordedVitalValue(dto: LogVitalReadingDTO) {
         if (dto.vitalType === 'blood_pressure') {
             if (dto.systolic === undefined || dto.diastolic === undefined) {
-                throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Blood pressure requires systolic and diastolic values')
+                throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.VITAL_REQUIRES_SYSTOLIC_DIASTOLIC)
             }
 
             return {
@@ -482,7 +483,7 @@ export class CaregiverService implements ICaregiverService {
         }
 
         if (dto.value === undefined) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'A recorded value is required for the selected vital')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.VITAL_REQUIRES_VALUE)
         }
 
         return {

@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IVitalService } from '../interfaces/vital.service.interface'
 import { CreateVitalPlanDTO } from '../validator/vital.schema'
 
@@ -14,7 +15,7 @@ export class VitalController {
     createVitalPlan = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const dto: CreateVitalPlanDTO = req.body
@@ -41,7 +42,7 @@ export class VitalController {
     cancelVitalPlan = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { planId } = req.params as { planId: string }
@@ -50,14 +51,14 @@ export class VitalController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: plan,
-            message: 'Vital plan cancelled successfully',
+            message: MSG.PLAN_CANCELLED,
         })
     }
 
     getPatientVitalSchedules = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const schedules = await this._vitalService.getPatientVitalSchedules(userId)
@@ -65,7 +66,7 @@ export class VitalController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: schedules,
-            message: 'Vital schedules fetched successfully',
+            message: MSG.SCHEDULES_FETCHED,
         })
     }
 
@@ -77,7 +78,7 @@ export class VitalController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Daily vital schedules generated',
+            message: MSG.GENERATED,
         })
     }
 }

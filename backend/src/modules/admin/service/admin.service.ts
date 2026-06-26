@@ -5,6 +5,7 @@ import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
+import { MSG } from '../constants/messages'
 import { IAdminRepository } from '../interfaces/admin.repository.interface'
 import { IAdminService } from '../interfaces/admin.service.interface'
 import {
@@ -60,12 +61,12 @@ export class AdminService implements IAdminService {
         reason?: string,
     ): Promise<{ message: string }> {
         if (status !== 'verified' && status !== 'rejected') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid verification status')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INVALID_VERIFICATION_STATUS)
         }
 
         const user = await this._userRepo.findById(doctorId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_NOT_FOUND)
         }
         const result = await this._adminRepo.verifyDoctor(doctorId, status, adminId, reason)
         await this._activityLogService.logActivity({
@@ -113,12 +114,12 @@ export class AdminService implements IAdminService {
         adminId: string,
     ): Promise<{ message: string }> {
         if (status !== 'verified' && status !== 'rejected') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid verification status')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INVALID_VERIFICATION_STATUS)
         }
         const result = await this._adminRepo.verifyCaregiver(caregiverId, status, adminId)
         const user = await this._userRepo.findById(caregiverId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.CAREGIVER_NOT_FOUND)
         }
         await this._activityLogService.logActivity({
             performedBy: adminId,
@@ -186,13 +187,13 @@ export class AdminService implements IAdminService {
 
     async toggleUserStatus(userId: string, isActive: boolean): Promise<{ message: string }> {
         if (typeof isActive !== 'boolean') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'isActive must be boolean')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.ISACTIVE_MUST_BE_BOOLEAN)
         }
 
         const result = await this._adminRepo.toggleUserStatus(userId, isActive)
         const user = await this._userRepo.findById(userId)
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
         await this._activityLogService.logActivity({
             performedByRole: 'admin',

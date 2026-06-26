@@ -10,6 +10,7 @@ import { IPatientRepository } from '../../../modules/patient/interfaces/patient.
 import { IPrescriptionRepository } from '../../../modules/prescription/interfaces/prescription.repository.interface'
 import { IUserRepository } from '../../auth/interfaces/user.repository.interface'
 import { IVitalRepository } from '../../vital/interfaces/vital.repository.interface'
+import { MSG } from '../constants/messages'
 import { IMedicalRecordRepository } from '../interfaces/medicalRecord.repository.interface'
 import { IMedicalRecordService } from '../interfaces/medicalRecord.service.interface'
 import { IClinicalNote, MedicalRecordDocument,MedicalRecordDTO } from '../types/medicalRecord.types'
@@ -28,16 +29,16 @@ export class MedicalRecordService implements IMedicalRecordService {
     private async resolveDoctorPatientContext(doctorId: string, patientId: string) {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (patient.primaryDoctorId?.toString() !== doctor._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to view this patient')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_AUTHORIZED_VIEW)
         }
 
         return { doctor, patient }
@@ -49,7 +50,7 @@ export class MedicalRecordService implements IMedicalRecordService {
     ): Promise<MedicalRecordDTO> {
         const user = await this._userRepo.findById(patient!.userId.toString())
         if (!user) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.USER_NOT_FOUND)
         }
 
         const age = Math.floor((Date.now() - new Date(patient!.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))

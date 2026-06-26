@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { ISubscriptionService } from '../interfaces/subscription.service.interface'
 import { createSubscriptionSchema } from '../validator/subscription.schema'
 
@@ -14,7 +15,7 @@ export class SubscriptionController {
     getMySubscription = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const subscription = await this._subscriptionService.getMySubscription(userId)
@@ -22,7 +23,7 @@ export class SubscriptionController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: subscription,
-            message: subscription ? 'Subscription fetched successfully' : 'No active subscription found',
+            message: subscription ? MSG.FETCHED : 'No active subscription found',
         })
     }
 
@@ -30,7 +31,7 @@ export class SubscriptionController {
         const userId = req.user?.userId
         const role = req.user?.role
         if (!userId || !role) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const dto = createSubscriptionSchema.parse(req.body)
@@ -39,7 +40,7 @@ export class SubscriptionController {
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
             data: result,
-            message: 'Subscription created, proceed with payment',
+            message: MSG.CREATED,
         })
     }
 
@@ -47,7 +48,7 @@ export class SubscriptionController {
         const userId = req.user?.userId
         const role = req.user?.role
         if (!userId || !role) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const subscription = await this._subscriptionService.verifySubscriptionPayment(userId, role, req.body)
@@ -55,7 +56,7 @@ export class SubscriptionController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: subscription,
-            message: 'Subscription activated successfully',
+            message: MSG.ACTIVATED,
         })
     }
 
@@ -63,7 +64,7 @@ export class SubscriptionController {
         const userId = req.user?.userId
         const role = req.user?.role
         if (!userId || !role) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { subscriptionId } = req.params as { subscriptionId: string }
@@ -71,7 +72,7 @@ export class SubscriptionController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Subscription cancelled',
+            message: MSG.CANCELLED,
         })
     }
 }

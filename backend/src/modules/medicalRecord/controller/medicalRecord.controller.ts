@@ -4,6 +4,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { IMedicalRecordService } from '../interfaces/medicalRecord.service.interface'
 
 @injectable()
@@ -13,7 +14,7 @@ export class MedicalRecordController {
     getMedicalRecord = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { patientId } = req.params
@@ -23,14 +24,14 @@ export class MedicalRecordController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Medical record fetched successfully',
+            message: MSG.FETCHED,
         })
     }
 
     updateMedicalRecord = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { patientId } = req.params
@@ -40,14 +41,14 @@ export class MedicalRecordController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Medical record updated successfully',
+            message: MSG.UPDATED,
         })
     }
 
     addClinicalNote = async (req: Request, res: Response) => {
         const doctorId = req.user?.userId
         if (!doctorId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const { patientId } = req.params
@@ -58,7 +59,7 @@ export class MedicalRecordController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Clinical note added successfully',
+            message: MSG.NOTE_ADDED,
         })
     }
 }

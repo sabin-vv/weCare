@@ -9,6 +9,7 @@ import { SOCKET_EVENTS } from '../../../core/socket/events'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
+import { MSG } from '../constants/messages'
 import { IAlertRepository } from '../interfaces/alert.repository.interface'
 import { IAlertService } from '../interfaces/alert.service.interface'
 import { AlertDocument } from '../types/alert.types'
@@ -40,7 +41,7 @@ export class AlertService implements IAlertService {
 
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const patientsResult = await this._patientRepo.listPatientsByDoctor({
@@ -65,17 +66,17 @@ export class AlertService implements IAlertService {
     async acknowledgeAlert(userId: string, alertId: string, note?: string): Promise<AlertDocument> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(userId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const alert = await this._alertRepo.findById(alertId)
         if (!alert) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Alert not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(alert.patientId.toString())
         if (!patient || patient.primaryDoctorId?.toString() !== doctor._id.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to acknowledge this alert')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_AUTHORIZED_ACKNOWLEDGE)
         }
 
         const updated = await this._alertRepo.update(alertId, {
@@ -86,7 +87,7 @@ export class AlertService implements IAlertService {
         })
 
         if (!updated) {
-            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to acknowledge alert')
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_ACKNOWLEDGE)
         }
 
         await this._activityLogService.logActivity({

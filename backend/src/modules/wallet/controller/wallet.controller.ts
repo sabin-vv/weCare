@@ -3,6 +3,7 @@ import { inject, injectable } from 'tsyringe'
 
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
+import { MSG } from '../constants/messages'
 import { IWalletService } from '../interfaces/wallet.service.interface'
 
 @injectable()
@@ -16,7 +17,7 @@ export class WalletController {
         if (!userId) {
             res.status(HTTP_STATUS.UNAUTHORIZED).json({
                 success: false,
-                message: 'Unauthorized',
+                message: MSG.UNAUTHORIZED,
             })
             return
         }
@@ -25,7 +26,7 @@ export class WalletController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Wallet credited successfully',
+            message: MSG.CREDITED,
             data: result,
         })
     }
@@ -37,7 +38,7 @@ export class WalletController {
         if (!userId) {
             res.status(HTTP_STATUS.UNAUTHORIZED).json({
                 success: false,
-                message: 'Unauthorized',
+                message: MSG.UNAUTHORIZED,
             })
             return
         }
@@ -46,7 +47,7 @@ export class WalletController {
 
         res.status(HTTP_STATUS.OK).json({
             success: true,
-            message: 'Wallet debited successfully',
+            message: MSG.DEBITED,
             data: result,
         })
     }
@@ -57,7 +58,7 @@ export class WalletController {
         if (!userId) {
             res.status(HTTP_STATUS.UNAUTHORIZED).json({
                 success: false,
-                message: 'Unauthorized',
+                message: MSG.UNAUTHORIZED,
             })
             return
         }
@@ -67,7 +68,7 @@ export class WalletController {
         if (!result) {
             res.status(HTTP_STATUS.NOT_FOUND).json({
                 success: false,
-                message: 'Wallet not found',
+                message: MSG.NOT_FOUND,
             })
             return
         }

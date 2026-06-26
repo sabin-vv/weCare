@@ -5,6 +5,7 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import { ICaregiverRepository } from '../interfaces/caregiver.repository.interface'
 import { ICaregiverService } from '../interfaces/caregiver.service.interface'
 import { LogMedicationDTO, LogSymptomDTO, LogVitalReadingDTO } from '../validator/caregiverLogging.schema'
@@ -19,7 +20,7 @@ export class CaregiverController {
     createProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._caregiverService.createProfile(userId, req.body)
@@ -27,14 +28,14 @@ export class CaregiverController {
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
             data: result,
-            message: 'Profile created successfully',
+            message: MSG.PROFILE_CREATED,
         })
     }
 
     getProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._caregiverService.getProfile(userId)
@@ -42,14 +43,14 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Caregiver profile fetched',
+            message: MSG.PROFILE_FETCHED,
         })
     }
 
     updateProfile = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const result = await this._caregiverService.updateProfile(userId, req.body)
@@ -57,7 +58,7 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Profile updated successfully',
+            message: MSG.PROFILE_UPDATED,
         })
     }
 
@@ -69,19 +70,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Caregivers list fetched',
+            message: MSG.CAREGIVERS_FETCHED,
         })
     }
 
     getPatientMedications = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { patientId } = req.params as { patientId: string }
@@ -91,19 +92,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: medications,
-            message: 'Patient medications fetched',
+            message: MSG.PATIENT_MEDICATIONS_FETCHED,
         })
     }
 
     getPatientVitalPlans = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { patientId } = req.params as { patientId: string }
@@ -113,19 +114,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: vitalPlans,
-            message: 'Patient vital plans fetched',
+            message: MSG.PATIENT_VITAL_PLANS_FETCHED,
         })
     }
 
     getPatientVitalSchedules = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { patientId } = req.params as { patientId: string }
@@ -135,19 +136,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: schedules,
-            message: 'Patient vital schedules fetched',
+            message: MSG.PATIENT_VITAL_SCHEDULES_FETCHED,
         })
     }
 
     getMyPatients = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const patients = await this._caregiverService.getMyPatients(caregiver._id)
@@ -155,19 +156,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: patients,
-            message: 'Patients fetched',
+            message: MSG.PATIENTS_FETCHED,
         })
     }
 
     getAlerts = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { type, severity, status, limit, page } = req.query as {
@@ -189,19 +190,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Alerts fetched',
+            message: MSG.ALERTS_FETCHED,
         })
     }
 
     logMedication = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { patientId, scheduleId } = req.params as { patientId: string; scheduleId: string }
@@ -215,19 +216,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.OK).json({
             success: true,
             data: result,
-            message: 'Medication log saved',
+            message: MSG.MEDICATION_LOG_SAVED,
         })
     }
 
     logVitalReading = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { patientId } = req.params as { patientId: string }
@@ -240,19 +241,19 @@ export class CaregiverController {
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
             data: result,
-            message: 'Vital reading saved',
+            message: MSG.VITAL_READING_SAVED,
         })
     }
 
     logSymptom = async (req: Request, res: Response) => {
         const userId = req.user?.userId
         if (!userId) {
-            throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'User not authenticated')
+            throw new AppError(HTTP_STATUS.UNAUTHORIZED, MSG.USER_NOT_AUTHENTICATED)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(userId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const { patientId } = req.params as { patientId: string }
@@ -261,7 +262,7 @@ export class CaregiverController {
         res.status(HTTP_STATUS.CREATED).json({
             success: true,
             data: result,
-            message: 'Symptom log saved',
+            message: MSG.SYMPTOM_LOG_SAVED,
         })
     }
 }

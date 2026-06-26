@@ -15,6 +15,7 @@ import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repos
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IWalletService } from '../../wallet/interfaces/wallet.service.interface'
+import { MSG } from '../constants/messages'
 import { ISubscriptionRepository } from '../interfaces/subscription.repository.interface'
 import { ISubscriptionService, VerifySubscriptionPaymentDTO } from '../interfaces/subscription.service.interface'
 import { toSubscriptionDTO } from '../mapper/subscription.mapper'
@@ -68,22 +69,22 @@ export class SubscriptionService implements ISubscriptionService {
     ): Promise<CreateSubscriptionResult | WalletSubscriptionResult> {
         const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         const existingSubscription = await this._subscriptionRepo.findActiveByPatient(patient._id)
         if (existingSubscription) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Patient already has an active subscription')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.ALREADY_ACTIVE)
         }
 
         const caregiverId = dto.caregiverId || patient.caregiverId?.toString()
         if (!caregiverId) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'No caregiver assigned to this patient')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.NO_CAREGIVER_ASSIGNED)
         }
 
         const caregiver = await this._caregiverRepo.findById(caregiverId)
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.CAREGIVER_NOT_FOUND)
         }
 
         const platformSettings = await this._adminRepo.getPlatformSettings()
@@ -110,7 +111,7 @@ export class SubscriptionService implements ISubscriptionService {
         if (dto.paymentMethod === 'wallet') {
             const wallet = await this._walletService.debit(patient._id.toString(), amount, 'Subscription payment')
             if (!wallet) {
-                throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Insufficient wallet balance')
+                throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INSUFFICIENT_BALANCE)
             }
 
             const payment = await this._paymentRepo.create({
@@ -188,16 +189,16 @@ export class SubscriptionService implements ISubscriptionService {
         const expectedSignature = crypto.createHmac('sha256', secret).update(body.toString()).digest('hex')
 
         if (expectedSignature !== dto.razorpaySignature) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid payment signature')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INVALID_SIGNATURE)
         }
 
         const payment = await this._paymentRepo.findByOrderId(dto.razorpayOrderId)
         if (!payment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Payment not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PAYMENT_NOT_FOUND)
         }
 
         if (payment.status === 'success') {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Payment already verified')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.PAYMENT_ALREADY_VERIFIED)
         }
 
         await this._paymentRepo.updateById(payment._id.toString(), {
@@ -226,7 +227,7 @@ export class SubscriptionService implements ISubscriptionService {
 
         const subscription = await this._subscriptionRepo.findById(payment.subscriptionId!.toString())
         if (!subscription) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Subscription not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const caregiver = await this._caregiverRepo.findByUserId(
@@ -240,7 +241,7 @@ export class SubscriptionService implements ISubscriptionService {
     async cancelSubscription(subscriptionId: string, performedBy: string, performedByRole: string): Promise<void> {
         const subscription = await this._subscriptionRepo.findById(subscriptionId)
         if (!subscription) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Subscription not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         await this._subscriptionRepo.updateById(subscriptionId, { status: 'cancelled' })

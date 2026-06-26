@@ -6,7 +6,6 @@ import { TOKENS } from '../../../container/tokens'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
-import { MSG } from '../constants/messages'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
@@ -15,6 +14,7 @@ import { CreateNotificationPayload } from '../../notification/types/notification
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
 import { IWalletService } from '../../wallet/interfaces/wallet.service.interface'
+import { MSG } from '../constants/messages'
 import { IAppointmentRepository } from '../interfaces/appointment.repository.interface'
 import {
     CreateAppointmentResult,

@@ -8,6 +8,7 @@ import { injectable } from 'tsyringe'
 import { env } from '../../../core/config/env'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
+import { MSG } from '../constants/messages'
 import type { UploadsPresignDTO } from '../validator/presignUpload.schema'
 
 @injectable()
@@ -15,10 +16,10 @@ export class UploadsController {
     presignUpload = async (req: Request, res: Response) => {
         const { fileName, contentType, folder, size } = req.body as UploadsPresignDTO
 
-        if (!env.AWS_BUCKET_NAME) throw new AppError(HTTP_STATUS.BAD_REQUEST, 'AWS_BUCKET_NAME is required')
+        if (!env.AWS_BUCKET_NAME) throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.AWS_BUCKET_NAME_REQUIRED)
 
         if (typeof size === 'number' && size > 5 * 1024 * 1024) {
-            throw new AppError(400, 'File is too large (max 5MB)')
+            throw new AppError(400, MSG.FILE_TOO_LARGE)
         }
 
         const originalBaseName = path.basename(fileName)

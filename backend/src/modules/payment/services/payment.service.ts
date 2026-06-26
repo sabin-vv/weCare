@@ -11,6 +11,7 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
+import { MSG } from '../constants/messages'
 import { IPaymentRepository } from '../interfaces/payment.repository.interface'
 import { IPaymentService } from '../interfaces/payment.service.interface'
 import { PaymentDocument } from '../types/payment.types'
@@ -33,12 +34,12 @@ export class PaymentService implements IPaymentService {
         const expectedSignature = crypto.createHmac('sha256', secret).update(body.toString()).digest('hex')
 
         if (expectedSignature !== dto.razorpaySignature) {
-            throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Invalid payment signature')
+            throw new AppError(HTTP_STATUS.BAD_REQUEST, MSG.INVALID_SIGNATURE)
         }
 
         const payment = await this._paymentRepo.findByOrderId(dto.razorpayOrderId)
         if (!payment) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Payment not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         if (payment.status === 'success') {
@@ -119,7 +120,7 @@ export class PaymentService implements IPaymentService {
                 targetType: 'payment',
                 description: `Appointment payment failed`,
             })
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Payment update failed')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.UPDATE_FAILED)
         }
 
         await this._activityLogService.logActivity({

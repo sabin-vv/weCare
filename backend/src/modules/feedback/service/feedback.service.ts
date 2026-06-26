@@ -10,6 +10,7 @@ import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.int
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
+import { MSG } from '../constants/messages'
 import { IFeedbackRepository } from '../interfaces/feedback.repository.interface'
 import { IFeedbackService } from '../interfaces/feedback.service.interface'
 import { CreateFeedbackDTO, FeedbackDocument, FeedbackResponse } from '../types/feedback.types'
@@ -38,7 +39,7 @@ export class FeedbackService implements IFeedbackService {
     async submitFeedback(userId: string, dto: CreateFeedbackDTO): Promise<FeedbackResponse> {
         const patient = await this._patientRepo.findByUserId(new Types.ObjectId(userId))
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PROFILE_NOT_FOUND)
         }
 
         const existing = await this._feedbackRepo.findOneByPatientAndTarget(
@@ -53,7 +54,7 @@ export class FeedbackService implements IFeedbackService {
                 comment: dto.comment,
             })
             if (!updated) {
-                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update feedback')
+                throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_UPDATE)
             }
 
             await this._activityLogService.logActivity({

@@ -1,0 +1,15 @@
+export const MSG = {
+    GEMINI_API_KEY_NOT_CONFIGURED: 'Gemini API key is not configured',
+    INVALID_GEMINI_RESPONSE: 'Invalid response from Gemini',
+    INVALID_AI_REQUEST: 'Invalid AI request',
+    INVALID_AI_API_KEY: 'Invalid AI API key',
+    ACCESS_DENIED: 'Access denied',
+    AI_MODEL_NOT_FOUND: 'AI model not found',
+    TOO_MANY_REQUESTS: 'Too many AI requests. Please try again later',
+    AI_SERVER_UNAVAILABLE: 'AI server temporarily unavailable',
+    UNEXPECTED_AI_ERROR: 'Unexpected AI service error',
+    MESSAGE_REQUIRED: 'Message is required',
+    MESSAGE_TOO_LONG: 'Message must be 500 character or less',
+    ONLY_PATIENTS_ACCESS: 'Only patients can access the assistant',
+    USER_NOT_AUTHENTICATED: 'User not authenticated',
+}

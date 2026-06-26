@@ -1,0 +1,17 @@
+export const MSG = {
+    PATIENT_NOT_FOUND: 'Patient not found',
+    ALREADY_ACTIVE: 'Patient already has an active subscription',
+    NO_CAREGIVER_ASSIGNED: 'No caregiver assigned to this patient',
+    CAREGIVER_NOT_FOUND: 'Caregiver not found',
+    INSUFFICIENT_BALANCE: 'Insufficient wallet balance',
+    INVALID_SIGNATURE: 'Invalid payment signature',
+    PAYMENT_NOT_FOUND: 'Payment not found',
+    PAYMENT_ALREADY_VERIFIED: 'Payment already verified',
+    NOT_FOUND: 'Subscription not found',
+    NO_ACTIVE: 'No active subscription found',
+    USER_NOT_AUTHENTICATED: 'User not authenticated',
+    FETCHED: 'Subscription fetched successfully',
+    CREATED: 'Subscription created, proceed with payment',
+    ACTIVATED: 'Subscription activated successfully',
+    CANCELLED: 'Subscription cancelled',
+}

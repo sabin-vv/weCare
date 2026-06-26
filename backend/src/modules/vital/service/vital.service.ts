@@ -8,6 +8,7 @@ import { IAlertService } from '../../alert/interfaces/alert.service.interface'
 import { ICaregiverActivityService } from '../../caregiverActivity/interfaces/caregiverActivity.service.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
+import { MSG } from '../constants/messages'
 import { IVitalRepository } from '../interfaces/vital.repository.interface'
 import { IVitalService } from '../interfaces/vital.service.interface'
 import { VitalPlanDocument, VitalScheduleDocument, VitalScheduleDTO } from '../types/vital.types'
@@ -27,32 +28,32 @@ export class VitalService implements IVitalService {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorId))
 
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile Not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const plan = await this._vitalRepo.findVitalPlanById(planId)
 
         if (!plan) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Vital plan not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PLAN_NOT_FOUND)
         }
         return { doctor, plan }
     }
 
     private validatePlanOwnerShip(plan: VitalPlanDocument, doctorId: Types.ObjectId) {
         if (plan.requestedBy.toString() !== doctorId.toString()) {
-            throw new AppError(HTTP_STATUS.FORBIDDEN, 'You are not authorized to change vital plan')
+            throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_AUTHORIZED_CHANGE_PLAN)
         }
     }
 
     async createVitalPlan(doctorUserId: string, dto: CreateVitalPlanDTO): Promise<VitalPlanDocument> {
         const doctor = await this._doctorRepo.findByUserId(new Types.ObjectId(doctorUserId))
         if (!doctor) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Doctor profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.DOCTOR_PROFILE_NOT_FOUND)
         }
 
         const patient = await this._patientRepo.findById(dto.patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         return await this._vitalRepo.createVitalPlan({
@@ -67,7 +68,7 @@ export class VitalService implements IVitalService {
     async getPatientVitalPlans(patientId: string, status?: string): Promise<VitalPlanDocument[]> {
         const patient = await this._patientRepo.findById(patientId)
         if (!patient) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Patient not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PATIENT_NOT_FOUND)
         }
 
         if (status) {
@@ -91,7 +92,7 @@ export class VitalService implements IVitalService {
 
         const updatedPlan = await this._vitalRepo.updateVitalPlan(planId, { status: 'cancelled' })
         if (!updatedPlan) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Vital plan not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.PLAN_NOT_FOUND)
         }
 
         return updatedPlan

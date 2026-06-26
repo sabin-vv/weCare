@@ -8,6 +8,7 @@ import { ICaregiverRepository } from '../../caregiver/interfaces/caregiver.repos
 import { SystemGeneratedScheduleModel } from '../../medication/models/medicationSchedule.model'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { vitalScheduleModel } from '../../vital/models/vitalSchedule.model'
+import { MSG } from '../constants/messages'
 import { IReminderRepository } from '../interfaces/reminder.repository.interface'
 import { IReminderService } from '../interfaces/reminder.service.interface'
 import {
@@ -29,7 +30,7 @@ export class ReminderService implements IReminderService {
     async getReminders(caregiverUserId: string): Promise<RemindersResponse> {
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(caregiverUserId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.CAREGIVER_PROFILE_NOT_FOUND)
         }
 
         const caregiverId = caregiver._id as Types.ObjectId
@@ -138,7 +139,7 @@ export class ReminderService implements IReminderService {
     async createReminder(caregiverUserId: string, dto: CreateReminderDTO): Promise<ReminderDocument> {
         const caregiver = await this._caregiverRepo.findByUserId(new Types.ObjectId(caregiverUserId))
         if (!caregiver) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Caregiver profile not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.CAREGIVER_PROFILE_NOT_FOUND)
         }
 
         return this._reminderRepo.create({
@@ -155,7 +156,7 @@ export class ReminderService implements IReminderService {
     async updateReminder(reminderId: string, dto: UpdateReminderDTO): Promise<ReminderDocument> {
         const reminder = await this._reminderRepo.findById(reminderId)
         if (!reminder) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Reminder not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const updateData: Partial<ReminderDocument> = {}
@@ -168,7 +169,7 @@ export class ReminderService implements IReminderService {
 
         const updated = await this._reminderRepo.update(reminderId, updateData)
         if (!updated) {
-            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update reminder')
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_UPDATE)
         }
 
         return updated
@@ -177,12 +178,12 @@ export class ReminderService implements IReminderService {
     async markReminderDone(reminderId: string): Promise<ReminderDocument> {
         const reminder = await this._reminderRepo.findById(reminderId)
         if (!reminder) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Reminder not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         const updated = await this._reminderRepo.update(reminderId, { status: 'completed' })
         if (!updated) {
-            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to update reminder')
+            throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_UPDATE)
         }
 
         return updated
@@ -191,7 +192,7 @@ export class ReminderService implements IReminderService {
     async deleteReminder(reminderId: string): Promise<void> {
         const reminder = await this._reminderRepo.findById(reminderId)
         if (!reminder) {
-            throw new AppError(HTTP_STATUS.NOT_FOUND, 'Reminder not found')
+            throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.NOT_FOUND)
         }
 
         await this._reminderRepo.delete(reminderId)

@@ -4,8 +4,8 @@ import { inject, injectable } from 'tsyringe'
 import { TOKENS } from '../../../container/tokens'
 import { HTTP_STATUS } from '../../../core/constants/httpStatus'
 import { AppError } from '../../../core/errors/AppError'
-import { MSG } from '../constants/messages'
 import { IAppointmentService } from '../../appointment/interfaces/appointment.service.interface'
+import { MSG } from '../constants/messages'
 import { IDoctorService } from '../interfaces/doctor.service.interface'
 
 @injectable()
