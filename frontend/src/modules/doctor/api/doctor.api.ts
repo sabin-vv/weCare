@@ -18,6 +18,7 @@ import type {
     AddPrescriptionPayload,
     AddVitalPlanPayload,
     PatientPrescription,
+    PaginatedPrescriptionsResponse,
     MedicalRecordData,
 } from '../types/doctor.types'
 
@@ -158,6 +159,18 @@ export const addPrescription = async (
 
 export const updatePrescriptionStatus = async (prescriptionId: string, status: string): Promise<void> => {
     await api.patch(`${PRESCRIPTIONS_API}/${prescriptionId}/status`, { status })
+}
+
+export const getPatientPrescriptions = async (
+    patientId: string,
+    page: number,
+    limit: number,
+): Promise<PaginatedPrescriptionsResponse> => {
+    const res = await api.get<PaginatedPrescriptionsResponse>(`${PRESCRIPTIONS_API}/patient/${patientId}`, {
+        params: { page, limit },
+    })
+
+    return res.data
 }
 
 export const createVitalPlan = async (patientId: string, data: AddVitalPlanPayload): Promise<void> => {

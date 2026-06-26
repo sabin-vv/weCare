@@ -1,8 +1,13 @@
 import { Activity, Droplets, Heart, OctagonMinus, Pencil } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { addPrescription, createVitalPlan, updatePrescriptionStatus } from '../../api/doctor.api'
+import {
+    addPrescription,
+    createVitalPlan,
+    getPatientPrescriptions,
+    updatePrescriptionStatus,
+} from '../../api/doctor.api'
 import { getMedicineNames, getMedicineStrengths } from '../../api/medicine.api'
 import { ADMINISTRATION_ROUTE, DURATION, FREQUENCY, MEDICAL_PRIORITY } from '../../constants/prescriptions.Constants'
 import type { MedicationProps, PatientPrescription, ScheduleTime, SelectedMedication } from '../../types/doctor.types'
@@ -11,6 +16,7 @@ import styles from './MedicationTable.module.css'
 
 import Button from '@/shared/components/Button/Button'
 import Modal from '@/shared/components/Modal/Modal'
+import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { Section } from '@/shared/components/Section/Section'
 import SelectField from '@/shared/components/SelectField/SelectField'
@@ -51,19 +57,41 @@ const normalizeScheduleTimes = (
     return normalizedTimes
 }
 
-const MedicationTable = ({
-    patientId,
-    patientName,
-    prescriptions,
-    hasConditions,
-    onSuccess,
-    vitalPlan,
-}: MedicationProps) => {
+const PAGE_LIMIT = 8
+
+const MedicationTable = ({ patientId, patientName, hasConditions, onSuccess, vitalPlan }: MedicationProps) => {
+    const [prescriptions, setPrescriptions] = useState<PatientPrescription[]>([])
+    const [page, setPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalCount, setTotalCount] = useState(0)
+    const [isLoadingPrescriptions, setIsLoadingPrescriptions] = useState(false)
+    const [prescriptionRefreshKey, setPrescriptionRefreshKey] = useState(0)
     const [showPrescriptionModal, setShowPrescriptionModal] = useState(false)
     const [showVitalsModal, setShowVitalsModal] = useState(false)
     const [editingPrescription, setEditingPrescription] = useState<PatientPrescription | null>(null)
     const [isEditMode, setIsEditMode] = useState(false)
     const [originalPrescription, setOriginalPrescription] = useState<SelectedMedication[]>([])
+
+    const fetchPrescriptions = useCallback(async () => {
+        setIsLoadingPrescriptions(true)
+        try {
+            const response = await getPatientPrescriptions(patientId, page, PAGE_LIMIT)
+            setPrescriptions(response.data)
+            setTotalPages(response.pagination.totalPages)
+            setTotalCount(response.pagination.total)
+        } catch (error) {
+            toast.error(getErrorMessage(error))
+            setPrescriptions([])
+        } finally {
+            setIsLoadingPrescriptions(false)
+        }
+    }, [patientId, page])
+
+    useEffect(() => {
+        if (patientId) {
+            fetchPrescriptions()
+        }
+    }, [fetchPrescriptions, patientId, prescriptionRefreshKey])
 
     const flattenedMedications = [...prescriptions]
         .sort((a, b) => new Date(b.prescribedAt).getTime() - new Date(a.prescribedAt).getTime())
@@ -429,6 +457,8 @@ const MedicationTable = ({
                 toast.success('Prescription added successfully')
             }
 
+            setPage(1)
+            setPrescriptionRefreshKey((k) => k + 1)
             onSuccess()
             handleClosePrescriptionModal()
         } catch (error) {
@@ -603,7 +633,7 @@ const MedicationTable = ({
                     </div>
                 }
             >
-                {flattenedMedications.length === 0 ? (
+                {flattenedMedications.length === 0 && !isLoadingPrescriptions ? (
                     <p className={styles.emptyMessage}>No prescriptions available for this patient.</p>
                 ) : (
                     <div className={styles.tableSection}>
@@ -611,7 +641,18 @@ const MedicationTable = ({
                             data={flattenedMedications}
                             columns={medicationColumns}
                             keyExtractor={(item) => `${item.prescriptionId}-${item.name}`}
-                        />
+                            isLoading={isLoadingPrescriptions}
+                        >
+                            {totalPages > 1 && (
+                                <Pagination
+                                    currentPage={page}
+                                    totalPages={totalPages}
+                                    totalCount={totalCount}
+                                    limit={PAGE_LIMIT}
+                                    onPageChange={setPage}
+                                />
+                            )}
+                        </DataTable>
                     </div>
                 )}
             </Section>

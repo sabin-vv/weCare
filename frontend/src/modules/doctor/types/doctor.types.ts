@@ -366,11 +366,22 @@ export interface SelectedMedication {
     instructions?: string
 }
 
+export interface PaginationInfo {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+}
+
+export interface PaginatedPrescriptionsResponse {
+    success: boolean
+    data: PatientPrescription[]
+    pagination: PaginationInfo
+}
+
 export interface MedicationProps {
     patientId: string
     patientName: string
-    clinicalStatus: string
-    prescriptions: PatientPrescription[]
     vitalPlan?: string[]
     hasConditions: boolean
     onSuccess: () => void

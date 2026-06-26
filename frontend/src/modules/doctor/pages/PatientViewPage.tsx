@@ -399,8 +399,6 @@ const PatientViewPage = () => {
             <MedicationTable
                 patientId={patient._id}
                 patientName={patient.name}
-                clinicalStatus={patient.clinicalStatus}
-                prescriptions={patient.prescriptions}
                 hasConditions={(patient.conditions?.length ?? 0) > 0}
                 vitalPlan={vitals}
                 onSuccess={fetchPatient}
