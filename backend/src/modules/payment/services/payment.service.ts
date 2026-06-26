@@ -96,7 +96,7 @@ export class PaymentService implements IPaymentService {
                     action: 'appointment_booked',
                     targetId: appointment._id.toString(),
                     targetType: 'appointment',
-                    description: `Booked Appointment with Dr. ${doctorName} (Appointment ID: ${appointment._id})`,
+                    description: `Booked Appointment with Dr. ${doctorName} (Appointment ID: ${appointment.appointmentId})`,
                 })
 
                 await this._activityLogService.logActivity({
@@ -106,7 +106,17 @@ export class PaymentService implements IPaymentService {
                     action: 'appointment_confirmed',
                     targetId: appointment._id.toString(),
                     targetType: 'appointment',
-                    description: `Confirmed appointment with Dr. ${doctorName} (Appointment ID: ${appointment._id})`,
+                    description: `Confirmed appointment with Dr. ${doctorName} (Appointment ID: ${appointment.appointmentId})`,
+                })
+
+                await this._activityLogService.logActivity({
+                    performedBy: payment.patientId.toString(),
+                    performedByRole: 'patient',
+                    category: 'payment',
+                    action: 'payment_success',
+                    targetId: payment._id.toString(),
+                    targetType: 'payment',
+                    description: `Appointment payment completed via Razorpay (Appointment ID: ${appointment.appointmentId})`,
                 })
             }
         }
@@ -132,16 +142,6 @@ export class PaymentService implements IPaymentService {
             })
             throw new AppError(HTTP_STATUS.NOT_FOUND, MSG.UPDATE_FAILED)
         }
-
-        await this._activityLogService.logActivity({
-            performedBy: payment.patientId.toString(),
-            performedByRole: 'patient',
-            category: 'payment',
-            action: 'payment_success',
-            targetId: payment._id.toString(),
-            targetType: 'payment',
-            description: `Appointment payment completed via Razorpay (Appointment ID: ${payment.appointmentId})`,
-        })
 
         return updatedPayment
     }

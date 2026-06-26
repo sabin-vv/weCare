@@ -14,7 +14,7 @@ export const startAppointmentCron = () => {
 
             const missedIds: string[] = []
             const cancelledIds: string[] = []
-            const cancelledAppointments: Array<{ _id: string; patientId: string }> = []
+            const cancelledAppointments: Array<{ id: string; appointmentId: string; patientId: string }> = []
 
             for (const apt of appointments) {
                 const [hours, minutes] = apt.slotEnd.split(':').map(Number)
@@ -27,7 +27,8 @@ export const startAppointmentCron = () => {
                     } else if (apt.status === 'pending_payment') {
                         cancelledIds.push(apt._id.toString())
                         cancelledAppointments.push({
-                            _id: apt._id.toString(),
+                            id: apt._id.toString(),
+                            appointmentId: (apt as any).appointmentId?.toString() || apt._id.toString(),
                             patientId: apt.patientId?.toString() || '',
                         })
                     }
@@ -59,18 +60,18 @@ export const startAppointmentCron = () => {
                         performedByRole: 'patient' as const,
                         category: 'appointment' as const,
                         action: 'appointment_cancelled' as const,
-                        targetId: apt._id,
+                        targetId: apt.id,
                         targetType: 'appointment' as const,
-                        description: `Auto-cancelled — Payment not completed (Appointment ID: ${apt._id})`,
+                        description: `Auto-cancelled — Payment not completed (Appointment ID: ${apt.appointmentId})`,
                     },
                     {
                         performedBy: apt.patientId,
                         performedByRole: 'patient' as const,
                         category: 'payment' as const,
                         action: 'payment_failed' as const,
-                        targetId: apt._id,
+                        targetId: apt.id,
                         targetType: 'appointment' as const,
-                        description: `Payment failed for appointment (Appointment ID: ${apt._id})`,
+                        description: `Payment failed for appointment (Appointment ID: ${apt.appointmentId})`,
                     },
                 ])
 
