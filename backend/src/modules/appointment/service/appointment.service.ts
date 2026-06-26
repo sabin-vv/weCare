@@ -22,7 +22,11 @@ import {
     RazorpayAppointmentResponse,
     WalletAppointmentResponse,
 } from '../interfaces/appointment.service.interface'
-import { toAppointmentListResponseDTO, toAppointmentResponseDTO, toDoctorAppointmentRowDTO } from '../mapper/appointment.mapper'
+import {
+    toAppointmentListResponseDTO,
+    toAppointmentResponseDTO,
+    toDoctorAppointmentRowDTO,
+} from '../mapper/appointment.mapper'
 import { AppointmentDocument, AppointmentResponseDTO, DoctorAppointmentsResponseDTO } from '../types/appointment.types'
 import { CreateAppointmentDTO, RescheduleAppointmentDTO, RetryPaymentDTO } from '../validator/appointment.schema'
 
@@ -143,7 +147,7 @@ export class AppointmentService implements IAppointmentService {
         consultationFee: number,
         platformFee: number,
         totalAmount: number,
-        doctorName: string,
+        _doctorName: string,
     ): Promise<RazorpayAppointmentResponse> {
         const expiredAt = new Date(Date.now() + 10 * 60 * 1000)
 
@@ -174,7 +178,12 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, MSG.FAILED_PREPARE_RAZORPAY)
         }
 
-        return { paymentMethod: 'razorpay', order, paymentId: payment._id.toString(), appointmentId: appointment._id.toString() }
+        return {
+            paymentMethod: 'razorpay',
+            order,
+            paymentId: payment._id.toString(),
+            appointmentId: appointment._id.toString(),
+        }
     }
 
     private async createWalletAppointment(
@@ -397,9 +406,7 @@ export class AppointmentService implements IAppointmentService {
             appointment.doctorId.toString(),
             dto.appointmentDate,
         )
-        const isSlotBooked = activeAppointments.some(
-            (a) => a.slotStart === dto.slotStart && a.status !== 'cancelled',
-        )
+        const isSlotBooked = activeAppointments.some((a) => a.slotStart === dto.slotStart && a.status !== 'cancelled')
         if (isSlotBooked) {
             throw new AppError(HTTP_STATUS.CONFLICT, MSG.SLOT_ALREADY_BOOKED)
         }
@@ -563,7 +570,7 @@ export class AppointmentService implements IAppointmentService {
                 action: 'appointment_cancelled',
                 targetId: id,
                 targetType: 'appointment',
-                description: `Cancelled appointment with Dr. ${doctorName}. Reason: ${reason}`,
+                description: `Cancelled appointment with Dr. ${doctorName}. Reason: ${reason} (Appointment ID: ${appointment.appointmentId})`,
             })
 
             if (refundAmount > 0) {
@@ -574,7 +581,7 @@ export class AppointmentService implements IAppointmentService {
                     action: 'payment_refunded',
                     targetId: id,
                     targetType: 'payment',
-                    description: `Refund of ₹${refundAmount} processed `,
+                    description: `Refund of ₹${refundAmount} processed (Appointment ID: ${appointment.appointmentId})`,
                 })
             }
         }
