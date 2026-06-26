@@ -240,9 +240,7 @@ const PatientAppointmentsPage = () => {
 
     return (
         <>
-            <MainWrapper>
-                <h1 className={styles.title}>My Appointments</h1>
-
+            <MainWrapper title="My Appointments" subtitle="View and manage your upcoming and past appointments">
                 {currentAppointments.length > 0 ? (
                     <section className={styles.section}>
                         <h2 className={styles.sectionTitle}>
