@@ -434,7 +434,7 @@ export class AppointmentService implements IAppointmentService {
             action: 'appointment_rescheduled',
             targetId: appointmentId,
             targetType: 'appointment',
-            description: `Rescheduled appointment with Dr. ${doctorName} to ${new Date(dto.appointmentDate).toLocaleDateString()} at ${dto.slotStart}`,
+            description: `Rescheduled appointment with Dr. ${doctorName} to ${new Date(dto.appointmentDate).toLocaleDateString()} at ${dto.slotStart} (Appointment ID: ${appointment.appointmentId})`,
         })
 
         return toAppointmentResponseDTO(updated)
