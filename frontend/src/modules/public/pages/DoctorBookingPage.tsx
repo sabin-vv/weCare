@@ -162,7 +162,11 @@ const DoctorBookingPage = () => {
                             )}
                         </div>
 
-                        <Button type="button" onClick={() => navigate(`/doctors/${doctor.id}`)}>
+                        <Button
+                            className={styles.bookButton}
+                            type="button"
+                            onClick={() => navigate(`/doctors/${doctor.id}`)}
+                        >
                             Book Appointment
                         </Button>
                     </article>
