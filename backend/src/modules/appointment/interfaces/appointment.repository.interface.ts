@@ -1,5 +1,7 @@
 import { AppointmentDocument } from '../types/appointment.types'
 
+type AppointmentStatus = AppointmentDocument['status']
+
 export interface IAppointmentRepository {
     create(data: Partial<AppointmentDocument>): Promise<AppointmentDocument>
 
@@ -25,7 +27,7 @@ export interface IAppointmentRepository {
 
     findFutureCancellableAppointments(doctorId: string, fromDate: Date): Promise<AppointmentDocument[]>
 
-    findPatientIdsByStatus(doctorId: string, status: string | string[]): Promise<string[]>
+    findPatientIdsByStatus(doctorId: string, statuses: AppointmentStatus[]): Promise<string[]>
 
     findDoctorVisibleAppointmentsByDoctorAndPatientIds(
         doctorId: string,
