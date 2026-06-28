@@ -1,0 +1,768 @@
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.errorText {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.backBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 1.5rem;
+}
+
+.backBtn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eee;
+}
+
+.cardTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    letter-spacing: 0.01em;
+}
+
+.doctorSection {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.doctorImage {
+    width: 96px;
+    height: 96px;
+    border-radius: 16px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.doctorAvatarPlaceholder {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.75rem;
+    color: #1d4ed8;
+    background: #dbeafe;
+    flex-shrink: 0;
+}
+
+.doctorMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.doctorName {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.doctorNameRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.verifiedBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #16a34a;
+    background: #dcfce7;
+
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.doctorSpecializations {
+    font-size: 0.9rem;
+    color: #64748b;
+    text-transform: capitalize;
+    margin: 0;
+}
+
+.doctorEmail {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.doctorRating {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: #f59e0b;
+    margin: 0;
+}
+
+.reviewCount {
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.infoList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.infoRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.infoIcon {
+    color: #364fc7;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.infoContent {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+    align-items: baseline;
+}
+
+.infoLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.infoLabel::after {
+    content: ':';
+    margin-left: 2px;
+}
+
+.infoValue {
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.appointmentIdText {
+    font-size: 0.85rem;
+    color: #475569;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: #f1f5f9;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+    width: fit-content;
+}
+
+.idIcon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #364fc7;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.badge {
+    display: inline-flex;
+    width: fit-content;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.statusConfirmed {
+    background: #e6fcf5;
+    color: #0ca678;
+}
+.statusPending {
+    background: #fff9db;
+    color: #f08c00;
+}
+.statusCancelled {
+    background: #fff5f5;
+    color: #fa5252;
+}
+.statusInConsultation {
+    background: #e7f5ff;
+    color: #1c7ed6;
+}
+.statusCompleted {
+    background: #edf2ff;
+    color: #364fc7;
+}
+
+.paymentPaid {
+    background: #e6fcf5;
+    color: #0ca678;
+}
+.paymentPending {
+    background: #fff9db;
+    color: #f08c00;
+}
+.paymentFailed {
+    background: #fff5f5;
+    color: #fa5252;
+}
+.paymentRefunded {
+    background: #f3f0ff;
+    color: #7048e8;
+}
+.paymentRefundPending {
+    background: #fff4e6;
+    color: #d9480f;
+}
+
+.paymentBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.paymentRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.paymentLabel {
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.paymentValue {
+    font-size: 0.95rem;
+    color: #475569;
+}
+
+.paymentDivider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 0.25rem 0;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+}
+
+.timelineStep {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    position: relative;
+    padding-bottom: 1.5rem;
+}
+
+.timelineStep.stepLast {
+    padding-bottom: 0;
+}
+
+.timelineStep::before {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 22px;
+    height: calc(100% - 22px);
+    width: 2px;
+    background: #e2e8f0;
+    z-index: 0;
+}
+
+.timelineStep.stepLast::before {
+    display: none;
+}
+
+.timelineDot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+    margin-top: 2px;
+    color: #cbd5e1;
+}
+
+.stepDone .timelineDot {
+    color: #0ca678;
+}
+
+.stepCancelled .timelineDot {
+    color: #fa5252;
+}
+
+.timelineContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 2px;
+}
+
+.timelineLabel {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.stepDone .timelineLabel {
+    color: #334155;
+    font-weight: 600;
+}
+
+.stepCancelled .timelineLabel {
+    color: #fa5252;
+    font-weight: 600;
+}
+
+.timelineDate {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.stepDone .timelineDate {
+    color: #64748b;
+}
+
+.patientBody {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.patientAvatar {
+    flex-shrink: 0;
+}
+
+.patientAvatarImg {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.patientAvatarPlaceholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: #1d4ed8;
+    background: #dbeafe;
+}
+
+.patientInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.patientName {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.patientDetail {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.clinicalBody {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.clinicalSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.clinicalHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.conditionsList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.conditionTag {
+    display: inline-flex;
+    padding: 0.3rem 0.65rem;
+    background: #f0fdf4;
+    color: #16a34a;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.noData {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+.patientIdValue {
+    font-size: 0.85rem;
+    color: #475569;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: #f1f5f9;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+    width: fit-content;
+    margin: 0;
+}
+
+.clinicalStats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.clinicalStat {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+.statIcon {
+    color: #364fc7;
+    flex-shrink: 0;
+}
+
+.statInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.statValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.cancellationBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.cancelRow {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #475569;
+}
+
+.cancelLabel {
+    font-weight: 600;
+    color: #334155;
+    min-width: 120px;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 0.5rem 0;
+}
+
+.bookAgainBtn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #1d4ed8;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bookAgainBtn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+}
+
+.rescheduleBtn {
+    padding: 12px 24px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rescheduleBtn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+}
+
+.retryPaymentBtn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #fef3c7;
+    color: #b45309;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.retryPaymentBtn:hover {
+    background: #fde68a;
+    transform: translateY(-1px);
+}
+
+.cancelBtn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: #fecaca;
+    transform: translateY(-1px);
+}
+
+.cancelModalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cancelModalText {
+    margin: 0;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.reasonOption {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reasonOption:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.reasonRadio {
+    width: 18px;
+    height: 18px;
+    accent-color: #dc2626;
+    cursor: pointer;
+}
+
+.reasonLabel {
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.customReasonInput {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.customReasonInput:focus {
+    border-color: #dc2626;
+}
+
+.customReasonInput::placeholder {
+    color: #94a3b8;
+}
+
+.modalCancelBtn {
+    padding: 10px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalCancelBtn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.modalConfirmBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #dc2626;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalConfirmBtn:hover {
+    background: #b91c1c;
+}
+
+.modalConfirmBtn:disabled {
+    background: #fca5a5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .doctorImage,
+    .doctorAvatarPlaceholder {
+        width: 72px;
+        height: 72px;
+    }
+
+    .doctorAvatarPlaceholder {
+        font-size: 1.25rem;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .actions button {
+        width: 100%;
+    }
+}
