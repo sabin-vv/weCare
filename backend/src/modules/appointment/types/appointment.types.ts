@@ -4,6 +4,9 @@ interface AppointmentPaymentInfo {
     _id?: string | Types.ObjectId
     status?: 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
     totalAmount?: number
+    consultationFee?: number
+    platformFee?: number
+    paidAt?: Date
 }
 
 export interface PopulatedAppointmentUser {
@@ -82,6 +85,14 @@ export interface AppointmentResponseDTO {
     status: string
     paymentStatus: string
     amount: number
+    consultationFee?: number
+    platformFee?: number
+    averageRating?: number
+    reviewCount?: number
+    confirmedAt?: string
+    cancelledAt?: string
+    completedAt?: string
+    paidAt?: string
     createdAt: string
     cancelledBy?: string
     cancellationReason?: string
@@ -90,6 +101,9 @@ export interface AppointmentResponseDTO {
 export interface PopulatedPayment {
     status?: 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
     totalAmount?: number
+    consultationFee?: number
+    platformFee?: number
+    paidAt?: Date
 }
 
 export type MongooseLikeDocument<T> = T & {

@@ -90,6 +90,12 @@ export const toAppointmentResponseDTO = (appointment: AppointmentDocument): Appo
               ? 'pending'
               : 'paid',
         amount: payment?.totalAmount ?? appointment.consultationFee,
+        consultationFee: payment?.consultationFee ?? appointment.consultationFee,
+        platformFee: payment?.platformFee,
+        confirmedAt: appointment.confirmedAt?.toISOString(),
+        cancelledAt: appointment.cancelledAt?.toISOString(),
+        completedAt: appointment.completedAt?.toISOString(),
+        paidAt: payment?.paidAt ? new Date(payment.paidAt).toISOString() : undefined,
         createdAt: appointment.createdAt.toISOString(),
         cancelledBy: getPopulatedUserName(appointment.cancelledBy),
         cancellationReason: appointment?.cancellationReason,
