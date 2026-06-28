@@ -134,38 +134,44 @@ const DetailedAppointmentCard = ({ appointment, onRetryPayment, onCancel }: Deta
                         </span>
                     )}
                 </div>
-                {isTerminal ? (
-                    <div className={styles.footerRight}>
+                <div className={styles.footerRight}>
+                    <button
+                        className={styles.viewDetailsButton}
+                        onClick={() => navigate(`/appointments/${appointment._id}`)}
+                    >
+                        View Details
+                    </button>
+                    {isTerminal ? (
                         <button
                             className={styles.bookAgainButton}
                             onClick={() => navigate(`/doctors/${appointment.doctorId._id}`)}
                         >
                             Book Again
                         </button>
-                    </div>
-                ) : (
-                    <div className={styles.footerRight}>
-                        {appointment.status === 'confirmed' && (
-                            <button
-                                className={styles.rescheduleButton}
-                                onClick={() => navigate(`/doctors/${doctorId}/reschedule/${appointment._id}`)}
-                            >
-                                Reschedule
-                            </button>
-                        )}
-                        {canRetryPayment ? (
-                            <button className={styles.retryButton} onClick={() => onRetryPayment(appointment)}>
-                                Retry Payment
-                            </button>
-                        ) : (
-                            canCancel && (
-                                <button className={styles.cancelButton} onClick={() => onCancel(appointment._id)}>
-                                    Cancel
+                    ) : (
+                        <>
+                            {appointment.status === 'confirmed' && (
+                                <button
+                                    className={styles.rescheduleButton}
+                                    onClick={() => navigate(`/doctors/${doctorId}/reschedule/${appointment._id}`)}
+                                >
+                                    Reschedule
                                 </button>
-                            )
-                        )}
-                    </div>
-                )}
+                            )}
+                            {canRetryPayment ? (
+                                <button className={styles.retryButton} onClick={() => onRetryPayment(appointment)}>
+                                    Retry Payment
+                                </button>
+                            ) : (
+                                canCancel && (
+                                    <button className={styles.cancelButton} onClick={() => onCancel(appointment._id)}>
+                                        Cancel
+                                    </button>
+                                )
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     )
