@@ -9,6 +9,7 @@ import { AppError } from '../../../core/errors/AppError'
 import { IActivityLogService } from '../../activityLog/interfaces/activityLog.service.interface'
 import { IAdminRepository } from '../../admin/interfaces/admin.repository.interface'
 import { IDoctorRepository } from '../../doctor/interfaces/doctor.repository.interface'
+import { IFeedbackRepository } from '../../feedback/interfaces/feedback.repository.interface'
 import { INotificationService } from '../../notification/interfaces/notification.service.interface'
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
@@ -43,6 +44,7 @@ export class AppointmentService implements IAppointmentService {
         @inject(TOKENS.IWalletService) private _walletService: IWalletService,
         @inject(TOKENS.INotificationService) private _notificationService: INotificationService,
         @inject(TOKENS.IActivityLogService) private _activityLogService: IActivityLogService,
+        @inject(TOKENS.IFeedbackRepository) private _feedbackRepo: IFeedbackRepository,
     ) {
         this.razorpay = new Razorpay({
             key_id: env.RAZORPAY_KEY_ID,
@@ -372,7 +374,19 @@ export class AppointmentService implements IAppointmentService {
             throw new AppError(HTTP_STATUS.FORBIDDEN, MSG.NOT_YOUR_APPOINTMENT)
         }
 
-        return toAppointmentResponseDTO(appointment)
+        const dto = toAppointmentResponseDTO(appointment)
+
+        const populatedDoctor = appointment.doctorId as unknown as { _id: Types.ObjectId }
+        const doctorId = populatedDoctor._id?.toString()
+        if (doctorId) {
+            const rating = await this._feedbackRepo.getAverageRatingByDoctor(doctorId)
+            if (rating) {
+                dto.averageRating = rating.averageRating
+                dto.reviewCount = rating.reviewCount
+            }
+        }
+
+        return dto
     }
 
     async rescheduleAppointment(
