@@ -6,6 +6,8 @@ import { IAppointmentRepository } from '../interfaces/appointment.repository.int
 import { AppointmentModel } from '../models/appointment.model'
 import { AppointmentDocument } from '../types/appointment.types'
 
+type AppointmentStatus = AppointmentDocument['status']
+
 @singleton()
 export class AppointmentRepository extends BaseRepository<AppointmentDocument> implements IAppointmentRepository {
     constructor() {
@@ -24,12 +26,13 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .findById(id)
             .populate({
                 path: 'doctorId',
-                select: 'profileImage specializations',
+                select: 'profileImage specializations verificationStatus',
                 populate: {
                     path: 'userId',
                     select: 'name email',
                 },
             })
+            .populate('paymentId', 'status totalAmount consultationFee platformFee paidAt')
             .populate('cancelledBy', 'name')
     }
 
@@ -143,7 +146,7 @@ export class AppointmentRepository extends BaseRepository<AppointmentDocument> i
             .sort({ appointmentDate: 1, slotStart: 1 })
     }
 
-    async findPatientIdsByStatus(doctorId: string, statuses: string[]): Promise<string[]> {
+    async findPatientIdsByStatus(doctorId: string, statuses: AppointmentStatus[]): Promise<string[]> {
         const appointments = await this.model
             .find({
                 doctorId,
