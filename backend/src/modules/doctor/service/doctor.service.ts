@@ -14,6 +14,7 @@ import { INotificationService } from '../../notification/interfaces/notification
 import { CreateNotificationPayload } from '../../notification/types/notification.types'
 import { IPatientRepository } from '../../patient/interfaces/patient.repository.interface'
 import { IPaymentRepository } from '../../payment/interfaces/payment.repository.interface'
+import { IWalletService } from '../../wallet/interfaces/wallet.service.interface'
 import { MSG } from '../constants/messages'
 import { IAvailabilityNotificationService } from '../interfaces/availabilityNotification.service.interface'
 import { IDoctorRepository } from '../interfaces/doctor.repository.interface'
@@ -112,6 +113,7 @@ export class DoctorService implements IDoctorService {
         @inject(TOKENS.IPatientRepository) private _patientRepo: IPatientRepository,
         @inject(TOKENS.IAlertRepository) private _alertRepo: IAlertRepository,
         @inject(TOKENS.IActivityLogRepository) private _activityLogRepo: IActivityLogRepository,
+        @inject(TOKENS.IWalletService) private _walletService: IWalletService,
     ) {}
 
     async createProfile(userId: string, dto: DoctorDTO) {
@@ -298,16 +300,27 @@ export class DoctorService implements IDoctorService {
             await this._appointmentRepo.update(appointment._id.toString(), { status: 'cancelled' })
 
             const payment = this._getPopulatedPayment(appointment.paymentId)
-            const refundPending = payment?.status === 'success'
+            const isPaid = payment?.status === 'success'
 
-            if (refundPending && payment?._id) {
-                await this._paymentRepo.updateById(payment._id.toString(), { status: 'refund_pending' })
+            if (isPaid && payment?._id) {
+                const patientUserId = (appointment.patientId as { _id: Types.ObjectId })._id.toString()
+                const refundAmount = payment.totalAmount
+
+                if (patientUserId && refundAmount > 0) {
+                    await this._walletService.credit(
+                        patientUserId,
+                        refundAmount,
+                        'Full refund - appointment cancelled due to schedule change',
+                        appointment._id.toString(),
+                    )
+                }
+                await this._paymentRepo.updateById(payment._id.toString(), { status: 'refunded' })
             }
 
             const payload = toAvailabilityCancellationNotificationPayload(appointment, doctorUser.name)
 
             if (payload) {
-                payload.refundPending = refundPending
+                payload.refundPending = isPaid
 
                 const failures = await this._availabilityNotificationService.sendAvailabilityCancellation(payload)
                 notificationFailures.push(...toNotificationFailures(appointment._id.toString(), failures))
@@ -319,7 +332,7 @@ export class DoctorService implements IDoctorService {
                     appointmentDate: payload.appointmentDate,
                     slotStart: payload.slotStart,
                     slotEnd: payload.slotEnd,
-                    refundPending,
+                    isPaid,
                 })
             }
         }
@@ -486,6 +499,7 @@ export class DoctorService implements IDoctorService {
         return payment as {
             _id: string | Types.ObjectId
             status?: 'pending' | 'success' | 'failed' | 'refund_pending' | 'refunded'
+            totalAmount: number
         }
     }
 
