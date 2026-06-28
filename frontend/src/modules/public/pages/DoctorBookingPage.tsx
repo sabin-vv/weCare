@@ -85,7 +85,7 @@ const DoctorBookingPage = () => {
         setPage(1)
     }
 
-    const hasFilters = query || selectedSpecialty
+    const hasFilters = query || selectedSpecialty || sortValue !== 'rating-desc'
 
     return (
         <MainWrapper
