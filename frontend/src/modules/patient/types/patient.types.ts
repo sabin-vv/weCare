@@ -98,6 +98,7 @@ export interface Appointment {
             email: string
         }
         specializations: Specialization[]
+        verificationStatus?: string
     }
     appointmentDate: string
     slotStart: string
@@ -105,6 +106,15 @@ export interface Appointment {
     status: 'pending_payment' | 'confirmed' | 'cancelled' | 'in_consultation' | 'completed'
     paymentStatus: 'pending' | 'paid' | 'failed' | 'refund_pending' | 'refunded'
     amount: number
+    consultationFee?: number
+    platformFee?: number
+    averageRating?: number
+    reviewCount?: number
+    confirmedAt?: string
+    cancelledAt?: string
+    completedAt?: string
+    paidAt?: string
+    createdAt?: string
     cancelledBy?: string
     cancellationReason?: string
 }
