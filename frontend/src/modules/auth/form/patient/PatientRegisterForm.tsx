@@ -13,6 +13,7 @@ import type { PatientRegisterData } from '../../validator/register.schema'
 import styles from './PatientRegisterForm.module.css'
 
 import Button from '@/shared/components/Button/Button'
+import DatePicker from '@/shared/components/DatePicker/DatePicker'
 import FormWrapper from '@/shared/components/FormWrapper/FormWrapper'
 import InputField from '@/shared/components/InputField/InputField'
 import PasswordField from '@/shared/components/PasswordField/PasswordField'
@@ -44,14 +45,13 @@ const PatientRegisterForm = ({ onSubmit, loading }: Props) => {
         resolver: zodResolver(patientRegisterSchema),
         defaultValues: {
             mobile: '',
+            dateOfBirth: '',
         },
     })
 
-    const today: Date = new Date()
-    const maxDate = today.toISOString().split('T')[0]
-    const min = new Date()
-    min.setFullYear(today.getFullYear() - 100)
-    const minDate = min.toISOString().split('T')[0]
+    const maxDate = new Date()
+    const minDate = new Date()
+    minDate.setFullYear(maxDate.getFullYear() - 100)
 
     const handleSubmitForm = async (data: PatientRegisterData) => {
         setSubmitting(true)
@@ -93,13 +93,19 @@ const PatientRegisterForm = ({ onSubmit, loading }: Props) => {
                 errors={errors && errors.email?.message}
             />
             <div className={styles.dobGenderWrapper}>
-                <InputField
-                    label="Date of Birth"
-                    type="date"
-                    {...register('dateOfBirth')}
-                    max={maxDate}
-                    min={minDate}
-                    errors={errors && errors.dateOfBirth?.message}
+                <Controller
+                    name="dateOfBirth"
+                    control={control}
+                    render={({ field }) => (
+                        <DatePicker
+                            label="Date of Birth"
+                            value={field.value}
+                            onChange={field.onChange}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                            error={errors.dateOfBirth?.message}
+                        />
+                    )}
                 />
                 <SelectField
                     label="Gender"
