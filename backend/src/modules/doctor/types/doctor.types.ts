@@ -30,7 +30,7 @@ export interface CancelledAppointmentSummary {
     appointmentDate: string
     slotStart: string
     slotEnd: string
-    refundPending: boolean
+    isPaid: boolean
 }
 
 export interface NotificationFailure {
