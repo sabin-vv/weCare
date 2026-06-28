@@ -8,4 +8,6 @@ export interface DateRangePickerProps {
     onChange: (value: DateRange) => void
     minDate?: Date
     maxDate?: Date
+    label?: string
+    error?: string
 }
