@@ -92,8 +92,8 @@ export const getPatientAppointments = async (): Promise<Appointment[]> => {
 }
 
 export const getAppointmentById = async (appointmentId: string): Promise<Appointment> => {
-    const response = await api.get(`${APPOINTMENT_API}/${appointmentId}`)
-    return response.data
+    const response = await api.get<{ success: boolean; data: Appointment }>(`${APPOINTMENT_API}/${appointmentId}`)
+    return response.data.data
 }
 
 export const getWallet = async (): Promise<GetWalletResponse> => {
