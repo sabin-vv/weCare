@@ -266,7 +266,7 @@ const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(
                         }}
                         onKeyDown={handleTriggerKeyDown}
                     >
-                        <span className={styles.selectedText}>{selectedOption?.label ?? 'Select an option'}</span>
+                        <span className={selectedValue === '' ? styles.placeholderText : styles.selectedText}>{selectedOption?.label ?? 'Select an option'}</span>
                         <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`} aria-hidden="true">
                             <ChevronDown size={16} />
                         </span>

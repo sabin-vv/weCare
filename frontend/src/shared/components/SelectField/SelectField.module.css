@@ -88,6 +88,15 @@
     text-overflow: ellipsis;
 }
 
+.placeholderText {
+    min-width: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #94a3b8;
+}
+
 .arrow {
     width: 24px;
     height: 24px;
