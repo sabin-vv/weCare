@@ -4,7 +4,7 @@ import { injectable } from 'tsyringe'
 import { BaseRepository } from '../../../core/base/base.repository'
 import { IFeedbackRepository } from '../interfaces/feedback.repository.interface'
 import { FeedbackModel } from '../models/feedback.model'
-import { FeedbackDocument } from '../types/feedback.types'
+import { FeedbackDocument, FeedbackTargetRole } from '../types/feedback.types'
 
 @injectable()
 export class FeedbackRepository extends BaseRepository<FeedbackDocument> implements IFeedbackRepository {
@@ -15,7 +15,7 @@ export class FeedbackRepository extends BaseRepository<FeedbackDocument> impleme
     async findOneByPatientAndTarget(
         patientId: string,
         targetId: string,
-        targetRole: string,
+        targetRole: FeedbackTargetRole,
     ): Promise<FeedbackDocument | null> {
         return this.model.findOne({
             patientId: new Types.ObjectId(patientId),
@@ -49,5 +49,27 @@ export class FeedbackRepository extends BaseRepository<FeedbackDocument> impleme
             averageRating: Math.round(r.averageRating * 10) / 10,
             reviewCount: r.reviewCount,
         }))
+    }
+
+    async getAverageRatingByDoctor(doctorId: string): Promise<{ averageRating: number; reviewCount: number } | null> {
+        const result = await this.model.aggregate([
+            {
+                $match: { targetId: new Types.ObjectId(doctorId), targetRole: 'doctor' },
+            },
+            {
+                $group: {
+                    _id: '$targetId',
+                    averageRating: { $avg: '$rating' },
+                    reviewCount: { $sum: 1 },
+                },
+            },
+        ])
+
+        if (result.length === 0) return null
+
+        return {
+            averageRating: Math.round(result[0].averageRating * 10) / 10,
+            reviewCount: result[0].reviewCount,
+        }
     }
 }
