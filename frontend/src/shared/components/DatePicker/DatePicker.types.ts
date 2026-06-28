@@ -4,4 +4,6 @@ export interface DatePickerProps {
     placeholder?: string
     minDate?: Date
     maxDate?: Date
+    label?: string
+    error?: string
 }

@@ -1,6 +1,8 @@
 import { ChevronDown } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 
+import ErrorField from '../ErrorField/ErrorField'
+
 import styles from './DatePicker.module.css'
 import type { DatePickerProps } from './DatePicker.types'
 
@@ -20,7 +22,15 @@ const isValidDate = (d: unknown): d is Date => d instanceof Date && !isNaN(d.get
 
 type ViewMode = 'day' | 'year'
 
-const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, maxDate }: DatePickerProps) => {
+const DatePicker = ({
+    value,
+    onChange,
+    placeholder = 'Select date',
+    minDate,
+    maxDate,
+    label,
+    error,
+}: DatePickerProps) => {
     const wrapperRef = useRef<HTMLDivElement>(null)
     const yearListRef = useRef<HTMLDivElement>(null)
     const selectedYearRef = useRef<HTMLButtonElement>(null)
@@ -60,6 +70,9 @@ const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, max
     }
 
     const goToNextMonth = () => {
+        const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1
+        const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear
+        if (maxDate && new Date(nextYear, nextMonth, 1) > maxDate) return
         if (viewMonth === 11) {
             setViewMonth(0)
             setViewYear((y) => y + 1)
@@ -128,10 +141,13 @@ const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, max
         return cells
     }
 
+    const yearMin = minDate ? minDate.getFullYear() : YEAR_MIN
+    const yearMax = maxDate ? maxDate.getFullYear() : YEAR_MAX
+
     const renderYears = () => {
         const cells: React.ReactNode[] = []
         const selectedYear = selectedDate?.getFullYear()
-        for (let year = YEAR_MIN; year <= YEAR_MAX; year++) {
+        for (let year = yearMin; year <= yearMax; year++) {
             const isSelected = selectedYear === year
             cells.push(
                 <button
@@ -156,78 +172,82 @@ const DatePicker = ({ value, onChange, placeholder = 'Select date', minDate, max
     const headerLabel = viewMode === 'day' ? `${MONTHS[viewMonth]} ${viewYear}` : '\u2039 Select year'
 
     return (
-        <div className={styles.wrapper} ref={wrapperRef}>
-            <button
-                type="button"
-                id={`${generatedId}-trigger`}
-                className={styles.trigger}
-                aria-haspopup="dialog"
-                aria-expanded={isOpen}
-                onClick={() => setIsOpen((o) => !o)}
-            >
-                <span className={displayText ? styles.selectedText : styles.placeholder}>
-                    {displayText || placeholder}
-                </span>
-                <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`} aria-hidden="true">
-                    <ChevronDown size={16} />
-                </span>
-            </button>
+        <div className={styles.fieldWrapper}>
+            {label && <label htmlFor={`${generatedId}-trigger`}>{label}</label>}
+            <div className={styles.wrapper} ref={wrapperRef}>
+                <button
+                    type="button"
+                    id={`${generatedId}-trigger`}
+                    className={styles.trigger}
+                    aria-haspopup="dialog"
+                    aria-expanded={isOpen}
+                    onClick={() => setIsOpen((o) => !o)}
+                >
+                    <span className={displayText ? styles.selectedText : styles.placeholder}>
+                        {displayText || placeholder}
+                    </span>
+                    <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`} aria-hidden="true">
+                        <ChevronDown size={16} />
+                    </span>
+                </button>
 
-            {isOpen && (
-                <div className={styles.popover} role="dialog" aria-labelledby={`${generatedId}-trigger`}>
-                    <div className={styles.header}>
-                        {viewMode === 'day' ? (
-                            <>
-                                <button
-                                    type="button"
-                                    className={styles.navBtn}
-                                    onClick={goToPrevMonth}
-                                    aria-label="Previous month"
-                                >
-                                    &#8249;
-                                </button>
+                {isOpen && (
+                    <div className={styles.popover} role="dialog" aria-labelledby={`${generatedId}-trigger`}>
+                        <div className={styles.header}>
+                            {viewMode === 'day' ? (
+                                <>
+                                    <button
+                                        type="button"
+                                        className={styles.navBtn}
+                                        onClick={goToPrevMonth}
+                                        aria-label="Previous month"
+                                    >
+                                        &#8249;
+                                    </button>
+                                    <button type="button" className={styles.headerTitleBtn} onClick={toggleViewMode}>
+                                        {headerLabel}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={styles.navBtn}
+                                        onClick={goToNextMonth}
+                                        aria-label="Next month"
+                                    >
+                                        &#8250;
+                                    </button>
+                                </>
+                            ) : (
                                 <button type="button" className={styles.headerTitleBtn} onClick={toggleViewMode}>
                                     {headerLabel}
                                 </button>
-                                <button
-                                    type="button"
-                                    className={styles.navBtn}
-                                    onClick={goToNextMonth}
-                                    aria-label="Next month"
-                                >
-                                    &#8250;
+                            )}
+                        </div>
+
+                        {viewMode === 'day' && (
+                            <>
+                                <div className={styles.dayRow}>
+                                    {DAYS.map((d) => (
+                                        <div key={d} className={styles.dayLabel}>
+                                            {d}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className={styles.grid}>{renderDays()}</div>
+                                <button type="button" className={styles.todayBtn} onClick={handleSelectToday}>
+                                    Today
                                 </button>
                             </>
-                        ) : (
-                            <button type="button" className={styles.headerTitleBtn} onClick={toggleViewMode}>
-                                {headerLabel}
-                            </button>
+                        )}
+
+                        {viewMode === 'year' && (
+                            <div className={styles.yearList} ref={yearListRef}>
+                                {renderYears()}
+                            </div>
                         )}
                     </div>
-
-                    {viewMode === 'day' && (
-                        <>
-                            <div className={styles.dayRow}>
-                                {DAYS.map((d) => (
-                                    <div key={d} className={styles.dayLabel}>
-                                        {d}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className={styles.grid}>{renderDays()}</div>
-                            <button type="button" className={styles.todayBtn} onClick={handleSelectToday}>
-                                Today
-                            </button>
-                        </>
-                    )}
-
-                    {viewMode === 'year' && (
-                        <div className={styles.yearList} ref={yearListRef}>
-                            {renderYears()}
-                        </div>
-                    )}
-                </div>
-            )}
+                )}
+            </div>
+            <ErrorField error={error} />
         </div>
     )
 }
