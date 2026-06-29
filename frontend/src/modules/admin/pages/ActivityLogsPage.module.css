@@ -1,6 +1,5 @@
 .container {
     animation: fadeIn 0.5s ease;
-    overflow-x: hidden;
 }
 
 @keyframes fadeIn {
@@ -84,17 +83,20 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
 }
 
 .filterItem {
-    min-width: 0;
-    flex: 1 1 160px;
+    width: 220px;
 }
 
 .filterItem input,
 .filterItem div {
     width: 100%;
+}
+
+.dateRangeItem {
+    width: 320px;
+    flex-shrink: 0;
 }
 
 .badge {

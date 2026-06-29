@@ -7,7 +7,7 @@ import type { ActivityLogEntry } from '../types/admin.types'
 
 import styles from './ActivityLogsPage.module.css'
 
-import DatePicker from '@/shared/components/DatePicker/DatePicker'
+import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import SelectField from '@/shared/components/SelectField/SelectField'
@@ -183,20 +183,16 @@ const ActivityLogsPage = () => {
                             onChange={(e) => updateFilter('targetType', e.target.value)}
                         />
                     </div>
-                    <div className={styles.filterItem}>
-                        <DatePicker
-                            value={filters.startDate}
-                            onChange={(v) => updateFilter('startDate', v)}
-                            placeholder="Start Date"
-                            maxDate={filters.endDate ? new Date(filters.endDate + 'T00:00:00') : new Date()}
-                        />
-                    </div>
-                    <div className={styles.filterItem}>
-                        <DatePicker
-                            value={filters.endDate}
-                            onChange={(v) => updateFilter('endDate', v)}
-                            placeholder="End Date"
-                            minDate={filters.startDate ? new Date(filters.startDate + 'T00:00:00') : undefined}
+                    <div className={styles.dateRangeItem}>
+                        <DateRangePicker
+                            value={{ start: filters.startDate ?? '', end: filters.endDate ?? '' }}
+                            onChange={(v) =>
+                                setFilters((prev) => ({
+                                    ...prev,
+                                    startDate: v.start,
+                                    endDate: v.end,
+                                }))
+                            }
                             maxDate={new Date()}
                         />
                     </div>
