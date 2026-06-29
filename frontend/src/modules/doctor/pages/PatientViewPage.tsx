@@ -341,58 +341,54 @@ const PatientViewPage = () => {
                 {vitalPlans.length === 0 ? (
                     <p className={styles.emptyVitalPlans}>No active vitals check requests.</p>
                 ) : (
-                    <div className={styles.vitalPlansTable}>
-                        <div className={styles.vitalsGrid}>
-                            {vitalPlans.map((plan) => (
-                                <div key={plan._id} className={styles.vitalCard}>
-                                    {plan.vitals.map((vital) => (
-                                        <>
-                                            <div className={styles.header}>
-                                                <span className={styles.vitalName}>{vitalNameFormat(vital.type)}</span>
+                    <div className={styles.vitalsGrid}>
+                        {vitalPlans.flatMap((plan) =>
+                            plan.vitals.map((vital) => (
+                                <div key={`${plan._id}-${vital.type}`} className={styles.vitalCard}>
+                                    <div className={styles.header}>
+                                        <span className={styles.vitalName}>{vitalNameFormat(vital.type)}</span>
 
-                                                <button
-                                                    onClick={() => handleCancelVitalPlan(plan._id)}
-                                                    className={styles.deleteButton}
-                                                    disabled={cancellingPlanId === plan._id}
-                                                >
-                                                    <Trash2 size={18} color="red" />
-                                                </button>
-                                            </div>
+                                        <button
+                                            onClick={() => handleCancelVitalPlan(plan._id)}
+                                            className={styles.deleteButton}
+                                            disabled={cancellingPlanId === plan._id}
+                                        >
+                                            <Trash2 size={18} color="red" />
+                                        </button>
+                                    </div>
 
-                                            <div className={styles.details}>
-                                                <div className={styles.detailRow}>
-                                                    <span className={styles.label}>Frequency</span>
+                                    <div className={styles.details}>
+                                        <div className={styles.detailRow}>
+                                            <span className={styles.label}>Frequency</span>
 
-                                                    <span className={styles.value}>
-                                                        {formatFrequency(vital.frequencyValue, vital.frequencyUnit)}
-                                                    </span>
-                                                </div>
+                                            <span className={styles.value}>
+                                                {formatFrequency(vital.frequencyValue, vital.frequencyUnit)}
+                                            </span>
+                                        </div>
 
-                                                <div className={styles.detailRow}>
-                                                    <span className={styles.label}>Duration</span>
+                                        <div className={styles.detailRow}>
+                                            <span className={styles.label}>Duration</span>
 
-                                                    <span className={styles.value}>
-                                                        {formatDuration(vital.durationValue, vital.durationUnit)}
-                                                    </span>
-                                                </div>
+                                            <span className={styles.value}>
+                                                {formatDuration(vital.durationValue, vital.durationUnit)}
+                                            </span>
+                                        </div>
 
-                                                <div className={styles.detailRow}>
-                                                    <span className={styles.label}>Requested On</span>
+                                        <div className={styles.detailRow}>
+                                            <span className={styles.label}>Requested On</span>
 
-                                                    <span className={styles.value}>
-                                                        {new Date(plan.createdAt).toLocaleDateString('en-IN', {
-                                                            day: '2-digit',
-                                                            month: 'short',
-                                                            year: 'numeric',
-                                                        })}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </>
-                                    ))}
+                                            <span className={styles.value}>
+                                                {new Date(plan.createdAt).toLocaleDateString('en-IN', {
+                                                    day: '2-digit',
+                                                    month: 'short',
+                                                    year: 'numeric',
+                                                })}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            ))
+                        )}
                     </div>
                 )}
             </Section>
