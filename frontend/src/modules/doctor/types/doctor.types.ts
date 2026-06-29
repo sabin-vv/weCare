@@ -537,6 +537,7 @@ export interface DashboardStats {
     todayAppointments: number
     openAlerts: number
     activeCaregivers: number
+    createdAt: string
     recentActivity: {
         action: string
         description: string
