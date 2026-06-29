@@ -5,6 +5,9 @@
     padding: 18px 0;
     border-bottom: 1px solid #edf2f7;
 }
+.container:last-child {
+    border-bottom: none;
+}
 
 .left {
     display: flex;
