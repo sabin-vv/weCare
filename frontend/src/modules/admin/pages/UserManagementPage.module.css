@@ -4,8 +4,14 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .title {
@@ -32,7 +38,7 @@
     font-size: 14px;
     transition: all 0.3s ease;
     background: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .searchInput:focus {
@@ -42,6 +48,7 @@
 }
 
 .tabs {
+    width: fit-content;
     display: flex;
     gap: 8px;
     background: #f1f5f9;
@@ -65,7 +72,9 @@
 .tabActive {
     background: #fff;
     color: #3b82f6;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* User Info Cells */
@@ -112,9 +121,18 @@
     display: inline-block;
 }
 
-.doctorBadge { background: #eff6ff; color: #3b82f6; }
-.caregiverBadge { background: #f0fdf4; color: #16a34a; }
-.patientBadge { background: #fff7ed; color: #ea580c; }
+.doctorBadge {
+    background: #eff6ff;
+    color: #3b82f6;
+}
+.caregiverBadge {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+.patientBadge {
+    background: #fff7ed;
+    color: #ea580c;
+}
 
 .statusBadge {
     display: flex;
@@ -130,8 +148,12 @@
     border-radius: 50%;
 }
 
-.dotActive { background: #22c55e; }
-.dotInactive { background: #94a3b8; }
+.dotActive {
+    background: #22c55e;
+}
+.dotInactive {
+    background: #94a3b8;
+}
 
 .toggleContainer {
     display: flex;
@@ -166,7 +188,7 @@
 
 .slider:before {
     position: absolute;
-    content: "";
+    content: '';
     height: 18px;
     width: 18px;
     left: 3px;
