@@ -169,7 +169,7 @@ const DoctorAvailabilityPage = () => {
                 throw new Error('Unexpected wallet response for Razorpay checkout')
             }
 
-            const { order, paymentId, appointmentId } = response
+            const { order, paymentId } = response
 
             const options = {
                 key: env.RAZORPAY_KEY_ID,
