@@ -86,13 +86,17 @@
 }
 
 .filterItem {
-    min-width: 0;
-    flex: 1 1 160px;
+    width: 220px;
 }
 
 .filterItem input,
 .filterItem div {
     width: 100%;
+}
+
+.dateRangeItem {
+    width: 220px;
+    flex-shrink: 0;
 }
 
 .userCell {
