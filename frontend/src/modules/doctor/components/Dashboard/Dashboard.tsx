@@ -10,6 +10,7 @@ import type {
     AlertData,
     AppointmentStats,
     DashboardStats as DashboardStatsType,
+    DateRange,
     DoctorAppointment,
 } from '../../types/doctor.types'
 import { AlertCard } from '../AlertCard'
@@ -17,7 +18,7 @@ import { AlertCard } from '../AlertCard'
 import styles from './Dashboard.module.css'
 
 import Button from '@/shared/components/Button/Button'
-import DatePicker from '@/shared/components/DatePicker/DatePicker'
+import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { getFileUrl } from '@/utils/getFileUrl'
@@ -119,8 +120,10 @@ const Dashboard = () => {
     const [appointments, setAppointments] = useState<DoctorAppointment[]>([])
     const [alerts, setAlerts] = useState<AlertData[]>([])
     const [appointmentStats, setAppointmentStats] = useState<AppointmentStats | null>(null)
-    const [startDate, setStartDate] = useState(getMonthStart)
-    const [endDate, setEndDate] = useState(getLocalDateString(new Date()))
+    const [dateRange, setDateRange] = useState<DateRange>({
+        start: getMonthStart(),
+        end: getLocalDateString(new Date()),
+    })
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -148,12 +151,12 @@ const Dashboard = () => {
 
     const fetchAppointmentStats = useCallback(async () => {
         try {
-            const data = await getAppointmentStats(startDate, endDate)
+            const data = await getAppointmentStats(dateRange.start, dateRange.end)
             setAppointmentStats(data)
         } catch (error) {
             toast.error(getErrorMessage(error))
         }
-    }, [startDate, endDate])
+    }, [dateRange])
 
     useEffect(() => {
         fetchAppointmentStats()
@@ -188,11 +191,12 @@ const Dashboard = () => {
             <Section
                 title="Appointment Overview"
                 actions={
-                    <div className={styles.dateFilter}>
-                        <DatePicker value={startDate} onChange={setStartDate} />
-                        <span className={styles.dateSeparator}>to</span>
-                        <DatePicker value={endDate} onChange={setEndDate} />
-                    </div>
+                    <DateRangePicker
+                        value={dateRange}
+                        onChange={setDateRange}
+                        minDate={stats?.createdAt ? new Date(stats.createdAt) : undefined}
+                        maxDate={new Date()}
+                    />
                 }
             >
                 <div className={styles.chartWrapper}>

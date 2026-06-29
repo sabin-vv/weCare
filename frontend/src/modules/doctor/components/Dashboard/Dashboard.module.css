@@ -165,17 +165,6 @@
     padding: 8px 0;
 }
 
-.dateFilter {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.dateSeparator {
-    color: #6b7280;
-    font-size: 14px;
-}
-
 .empty {
     color: #9ca3af;
     font-size: 14px;
