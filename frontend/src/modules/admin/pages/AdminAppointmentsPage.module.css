@@ -83,16 +83,17 @@
     display: flex;
     align-items: center;
     gap: 12px;
-}
-
-.filterItem {
-    min-width: 0;
-    flex: 1 1 160px;
+    width: fit-content;
 }
 
 .filterItem input,
 .filterItem div {
     width: 100%;
+}
+
+.dateRangeItem {
+    width: 320px;
+    flex-shrink: 0;
 }
 
 .userCell {
@@ -156,6 +157,13 @@
 .timeCell {
     font-size: 13px;
     color: #475569;
+    white-space: nowrap;
+}
+
+.idCell {
+    font-size: 12px;
+    color: #64748b;
+    font-family: monospace;
     white-space: nowrap;
 }
 

@@ -7,7 +7,7 @@ import type { AdminAppointment } from '../types/admin.types'
 
 import styles from './AdminAppointmentsPage.module.css'
 
-import DatePicker from '@/shared/components/DatePicker/DatePicker'
+import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import SelectField from '@/shared/components/SelectField/SelectField'
@@ -97,6 +97,11 @@ const columns: Column<AdminAppointment>[] = [
         ),
     },
     {
+        header: 'Appointment ID',
+        key: 'appointmentId',
+        render: (item) => <span className={styles.idCell}>{item.appointmentId}</span>,
+    },
+    {
         header: 'Date',
         key: 'appointmentDate',
         render: (item) => <span className={styles.dateCell}>{formatDate(item.appointmentDate)}</span>,
@@ -123,11 +128,6 @@ const columns: Column<AdminAppointment>[] = [
         header: 'Payment',
         key: 'paymentStatus',
         render: (item) => <PaymentBadge status={item.paymentStatus} />,
-    },
-    {
-        header: 'Created',
-        key: 'createdAt',
-        render: (item) => <span className={styles.dateCell}>{formatDate(item.createdAt)}</span>,
     },
 ]
 
@@ -211,20 +211,10 @@ const AdminAppointmentsPage = () => {
                             onChange={(e) => updateFilter('status', e.target.value)}
                         />
                     </div>
-                    <div className={styles.filterItem}>
-                        <DatePicker
-                            value={filters.startDate}
-                            onChange={(v) => updateFilter('startDate', v)}
-                            placeholder="Start Date"
-                            maxDate={filters.endDate ? new Date(filters.endDate + 'T00:00:00') : new Date()}
-                        />
-                    </div>
-                    <div className={styles.filterItem}>
-                        <DatePicker
-                            value={filters.endDate}
-                            onChange={(v) => updateFilter('endDate', v)}
-                            placeholder="End Date"
-                            minDate={filters.startDate ? new Date(filters.startDate + 'T00:00:00') : undefined}
+                    <div className={styles.dateRangeItem}>
+                        <DateRangePicker
+                            value={{ start: filters.startDate, end: filters.endDate }}
+                            onChange={(v) => setFilters((prev) => ({ ...prev, startDate: v.start, endDate: v.end }))}
                             maxDate={new Date()}
                         />
                     </div>
