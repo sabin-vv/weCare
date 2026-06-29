@@ -1,9 +1,8 @@
-import { CalendarDays, Clock3 } from 'lucide-react'
+import { CalendarDays } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { getDoctorAvailability, updateDoctorAvailability } from '../api/doctor.api'
-import { DateRangePicker } from '../components/DateRangePicker'
 import { DayScheduleRow } from '../components/DayScheduleRow'
 import { SlotDurationSelector } from '../components/SlotDurationSelector'
 import { type DoctorAvailability, type WeeklySchedule } from '../types/doctor.types'
@@ -11,7 +10,9 @@ import { validateDoctorAvailability } from '../validator/availabilityValidation'
 
 import styles from './AvailabilityPage.module.css'
 
+import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker'
 import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 export const initialSchedule: WeeklySchedule[] = [
@@ -155,8 +156,6 @@ const AvailabilityPage = () => {
         }
     }
 
-    const today = new Date().toISOString().split('T')[0]
-
     return (
         <MainWrapper
             title="Set Weekly Availability"
@@ -169,34 +168,14 @@ const AvailabilityPage = () => {
                     </div>
                 ) : (
                     <div className={styles.form}>
-                        <section className={styles.card}>
-                            <div className={styles.cardHeader}>
-                                <div className={styles.cardTitleWrap}>
-                                    <div className={styles.iconBadge}>
-                                        <Clock3 size={18} />
-                                    </div>
-                                    <h2 className={styles.cardTitle}>Slot Configuration</h2>
-                                </div>
-                            </div>
-
-                            <div className={styles.configRow}>
-                                <div className={styles.fieldBlock}>
-                                    <span className={styles.fieldLabel}>Consultation Duration</span>
-                                    <SlotDurationSelector value={slotDuration} onChange={handleSlotDurationChange} />
-                                </div>
-                            </div>
-                        </section>
-
-                        <section className={styles.card}>
-                            <div className={styles.scheduleHeader}>
-                                <div className={styles.cardTitleWrap}>
-                                    <div className={styles.iconBadge}>
-                                        <CalendarDays size={18} />
-                                    </div>
-                                    <h2 className={styles.cardTitle}>Weekly Schedule</h2>
-                                </div>
-
-                                <DateRangePicker value={dateRange} onChange={setDateRange} minDate={today} />
+                        <Section
+                            title="Weekly Schedule"
+                            icon={<CalendarDays size={18} />}
+                            actions={<DateRangePicker value={dateRange} onChange={setDateRange} />}
+                        >
+                            <div className={styles.fieldBlock}>
+                                <span className={styles.fieldLabel}>Consultation Duration</span>
+                                <SlotDurationSelector value={slotDuration} onChange={handleSlotDurationChange} />
                             </div>
 
                             <div className={styles.daysList}>
@@ -270,7 +249,7 @@ const AvailabilityPage = () => {
                                     />
                                 ))}
                             </div>
-                        </section>
+                        </Section>
 
                         <div className={styles.actions}>
                             <button type="button" className={styles.secondaryButton} onClick={handleReset}>
