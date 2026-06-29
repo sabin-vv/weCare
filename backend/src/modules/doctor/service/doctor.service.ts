@@ -561,6 +561,7 @@ export class DoctorService implements IDoctorService {
             todayAppointments,
             openAlerts,
             activeCaregivers,
+            createdAt: doctor.createdAt.toISOString(),
             recentActivity,
         }
     }
