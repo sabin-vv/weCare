@@ -100,6 +100,9 @@ export interface DoctorDocument extends Document {
 
     consultationFee: number
     isActive: boolean
+
+    createdAt: Date
+    updatedAt: Date
 }
 
 export interface DoctorProfileResponse {
@@ -177,6 +180,7 @@ export interface DashboardStats {
     todayAppointments: number
     openAlerts: number
     activeCaregivers: number
+    createdAt: string
     recentActivity: {
         action: string
         description: string
