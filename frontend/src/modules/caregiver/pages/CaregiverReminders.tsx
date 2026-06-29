@@ -7,6 +7,7 @@ import type { CreateReminderDTO, PatientOption, ReminderItem, RemindersResponse 
 
 import styles from './CaregiverReminders.module.css'
 
+import DateTimePicker from '@/shared/components/DateTimePicker/DateTimePicker'
 import InputField from '@/shared/components/InputField/InputField'
 import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
@@ -154,12 +155,23 @@ const CaregiverReminders = () => {
                     onChange={(e) => setCreateForm((f) => ({ ...f, description: e.target.value }))}
                 />
             </label>
-
-            <InputField
+            <DateTimePicker
                 label="Date & time *"
-                type="datetime-local"
-                value={createForm.scheduleTime}
-                onChange={(e) => setCreateForm((f) => ({ ...f, scheduleTime: e.target.value }))}
+                value={
+                    createForm.scheduleTime
+                        ? {
+                              date: createForm.scheduleTime.split('T')[0],
+                              time: createForm.scheduleTime.split('T')[1],
+                          }
+                        : undefined
+                }
+                minDate={new Date()}
+                onChange={(val) =>
+                    setCreateForm((f) => ({
+                        ...f,
+                        scheduleTime: `${val.date}T${val.time}`,
+                    }))
+                }
             />
 
             <span className={styles.modalLabel}>Priority</span>
