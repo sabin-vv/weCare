@@ -6,7 +6,7 @@ import type { Transactions } from '../types/patient.types'
 import styles from './WalletPage.module.css'
 
 import Button from '@/shared/components/Button/Button'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 
 const WalletPage = () => {
     const [balance, setBalance] = useState<number>(0)

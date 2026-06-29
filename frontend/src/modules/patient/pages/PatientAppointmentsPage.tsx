@@ -10,7 +10,7 @@ import { type Appointment, type CancelModalContentProps } from '../types/patient
 import styles from './PatientAppointmentsPage.module.css'
 
 import { env } from '@/config/env'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 import { loadRazorpayScript } from '@/utils/loadRazorpay'

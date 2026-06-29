@@ -11,7 +11,7 @@ import styles from './CaregiverDashboard.module.css'
 
 import { env } from '@/config/env'
 import { VerificationStatus } from '@/modules/auth/types/auth.types'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import { useAuth } from '@/shared/context/AuthContext'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 

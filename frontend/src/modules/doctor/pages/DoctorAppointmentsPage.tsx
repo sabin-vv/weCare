@@ -7,7 +7,7 @@ import type { DoctorAppointment, PaginationData } from '../types/doctor.types'
 
 import styles from './DoctorAppointmentsPage.module.css'
 
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import DataTable from '@/shared/components/Table/DataTable'

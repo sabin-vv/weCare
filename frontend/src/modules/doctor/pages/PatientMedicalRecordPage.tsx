@@ -9,7 +9,7 @@ import type { ClinicalNote, MedicalRecordData } from '../types/doctor.types'
 import styles from './PatientMedicalRecordPage.module.css'
 
 import { env } from '@/config/env'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 

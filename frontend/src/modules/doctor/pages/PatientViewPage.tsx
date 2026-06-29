@@ -22,7 +22,7 @@ import type { CaregiverOption, PatientDetails, RiskLevel, PatientVitalPlan } fro
 import styles from './PatientViewPage.module.css'
 
 import { type ConditionResult, searchConditions } from '@/modules/doctor/api/conditionsApi'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import { Section } from '@/shared/components/Section/Section'

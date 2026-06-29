@@ -41,7 +41,7 @@ import type {
 
 import styles from './CaregiverPatients.module.css'
 
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'

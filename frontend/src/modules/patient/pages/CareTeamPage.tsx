@@ -9,7 +9,7 @@ import type { FeedbackTarget, TeamMember } from '../types/patient.types'
 
 import styles from './CareTeamPage.module.css'
 
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 
 const CareTeamPage = () => {

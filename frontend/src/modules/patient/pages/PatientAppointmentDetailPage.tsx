@@ -35,7 +35,7 @@ import type { Appointment, PatientProfileData, Prescription, VitalSchedule } fro
 import styles from './PatientAppointmentDetailPage.module.css'
 
 import { env } from '@/config/env'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'

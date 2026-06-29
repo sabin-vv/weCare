@@ -8,7 +8,7 @@ import type { AlertData, PaginationData } from '../types/doctor.types'
 
 import styles from './AlertPage.module.css'
 
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import { Section } from '@/shared/components/Section/Section'
 import SelectField from '@/shared/components/SelectField/SelectField'

@@ -9,7 +9,7 @@ import styles from './DoctorBookingPage.module.css'
 
 import { env } from '@/config/env'
 import Button from '@/shared/components/Button/Button'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Pagination from '@/shared/components/Pagination/Pagination'
 import SearchField from '@/shared/components/SearchField/SearchField'
 import SelectField from '@/shared/components/SelectField/SelectField'

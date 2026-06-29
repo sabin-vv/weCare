@@ -11,7 +11,7 @@ import { validateDoctorAvailability } from '../validator/availabilityValidation'
 import styles from './AvailabilityPage.module.css'
 
 import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 

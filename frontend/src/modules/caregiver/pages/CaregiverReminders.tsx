@@ -8,7 +8,7 @@ import type { CreateReminderDTO, PatientOption, ReminderItem, RemindersResponse 
 import styles from './CaregiverReminders.module.css'
 
 import InputField from '@/shared/components/InputField/InputField'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import Modal from '@/shared/components/Modal/Modal'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'

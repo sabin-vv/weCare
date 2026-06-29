@@ -9,7 +9,7 @@ import type { PrescriptionItem, VitalPlanItem } from '../types/caregiver.types'
 
 import styles from './PrescriptionPage.module.css'
 
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import { Section } from '@/shared/components/Section/Section'
 import { getErrorMessage } from '@/utils/getErrorMessage'
 

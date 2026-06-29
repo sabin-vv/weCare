@@ -32,7 +32,7 @@ import {
 import styles from './PatientDashboardPage.module.css'
 
 import { getPlatformSettings } from '@/modules/admin/api/admin.api'
-import MainWrapper from '@/shared/components/MainWrapper.tsx/MainWrapper'
+import MainWrapper from '@/shared/components/MainWrapper/MainWrapper'
 import { Section } from '@/shared/components/Section/Section'
 import { useAuth } from '@/shared/context/AuthContext'
 import { useNotifications } from '@/shared/hooks/useNotifications'
