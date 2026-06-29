@@ -1,7 +1,7 @@
 import cron from 'node-cron'
 
-import { AppointmentModel } from '../../modules/appointment/models/appointment.model'
 import { ActivityLogModel } from '../../modules/activityLog/models/activityLog.model'
+import { AppointmentModel } from '../../modules/appointment/models/appointment.model'
 
 export const startAppointmentCron = () => {
     cron.schedule('*/5 * * * *', async () => {
@@ -28,7 +28,7 @@ export const startAppointmentCron = () => {
                         cancelledIds.push(apt._id.toString())
                         cancelledAppointments.push({
                             id: apt._id.toString(),
-                            appointmentId: (apt as any).appointmentId?.toString() || apt._id.toString(),
+                            appointmentId: apt.appointmentId?.toString() || apt._id.toString(),
                             patientId: apt.patientId?.toString() || '',
                         })
                     }
