@@ -96,33 +96,33 @@ const LandingPage = () => {
                         </div>
 
                         <div className={styles.roleCards}>
-                        <div className={styles.roleCard}>
-                            <div className={styles.roleCardHeader}>
-                                <div className={styles.roleIcon}>
-                                    <Stethoscope size={24} />
+                            <div className={styles.roleCard}>
+                                <div className={styles.roleCardHeader}>
+                                    <div className={styles.roleIcon}>
+                                        <Stethoscope size={24} />
+                                    </div>
+                                    <h3>Doctor</h3>
                                 </div>
-                                <h3>Doctor</h3>
+                                <p>Manage patients, issue prescriptions, and monitor progress.</p>
                             </div>
-                            <p>Manage patients, issue prescriptions, and monitor progress.</p>
-                        </div>
-                        <div className={styles.roleCard}>
-                            <div className={styles.roleCardHeader}>
-                                <div className={styles.roleIcon}>
-                                    <User size={24} />
+                            <div className={styles.roleCard}>
+                                <div className={styles.roleCardHeader}>
+                                    <div className={styles.roleIcon}>
+                                        <User size={24} />
+                                    </div>
+                                    <h3>Patient</h3>
                                 </div>
-                                <h3>Patient</h3>
+                                <p>Book appointments and track prescriptions easily.</p>
                             </div>
-                            <p>Book appointments and track prescriptions easily.</p>
-                        </div>
-                        <div className={styles.roleCard}>
-                            <div className={styles.roleCardHeader}>
-                                <div className={styles.roleIcon}>
-                                    <HeartHandshake size={24} />
+                            <div className={styles.roleCard}>
+                                <div className={styles.roleCardHeader}>
+                                    <div className={styles.roleIcon}>
+                                        <HeartHandshake size={24} />
+                                    </div>
+                                    <h3>Caregiver</h3>
                                 </div>
-                                <h3>Caregiver</h3>
+                                <p>Follow medication plans and update treatment progress.</p>
                             </div>
-                            <p>Follow medication plans and update treatment progress.</p>
-                        </div>
                         </div>
                     </div>
                 </div>
@@ -130,13 +130,34 @@ const LandingPage = () => {
 
             <section className={styles.featuresSection}>
                 <div className={styles.landingWrapper}>
-                    <svg className={styles.ecgLine} viewBox="0 0 200 28" preserveAspectRatio="none" fill="none" aria-hidden="true">
-                        <path d="M0 14 L45 14 L50 4 L55 24 L60 14 L140 14 L145 4 L150 24 L155 14 L200 14" stroke="#2e9b76" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg
+                        className={styles.ecgLine}
+                        viewBox="0 0 200 28"
+                        preserveAspectRatio="none"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M0 14 L45 14 L50 4 L55 24 L60 14 L140 14 L145 4 L150 24 L155 14 L200 14"
+                            stroke="#2e9b76"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
                     </svg>
                     <h2 className={styles.sectionTitle}>Everything you need</h2>
                     <p className={styles.sectionSubtitle}>
                         A complete healthcare coordination platform for every role.
                     </p>
+                    <div className={styles.buttonGroup}>
+                        <Button
+                            fullWidth={false}
+                            style={{ background: '#2e9b76', borderColor: '#2e9b76' }}
+                            onClick={() => navigate('/doctors')}
+                        >
+                            Find a Doctor <ArrowRight size={18} />
+                        </Button>
+                    </div>
                     <div className={styles.featuresGrid}>
                         {features.map((f) => (
                             <div key={f.title} className={styles.featureCard}>
@@ -155,8 +176,20 @@ const LandingPage = () => {
 
             <section className={styles.worksSection}>
                 <div className={styles.landingWrapper}>
-                    <svg className={styles.ecgLine} viewBox="0 0 200 28" preserveAspectRatio="none" fill="none" aria-hidden="true">
-                        <path d="M0 14 L45 14 L50 4 L55 24 L60 14 L140 14 L145 4 L150 24 L155 14 L200 14" stroke="#2e9b76" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <svg
+                        className={styles.ecgLine}
+                        viewBox="0 0 200 28"
+                        preserveAspectRatio="none"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M0 14 L45 14 L50 4 L55 24 L60 14 L140 14 L145 4 L150 24 L155 14 L200 14"
+                            stroke="#2e9b76"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
                     </svg>
                     <h2 className={styles.sectionTitle}>How WeCare Works</h2>
                     <p className={styles.sectionSubtitle}>From booking to recovery — we've got you covered.</p>
@@ -164,7 +197,9 @@ const LandingPage = () => {
                         {works.map((w) => (
                             <div key={w.number} className={styles.worksCard}>
                                 <div className={styles.worksNumber}>{w.number}</div>
-                                <div className={styles.worksIcon}><w.icon size={28} /></div>
+                                <div className={styles.worksIcon}>
+                                    <w.icon size={28} />
+                                </div>
                                 <h4>{w.title}</h4>
                                 <p>{w.description}</p>
                             </div>
