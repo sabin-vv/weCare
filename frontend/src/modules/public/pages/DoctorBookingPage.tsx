@@ -109,15 +109,15 @@ const DoctorBookingPage = () => {
                             value={sortValue}
                             onChange={(e) => setSortValue(e.target.value)}
                         />
+                    </div>
+                    <div className={styles.filterRight}>
+                        <SearchField value={query} onSearch={setQuery} placeholder="Search doctor or specialty" />
                         {hasFilters && (
                             <button type="button" className={styles.clearButton} onClick={clearFilters}>
                                 Clear All
                                 <X size={16} />
                             </button>
                         )}
-                    </div>
-                    <div className={styles.filterRight}>
-                        <SearchField value={query} onSearch={setQuery} placeholder="Search doctor or specialty" />
                     </div>
                 </div>
             </div>

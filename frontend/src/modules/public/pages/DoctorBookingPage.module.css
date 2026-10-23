@@ -48,9 +48,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-left: auto;
-    flex: 1;
-    max-width: 420px;
+    justify-content: flex-end;
 }
 
 .clearButton {
@@ -360,6 +358,19 @@
     .filters {
         width: 100%;
         flex-wrap: wrap;
+        gap: 16px;
+    }
+
+    .filterLeft {
+        flex: 1;
+        min-width: 280px;
+    }
+
+    .filterRight {
+        flex: 1;
+        min-width: 280px;
+        max-width: none;
+        justify-content: flex-end;
     }
 
     .grid {
@@ -379,6 +390,38 @@
 
     .filters {
         flex-direction: column;
+        gap: 16px;
+    }
+
+    .filterLeft {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .filterLeft > * {
+        width: 100%;
+    }
+
+    .filterRight {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: none;
+        gap: 12px;
+    }
+
+    .filterRight > *:first-child {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .clearButton {
+        max-width: none;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .grid {
